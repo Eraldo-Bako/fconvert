@@ -1,12 +1,10 @@
 #ifndef VIDEO_CONVERTER_H
 #define VIDEO_CONVERTER_H
 
-#include <iostream>
-#include <string>
 #include <filesystem>
-
-namespace fs = std::filesystem;
+#include <string>
 
 void video();
+void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent);
 
 #endif

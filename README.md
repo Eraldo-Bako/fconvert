@@ -1,76 +1,82 @@
-# File Converter
-File Converter is a C++ command-line utility that allows users to convert files between different formats, including images, videos, and audio. The utility provides a user-friendly interface for converting files while utilizing the standard C++ filesystem library for platform-independent file path handling.
+# fconvert 🛠️
 
+**fconvert** is a fast, intentional, and hardware-agnostic C++ command-line utility. Designed for Arch Linux and other Unix-like systems, it provides a seamless way to convert images, videos, and audio files using a smart "Sandbox" directory logic.
 
-<h2>Features:</h2>
+---
 
--Convert image files (PNG, JPEG, WebP) to different formats.<br>
--Convert video files (MP4, AVI, MOV, WebM, MKV, MP3) to desired formats using FFmpeg.<br>
--Convert audio files (MP3, WAV, AAC, FLAC, OGG) to desired formats using FFmpeg.<br>
--Support for relative file paths or providing file paths as command-line arguments.<br>
--Clear the console after each conversion for a cleaner user experience.<br>
+## ✨ Key Features
 
+* **Smart Routing:** Automatically detects intent. Want audio from a video? Just run `fconvert -f movie.mp4 -mp3`.
+* **Sandbox Workflow:** Automatically monitors `input_file/` and outputs to `output_file/` to keep your system clean.
+* **Conflict Resolution:** Handles existing files gracefully (auto-renaming or prompt-to-overwrite).
+* **CLI & Interactive:** Use rapid flags for automation or the guided menu for ease of use.
+* **Hardware Agnostic:** Optimized for high-quality CPU encoding, ensuring portability across different environments.
 
-<h2>Requirements:</h2>
+---
 
-C++17 compiler<br>
-OpenCV library (for image conversion)<br>
-FFmpeg library (for video and audio conversion)<br>
+## 📊 Supported Formats
 
+| Category | Extensions |
+| :--- | :--- |
+| **Images** | `jpg`, `jpeg`, `png`, `webp`, `tiff`, `bmp` |
+| **Audio** | `mp3`, `wav`, `flac`, `ogg`, `m4a`, `opus` |
+| **Video** | `mp4`, `mkv`, `mov`, `webm`, `avi`, `flv` |
 
-<h2>Installation:</h2>
+> **Note:** Inputting a video file with an audio target extension (e.g., `.mp4` to `-mp3`) will automatically trigger a high-quality audio extraction.
 
-Install a C++17 compliant compiler on your system (e.g., GCC, Clang).<br>
-Install the OpenCV library to handle image conversion. Follow the instructions provided on the OpenCV website or use a package manager like apt-get or brew.<br>
-Install the FFmpeg library to handle video and audio conversion. Follow the instructions provided on the FFmpeg website or use a package manager like apt-get,brew, or download it from the official website.
+---
 
+## 🚀 Installation
 
-<h2>Usage:</h2>
+### Prerequisites
+Ensure you have the following installed on your system:
+* **C++17** compatible compiler (GCC/Clang)
+* **FFmpeg** (for video and audio processing)
+* **OpenCV 4** (for image processing)
 
-Clone the repository or download the code files from GitHub.<br>
-Compile the main.cpp and classes files using the C++17 compiler and link with OpenCV and FFmpeg libraries.<br>
+### Build Instructions
+For Arch Linux and most Linux distributions, use the following command:
 
-<h4>bash</h4>
-    
-    g++ -o main main.cpp classes/image_converter.cpp classes/video_converter.cpp classes/audio_converter.cpp -I/path_to_opencv_include -L/path_to_opencv_lib -lopencv_world -lstdc++fs
-or
+```bash
+g++ -o fconvert main.cpp classes/*.cpp `pkg-config --cflags --libs opencv4` -lstdc++fs
+```
+### Installation (Arch Linux)
+Clone the repo and use `makepkg` to install system-wide:
+```bash
+git clone https://github.com/Eraldo-Bako/fconvert
+cd fconvert
+makepkg -si
+```
+> **Note:** You could use a package helper like ```yay``` or ```paru``` once the package is in the AUR.
+## 📖 Usage
+> **Note:** If you installed the package via `makepkg`, you can simply use `fconvert`. If you are running the binary locally from the build folder, use `./fconvert`.
+### Quick Convert (CLI Mode)
+Convert a file instantly without entering the menu:
 
-<h4>bash</h4> 
-    
-    g++ -o main main.cpp classes/image_converter.cpp classes/video_converter.cpp classes/audio_converter.cpp `pkg-config --cflags --libs opencv4` -lstdc++fs
+```bash
+fconvert -f image.png -webp
+fconvert -f music.wav -flac
+fconvert -f video.mp4 -mp3  # Automatically extracts high-quality audio
+```
+### Interactive Mode
+Simply run the executable to enter the guided interface:
+```bash
+fconvert
+```
+### Sandbox Logic
+1. Place your files in the input_file/ folder.
+2. Run fconvert.
+3. Find your processed files in the output_file/ folder.
 
-<hr>
-In Windows, you can use the following command to compile the code with the g++ compiler:
+## ⌨️ Flags
+* ```-h```, ```--help``` : Show the help message and supported formats.
 
+* ```-d```, ```--debug```: Enable debug mode for detailed path-resolution logging.
 
-<h4>bash</h4> 
-    
-    g++ -o main main.cpp classes/image_converter.cpp classes/video_converter.cpp classes/audio_converter.cpp -I"C:\path_to_opencv_include" -L"C:\path_to_opencv_lib" -lopencv_world451 -lstdc++fs
-
-Replace "C:\path_to_opencv_include" with the actual path to the OpenCV include directory and "C:\path_to_opencv_lib" with the actual path to the OpenCV library directory on your system.<br>
-
-Note: Make sure to use backslashes \ for directory paths in Windows, and if there are spaces in the paths, enclose the entire path in double quotes as shown above. Additionally, you may need to adjust the version number in -lopencv_world451 to match the version of OpenCV you have installed.<br>
-<hr>
-Run the executable "main" on your terminal or command prompt.<br>
-<h4>bash</h4>
-
-    ./main
-
-
-Put the files you want to convert inside input_file folder and get the converted file inside of the output_file folder.<br>
-Follow the on-screen instructions to choose the file type you want to convert (image, video, or audio) and provide the necessary input.<br>
-
-
-<h2>Contributing:</h2>
-
-Contributions are welcome! If you find any issues, have suggestions, or want to add new features, feel free to open an issue or submit a pull request.<br>
-
-
-<h2>License:</h2>
-
-This project is licensed under the MIT License. Feel free to use, modify, and distribute the code as per the terms of the license.<br>
-
-
-<h2>Disclaimer:</h2>
-
-Please use this utility responsibly and comply with all relevant copyright laws and licensing agreements when converting files. The authors are not responsible for any misuse or illegal activities involving this software.
+* ```-f <file> -<ext>```: Execute a quick conversion.
+## 🤝 Contributing
+Contributions are welcome! If you find a bug or have a feature request (like hardware-accelerated encoding profiles), please open an issue or submit a pull request.
+## 📄 License
+This project is licensed under the MIT License.
+## ⚖️ Disclaimer
+Please use this utility responsibly and comply with relevant copyright laws. The authors are not responsible for any misuse of this software.

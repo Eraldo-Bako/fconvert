@@ -1,14 +1,10 @@
 #ifndef IMAGE_CONVERTER_H
 #define IMAGE_CONVERTER_H
 
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <string>
 #include <filesystem>
-
-namespace fs = std::filesystem;
+#include <string>
 
 void image();
-
+void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
 
 #endif

@@ -1,0 +1,13 @@
+# Binaries
+fconvert
+*.o
+
+# Directories to ignore content but keep the folder
+#none atm
+
+# CMake artifacts
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile

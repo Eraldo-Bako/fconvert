@@ -1,12 +1,10 @@
 #ifndef AUDIO_CONVERTER_H
 #define AUDIO_CONVERTER_H
 
-#include <iostream>
-#include <string>
 #include <filesystem>
-
-namespace fs = std::filesystem;
+#include <string>
 
 void audio();
+void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
 
 #endif
