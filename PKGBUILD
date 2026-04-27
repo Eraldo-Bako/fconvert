@@ -1,6 +1,6 @@
 # Maintainer: Eraldo Bako <eraldobako@gmail.com>
 pkgname=fconvert
-pkgver=2.0.0
+pkgver=2.0.1
 pkgrel=1
 pkgdesc="A fast, intentional CLI file converter for images, audio, and video."
 arch=('x86_64')

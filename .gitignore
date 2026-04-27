@@ -1,9 +1,14 @@
 # Binaries
 fconvert
+fconvert-v*
+fconvert-*.tar
 *.o
+*.so
+*.DS_Store
 
 # Directories to ignore content but keep the folder
-#none atm
+pkg/
+src/
 
 # CMake artifacts
 build/
@@ -11,3 +16,6 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
+
+*debugging
+*shipping

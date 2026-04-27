@@ -16,11 +16,13 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
     } else if (fmt == "ogg") {
         params = "-c:a libvorbis -q:a 5";
     } else if (fmt == "m4a") {
-        params = "-c:a aac -b:a 256k";
+        params = "-c:a aac -b:a 256k -movflags +faststart";
+    } else if (fmt == "aac") {
+        params = "-fflags +genpts -vn -sn -dn -c:a aac -b:a 256k -af \"aresample=async=1\"";
     } else if (fmt == "opus") {
         params = "-c:a libopus -b:a 128k";
     } else {
-        params = "-c:a aac -b:a 192k";
+        params = "-c:a aac -b:a 192k -ar 44100";
     }
 
     std::string cmd = PathHandler::get_clean_cmd(in.string(), out.string(), params);

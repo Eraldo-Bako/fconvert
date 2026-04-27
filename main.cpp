@@ -92,7 +92,8 @@ int main(int argc, char* argv[]) {
         std::transform(quick_ext.begin(), quick_ext.end(), quick_ext.begin(), ::tolower);
 
         bool targetIsAudio = (quick_ext == "mp3" || quick_ext == "wav" || quick_ext == "flac" || 
-                              quick_ext == "m4a" || quick_ext == "ogg" || quick_ext == "opus");
+                              quick_ext == "m4a" || quick_ext == "aac" || quick_ext == "ogg" || 
+                              quick_ext == "opus");
         
         bool inputIsVideo  = (in_ext == ".mp4" || in_ext == ".mkv" || in_ext == ".mov" || 
                               in_ext == ".webm" || in_ext == ".avi" || in_ext == ".flv");
