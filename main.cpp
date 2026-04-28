@@ -1,6 +1,7 @@
 #include "classes/image_converter.h"
 #include "classes/video_converter.h"
 #include "classes/audio_converter.h"
+#include "classes/ebook_converter.h"
 #include "classes/path_handler.h"
 #include <iostream>
 #include <vector>
@@ -10,6 +11,15 @@
 
 namespace fs = std::filesystem;
 
+void print_version() {
+    std::cout << "fconvert (MIT) v2.0.2\n"
+              << "Copyright (C) 2026 Eraldo Bako\n"
+              << "License MIT\n"
+              << "This is free software: you are free to change and redistribute it.\n"
+              << "There is NO WARRANTY, to the extent permitted by law.\n"
+              << "Written by Eraldo Bako." << std::endl;
+}
+
 void print_help() {
     std::cout << "Usage: fconvert [options]\n\n"
               << "Options:\n"
@@ -17,11 +27,12 @@ void print_help() {
               << "  -d, --debug       Enable debug mode (extra logging)\n"
               << "  -f <file> -<ext>  Quick Convert: convert <file> to target <ext>\n\n"
               << "Interactive Mode:\n"
-              << "  Run without -f to enter the guided menu.\n\n"
+              << "  Run fconvert without flags to enter the guided menu.\n\n"
               << "Supported Extensions:\n"
-              << "  Images: jpg, jpeg, png, webp, tiff, bmp\n"
+              << "  Image: jpg, jpeg, png, webp, tiff, bmp\n"
               << "  Audio:  mp3, wav, flac, ogg, m4a, opus\n"
               << "  Video:  mp4, mkv, mov, webm, avi, flv\n"
+              << "  eBook:  epub, pdf, html\n"
               << "  Note:   Inputting a video with an audio extension auto-extracts audio.\n";
 }
 
@@ -33,23 +44,60 @@ void clear_screen() {
 #endif
 }
 
+void print_banner() {
+    std::cout << R"(
+   __                              _   
+  / _|                            | |  
+ | |_ ___ ___  _ ____   _____ _ __| |_ 
+ |  _/ __/ _ \| '_ \ \ / / _ \ '__| __|
+ | || (_| (_) | | | \ V /  __/ |  | |_ 
+ |_| \___\___/|_| |_|\_/ \___|_|   \__|
+
+ ---------------------------- File Converter ----------------------------
+ ----- A fast CLI converter for Images, Videos, Audios, and Ebooks! -----
+ ------------------------------------------------------------------------
+    )" << std::endl;
+}
+
 void interactive_mode() {
     while (true) {
-        std::string type;
-        std::cout << "\n--- File Converter ---\nType (image/video/audio/exit): ";
-        std::cin >> type;
-        if (type == "exit") break;
+        clear_screen();
+        print_banner();
+        std::string input;
+        std::cout << "Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit: ";
         
+        if (!(std::cin >> input)) break;
+
+        for (auto &c : input) c = std::tolower(c);
+
+        if (input == "q" || input == "quit" || input == "exit") {
+            break;
+        }
+
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        if (type == "image") image();
-        else if (type == "video") video();
-        else if (type == "audio") audio();
+        if (input == "i" || input == "image") {
+            image();
+        } else if (input == "v" || input == "video") {
+            video();
+        } else if (input == "a" || input == "audio") {
+            audio();
+        } else if (input == "e" || input == "ebook" || input == "book" || input == "pdf") {
+            std::cout << "[!] Ebook support comming soon! [!]\n";
+            continue;
+            //ebook();
+        } else {
+            std::cout << "[!] Invalid input: " << input << " Please try again. [!]\n";
+            continue; 
+        }
 
-        std::cout << "\nAgain? (y/N): ";
-        char c = 'N'; 
-        std::cin >> c;
-        if (std::tolower(c) != 'y') break;
+        std::cout << "\nDO you want to convert another file? (y/N): ";
+        std::string again;
+        std::cin >> again;
+        
+        if (again.empty() || std::tolower(again[0]) != 'y') {
+            break;
+        }
         clear_screen();
     }
 }
@@ -59,10 +107,13 @@ int main(int argc, char* argv[]) {
     fs::path quick_file;
     std::string quick_ext;
 
-    // Parse CLI arguments
     for (size_t i = 1; i < args.size(); ++i) {
         if (args[i] == "-h" || args[i] == "--help") {
             print_help();
+            return 0;
+        }
+        if (args[i] == "-v" || args[i] == "--version") {
+            print_version();
             return 0;
         }
         if (args[i] == "-d" || args[i] == "--debug") {
@@ -71,7 +122,7 @@ int main(int argc, char* argv[]) {
         if (args[i] == "-f" && i + 1 < args.size()) {
             quick_file = args[++i];
         }
-        // Capture target extension (any flag that isn't -f, -d, -h, or --help)
+
         if (args[i].size() > 1 && args[i][0] == '-' && 
             args[i] != "-f" && args[i] != "-d" && args[i] != "--debug" && 
             args[i] != "-h" && args[i] != "--help") {
@@ -79,7 +130,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Quick Convert Mode
     if (!quick_file.empty() && !quick_ext.empty()) {
         fs::path in = PathHandler::resolve_input(quick_file.string());
         if (in.empty()) { 

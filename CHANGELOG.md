@@ -1,3 +1,21 @@
+# Changelog
+### Patch Notes v2.0.2
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.0.1;
+name-me-pls: quack;
+license: MIT, CC BY-NC-ND(branding only);
+Fixed bugs :
+* Fixed case-sensitivity logic in audio, video, and image format validation,
+* Improved input buffer handling to prevent menu skipping,
+* Switched to `std::set` for more format checking;
+Features:
+* Added `-v` and `--version` flags,
+* Introduced `interactive_mode()` with a new ASCII art banner and new menus,
+* Placeholder `ebook()` function for future expansion;
+```
 ### Patch Notes v2.0.1
 ```
 maintainer : Eraldo Bako;
@@ -70,3 +88,14 @@ Features:
 * Improved path_handler logic
 * Improved aac conversion support;
 ```
+### Patch Notes v2.0.0
+```
+* Rewritten overall logic.
+* Name change to fconvert.
+* Package added to the AUR.
+```
+### Patch Notes v1.0.0
+```
+* Initial release of file-converter
+```
+**EOF**

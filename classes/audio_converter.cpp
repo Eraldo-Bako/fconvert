@@ -2,6 +2,7 @@
 #include "path_handler.h"
 #include <iostream>
 #include <algorithm>
+#include <set>
 
 void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
     std::transform(fmt.begin(), fmt.end(), fmt.begin(), ::tolower);
@@ -32,9 +33,30 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
 
 void audio() {
     std::string name, fmt;
-    std::cout << "Audio filename: "; std::getline(std::cin >> std::ws, name);
+    std::cout << "Audio filename or path: "; std::getline(std::cin >> std::ws, name);
     fs::path in = PathHandler::resolve_input(name);
     if (in.empty()) return;
-    std::cout << "Format: "; std::cin >> fmt;
+
+    std::cout << "Format: "; if (!(std::cin >> fmt)) return;
+    for (auto &c : fmt) c = std::tolower(c);
+
+    if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
+        std::cout << "[!] Successfully stopped the conversion! [!]";
+        return;
+    }
+
+    static const std::set<std::string> valid_audio = {"mp3", "wav", "flac", "aac", "ogg", "m4a", "wma", "opus"};
+    if (valid_audio.find(fmt) == valid_audio.end()) {
+        std::cout << "\n[!] Format '" << fmt << "' is not supported or doesn't exist. [!]\n"
+                  << "Supported audio formats include:\n"
+                  << "* Uncompressed: WAV\n"
+                  << "* Lossless Compressed: FLAC\n"
+                  << "* Lossy Compressed: MP3, AAC, OGG, M4A, WMA, OPUS\n"
+                  << "\n[-] If you believe this is a bug, make sure to report it. [-]\n";
+        return;
+    }
+
     audio_convert_logic(in, fmt, false);
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }

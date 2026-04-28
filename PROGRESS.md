@@ -58,4 +58,6 @@ Aborted                    (core dumped) fconvert -f 2279192-2493561373.png -web
 (needs full path - shouldnt if we are located in that directory)
 $ fconvert -f /home/eraldo/Pictures/2279192-2493561373.png -webp
  [+] Saved: "2279192-2493561373.webp"
+ 
+Added: Better looking interactive menu;
 ```

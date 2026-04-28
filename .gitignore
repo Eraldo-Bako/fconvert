@@ -9,6 +9,7 @@ fconvert-*.tar
 # Directories to ignore content but keep the folder
 pkg/
 src/
+fconvert-binaries/
 
 # CMake artifacts
 build/
@@ -17,5 +18,7 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
+# Offline Features
+classes/ebook*
 *debugging
 *shipping
