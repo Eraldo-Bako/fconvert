@@ -19,6 +19,6 @@ cmake_install.cmake
 Makefile
 
 # Offline Features
-classes/ebook*
+#classes/ebook*
 *debugging
 *shipping
