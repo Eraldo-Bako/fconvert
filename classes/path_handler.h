@@ -1,3 +1,5 @@
+// fconvert v2.0.3 (c) 2023 - 2026 Eraldo Bako - MIT License
+// Maintaier: eraldobako@gmail.com
 #ifndef PATH_HANDLER_H
 #define PATH_HANDLER_H
 
@@ -13,7 +15,8 @@ public:
     static fs::path resolve_input(const std::string& filename);
     static fs::path get_output_path(const fs::path& inputPath, const std::string& extension);
     static fs::path handle_conflicts(fs::path target, bool silent = false);
-    static std::string get_clean_cmd(const std::string& input, const std::string& output, const std::string& params);
+    static std::string build_ffmpeg_cmd(const std::string& input, const std::string& output, const std::string& params);
+    static std::string build_pandoc_cmd(const std::string& input, const std::string& output, const std::string& params);
 };
 
 #endif

@@ -1,3 +1,5 @@
+// fconvert v2.0.3 (c) 2023 - 2026 Eraldo Bako - MIT License
+// Maintaier: eraldobako@gmail.com
 #ifndef IMAGE_CONVERTER_H
 #define IMAGE_CONVERTER_H
 

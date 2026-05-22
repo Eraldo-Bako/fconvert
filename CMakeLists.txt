@@ -1,18 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
-project(fconvert)
+cmake_minimum_required(VERSION 3.12)
+project(fconvert LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
-file(GLOB_RECURSE SOURCES "main.cpp" "classes/*.cpp")
+file(GLOB CLASS_SOURCES CONFIGURE_DEPENDS 
+    "classes/*.cpp"
+    "classes/*.h"
+)
 
-add_executable(fconvert ${SOURCES})
+add_executable(fconvert main.cpp ${CLASS_SOURCES})
 
-target_link_libraries(fconvert ${OpenCV_LIBS})
+target_include_directories(fconvert PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS})
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_link_libraries(fconvert stdc++fs)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
+    target_link_libraries(fconvert PRIVATE stdc++fs)
 endif()

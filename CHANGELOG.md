@@ -1,10 +1,42 @@
 # Changelog
+### Patch Notes v2.0.3
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.0.3;
+name-me-pls: vocal;
+license: MIT, CC BY-NC-ND(branding only);
+Fixed bugs :
+* Quitting Bug when providing "ENTER" as input
+* fconvert -f defaulting to interactive mode when no file path or extension falg provided
+* Debug Mode no longer just a framework
+* Small fixes in README.md
+Features:
+* Fully interactive Debug Mode. Logs will appear as [DEBUG] ------ [`] {Proccess}: {Info} [`]
+* Improved Case-Sensitivity(safe conversion to lowercase) and Input Buffer Skipping
+* Introduced a possible framework for ebook conversion(highly experimental):
+    - Not functional with the -f flag
+    - Visually hidden as an option, unless programm is running in debug mode.
+    - Kind of supporting PDF, DOCX, EPUB, HTML, TXT
+* License Updated:
+    - Copyright (c) 2023 - 2026 Eraldo Bako
+    - Added year 2023 as this is when this project was first published
+* PKGBUILD using CMakeLists.txt and using gcc command as fallback
+* Added maintainer info and license disclaimer in file containing source code
+* Added PathHandler::build_pandoc_cmd method and changed the PathHandler::get_clean_cmd method for FFmpeg command construction to PathHandler::build_ffmpeg_cmd
+* Added support for .<ext> when usinf -f flag:
+    - Before: $ fconvert -f file.png -extension
+    - Added:  $ fconvert -f file.png .extension
+    - users can either use the -<ext> or .<ext> format
+Comment: "Read more in [PROGRESS.md](./PROGRESS.md)"
+```
 ### Patch Notes v2.0.2
 ```
 maintainer : Eraldo Bako;
 email : <eraldobako@gmail.com>;
 package : fconvert;
-version : 2.0.1;
+version : 2.0.2;
 name-me-pls: quack;
 license: MIT, CC BY-NC-ND(branding only);
 Fixed bugs :

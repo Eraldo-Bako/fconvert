@@ -1,12 +1,13 @@
 # Binaries
-fconvert
+fconvert*
 fconvert-v*
 fconvert-*.tar
 *.o
 *.so
+*.dll
 *.DS_Store
 
-# Directories to ignore content but keep the folder
+# Directories
 pkg/
 src/
 fconvert-binaries/
