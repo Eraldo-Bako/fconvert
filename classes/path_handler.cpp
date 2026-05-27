@@ -1,4 +1,4 @@
-// fconvert v2.0.3 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
 #include "path_handler.h"
 #include <iostream>
@@ -7,7 +7,7 @@
 bool PathHandler::debug_mode = false; // default debug mode is inactive, may change later
 
 void PathHandler::log(const std::string& msg) {
-    if (PathHandler::debug_mode) std::cout << " [DEBUG] ------ " << msg << std::endl;
+    if (PathHandler::debug_mode) std::cout << std::endl << "[DEBUG] ------ " << msg << std::endl;
 }
 
 fs::path PathHandler::resolve_input(const std::string& filename) {

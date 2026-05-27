@@ -1,5 +1,5 @@
 # Binaries
-fconvert*
+fconvert*.bin
 fconvert-v*
 fconvert-*.tar
 *.o
@@ -20,6 +20,7 @@ cmake_install.cmake
 Makefile
 
 # Offline Features
-#classes/ebook*
 *debugging
 *shipping
+FFmpeg*
+old*

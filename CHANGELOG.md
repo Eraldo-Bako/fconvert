@@ -1,4 +1,32 @@
 # Changelog
+### Patch Notes v2.1.0
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.1.0;
+name-me-pls: stuff;
+license: MIT, CC BY-NC-ND(branding only);
+Fixed bugs :
+* Quitting Bug when reaching EOF as input
+Features :
+* Added support for RAW image formats as input only
+* Added new method in image_converter.cpp for making RAW images accessible by OpenCV through LibRaw:
+    cv::Mat read_camera_raw(const std::string& raw_path)
+* Added external_write boolean when using ImageMagick
+* Added support for project-type image formats(psd, xcf, ai, pdf, etc) using ImageMagick and Ghostscript
+* Added better support for libheif libde265 x265 codecs
+* Added better support for overall image, video, and audio conversions
+    - Images: using better OpenCV methods for reading and conversion
+    - Video: using better FFmpeg flags and presets for Quick, Default, and Best for conversion
+    - Audio: using better FFmpeg flags and audio specific presets
+* Added eBook support for the -f flag
+* Added icon.svg, icon.ico that is used as part of the fconvert branding
+* Improved CMakeLists.txt logic for better Windows support
+* Added option to build without LibRaw if not preferred while building using CMake
+* Using resources.rc to embed an icon when building the Windows binary
+Comment : "Read more in [PROGRESS.md](./PROGRESS.md)"
+```
 ### Patch Notes v2.0.3
 ```
 maintainer : Eraldo Bako;
@@ -12,7 +40,7 @@ Fixed bugs :
 * fconvert -f defaulting to interactive mode when no file path or extension falg provided
 * Debug Mode no longer just a framework
 * Small fixes in README.md
-Features:
+Features :
 * Fully interactive Debug Mode. Logs will appear as [DEBUG] ------ [`] {Proccess}: {Info} [`]
 * Improved Case-Sensitivity(safe conversion to lowercase) and Input Buffer Skipping
 * Introduced a possible framework for ebook conversion(highly experimental):
@@ -29,7 +57,7 @@ Features:
     - Before: $ fconvert -f file.png -extension
     - Added:  $ fconvert -f file.png .extension
     - users can either use the -<ext> or .<ext> format
-Comment: "Read more in [PROGRESS.md](./PROGRESS.md)"
+Comment : "Read more in [PROGRESS.md](./PROGRESS.md)"
 ```
 ### Patch Notes v2.0.2
 ```
