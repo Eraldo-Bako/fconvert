@@ -1,8 +1,8 @@
-# fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+# fconvert v2.1.1 (c) 2023 - 2026 Eraldo Bako - MIT License
 # Maintainer: Eraldo Bako <eraldobako@gmail.com>
 pkgname=fconvert
 pkgver=2.1.1
-pkgrel=1
+pkgrel=2
 pkgdesc="A fast, intentional CLI file converter for images, audio, video, documents."
 arch=('x86_64')
 url="https://github.com/Eraldo-Bako/fconvert"

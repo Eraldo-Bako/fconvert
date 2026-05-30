@@ -70,8 +70,8 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
                 std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
             }
         #else
-            if (WIFEXITED(status)) {
-                int exitCode = WEXITSTATUS(status);
+            if (WIFEXITED(execute)) {
+                int exitCode = WEXITSTATUS(execute);
                 if (WIFEXITED(execute)) {
                     int exitCode = WEXITSTATUS(execute);
                     if (exitCode == 0) { //successful conversion
