@@ -135,7 +135,7 @@ $ sudo pacman -Syyu libraw imagemagick ghostscript pandoc libheif libde265 x265
 #### Fedora Based
 ```bash
 # Required:
-$ sudo dnf groupinstall "Development Tools" && sudo dnf install cmake ffmpeg-free opencv-devel
+$ sudo dnf install @development-tools && sudo dnf install cmake ffmpeg-free opencv-devel
 
 # Optional:
 $ sudo dnf install LibRaw-devel ImageMagick ghostscript pandoc libheif-devel libde265-devel x265-devel
