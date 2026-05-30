@@ -156,8 +156,10 @@ $ sudo apt install libraw-dev imagemagick ghostscript pandoc libheif-dev libde26
 > vcpkg install ffmpeg opencv4
 
 # Optional:
-> vcpkg install libraw imagemagick ghostscript pandoc libheif libde265 x265
+> vcpkg install libraw graphicsmagick libheif libde265 x265
+> winget install JohnMacFarlane.Pandoc
 ```
+If you installed the optional packages(graphicsmagick/imagemagick), get and install ghostscript for Windows: [gs00000w64.exe](https://github.com/artifexsoftware/ghostpdl-downloads/releases)
 #### MacOS
 ```zsh
 # Required (Requires Xcode Command Line Tools installed):
