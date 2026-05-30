@@ -5,7 +5,11 @@
 
 #include <filesystem>
 #include <string>
-#include <libraw/libraw.h>
+#ifdef _WIN32
+    #include <libraw.h>
+#else
+    #include <libraw/libraw.h>
+#endif
 #include <opencv2/opencv.hpp>
 
 cv::Mat read_camera_raw(const std::string& raw_path);

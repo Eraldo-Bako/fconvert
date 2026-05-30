@@ -15,7 +15,12 @@ if(WITH_LIBRAW)
     endif()
 
     if(NOT LIBRAW_FOUND)
-        find_package(libraw QUIET) 
+        find_package(LibRaw QUIET) 
+        if(LibRaw_FOUND)
+            set(LIBRAW_FOUND TRUE)
+            set(LIBRAW_INCLUDE_DIRS ${LibRaw_INCLUDE_DIR})
+            set(LIBRAW_LIBRARIES ${LibRaw_LIBRARIES})
+        endif()
     endif()
 
     if(NOT LIBRAW_FOUND)
@@ -44,4 +49,15 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
     target_link_libraries(fconvert PRIVATE stdc++fs)
+endif()
+
+# APPIMAGE
+if(NOT WIN32)
+    include(GNUInstallDirs)
+
+    install(TARGETS fconvert DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES fconvert.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+    install(FILES branding/icon.svg 
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+            RENAME fconvert-icon.svg)
 endif()

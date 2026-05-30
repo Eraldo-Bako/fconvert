@@ -22,7 +22,7 @@ build() {
   cd "$pkgname"
 
   echo "fconvert==> Attempting compilation via CMake..."
-  if cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build; then
+  if cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_STRIP=ON -DWITH_LIBRAW=ON && cmake --build build; then
     echo "fconvert==> CMake build successful!"
     cp build/fconvert .
   else

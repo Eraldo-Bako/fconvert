@@ -1,4 +1,18 @@
 # Changelog
+### Patch Notes v2.1.1
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.1.1;
+name-me-pls: smile;
+license: MIT, CC BY-NC-ND(branding only);
+Fixed bugs :
+* Fixed defining libraries for Windows
+* Fixed Error catching for Windows
+* Added CMakeLists.txt fallback for Windows
+* Improved build command in PKGBUILD
+```
 ### Patch Notes v2.1.0
 ```
 maintainer : Eraldo Bako;

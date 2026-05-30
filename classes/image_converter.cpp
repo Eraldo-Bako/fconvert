@@ -7,8 +7,11 @@
 #include <algorithm>
 #include <cctype>
 #include <set>
-#include <libraw/libraw.h>
-#include <opencv2/opencv.hpp>
+#ifdef _WIN32
+    #include <libraw.h>
+#else
+    #include <libraw/libraw.h>
+#endif
 // sudo pacman -S libraw imagemagick ghostscript 
 // codecs: libheif libde265 x265
 cv::Mat read_camera_raw(const std::string& raw_path) {

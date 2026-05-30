@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <cctype>
 #include <set>
-#include <sys/wait.h>
+#ifndef _WIN32
+    #include <sys/wait.h>
+#endif
 
 void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
     // checking the existence of the input_file and the directory
@@ -60,18 +62,30 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
         // the system shell itself couldn't be started
         std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]" << std::endl;
     } else { // did the command even finish normally
-        if (WIFEXITED(execute)) {
-            int exitCode = WEXITSTATUS(execute);
-            if (exitCode == 0) { //successful conversion
+        #ifdef _WIN32
+            int exitCode = execute; 
+            if (exitCode == 0) {
                 std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
-            } else { // either the constructed cmd is wrong or FFmpeg is acting up
+            } else {
                 std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
             }
-        } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-            std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
-            std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
-                      << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
-        }
+        #else
+            if (WIFEXITED(status)) {
+                int exitCode = WEXITSTATUS(status);
+                if (WIFEXITED(execute)) {
+                    int exitCode = WEXITSTATUS(execute);
+                    if (exitCode == 0) { //successful conversion
+                        std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                    } else { // either the constructed cmd is wrong or FFmpeg is acting up
+                        std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
+                    }
+                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
+                    std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
+                    std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
+                            << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
+                }
+            }
+        #endif
     }
 }
 

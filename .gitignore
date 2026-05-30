@@ -1,5 +1,6 @@
 # Binaries
 fconvert*.bin
+*.AppImage
 fconvert-v*
 fconvert-*.tar
 *.o
@@ -13,11 +14,12 @@ src/
 fconvert-binaries/
 
 # CMake artifacts
-build/
+build*/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
+AppDir/
 
 # Offline Features
 *debugging
