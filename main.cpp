@@ -1,6 +1,6 @@
 /*
 ------------------------------------------------------------------------
-    fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+    fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
     A fast CLI converter for Images, Videos, Audios, and Ebooks
     This is free software: you are free to change and redistribute it.
     There is NO WARRANTY, to the extent permitted by law.
@@ -12,26 +12,29 @@
      | |_ ___ ___  _ ____   _____ _ __| |_ 
      |  _/ __/ _ \| '_ \ \ / / _ \ '__| __|
      | || (_| (_) | | | \ V /  __/ |  | |_ 
-     |_| \___\___/|_| |_|\_/ \___|_|   \__\/v2.1.0
+     |_| \___\___/|_| |_|\_/ \___|_|   \__\/v2.2.0
 
 ----------------------- fconvert - File Converter ----------------------
 ------------------------------------------------------------------------
 */
-#include "classes/image_converter.h"
-#include "classes/video_converter.h"
-#include "classes/audio_converter.h"
-#include "classes/ebook_converter.h"
-#include "classes/path_handler.h"
+
+#include "classes/path_handler.hpp"
+
+#include "classes/image_converter.hpp"
+#include "classes/video_converter.hpp"
+#include "classes/audio_converter.hpp"
+#include "classes/ebook_converter.hpp"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <filesystem>
+#include <cctype>
 #include <limits>
 
 namespace fs = std::filesystem;
 
 void print_version() {
-    std::cout << "fconvert (MIT) v2.1.0\n"
+    std::cout << "fconvert (MIT) v2.2.0\n"
               << "Copyright (C) 2023 - 2026 Eraldo Bako\n"
               << "License MIT\n"
               << "This is free software: you are free to change and redistribute it.\n"
@@ -72,7 +75,7 @@ void print_banner() {
  |  _/ __/ _ \| '_ \ \ / / _ \ '__| __|
  | || (_| (_) | | | \ V /  __/ |  | |_ 
  |_| \___\___/|_| |_|\_/ \___|_|   \__\)";
-    if (PathHandler::debug_mode) std::cout << "/2.1.0";
+    if (PathHandler::debug_mode) std::cout << "/2.2.0";
     std::cout  << std::endl << R"(
  ---------------------------- File Converter ----------------------------
  ----- A fast CLI converter for Images, Videos, Audios, and Ebooks! -----
@@ -117,7 +120,7 @@ void interactive_mode() {
         } else if (input == "a" || input == "audio") {
             PathHandler::log("[~] Detected: Audio key received '" + input + "'. Applying... [~]");
             audio();
-        } else if (input == "e" || input == "ebook" || input == "doc" || input == "document" || input == "pdf") {
+        } else if (input == "e" || input == "ebook" || input == "doc" || input == "document") {
             PathHandler::log("[~] Detected: eBook key received '" + input + "'. Applying... [~]");
             std::cout << "[!] eBook is currently highly experimental! [!]\n";
             std::cout << "[!] Only use it if you know what you are doing. [!]\n";

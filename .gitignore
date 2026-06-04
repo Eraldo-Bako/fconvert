@@ -1,8 +1,7 @@
 # Binaries
 fconvert*.bin
 *.AppImage
-fconvert-v*
-fconvert-*.tar
+*fconvert*
 *.o
 *.so
 *.dll
@@ -12,6 +11,7 @@ fconvert-*.tar
 pkg/
 src/
 fconvert-binaries/
+docs/
 
 # CMake artifacts
 build*/
@@ -25,4 +25,3 @@ AppDir/
 *debugging
 *shipping
 FFmpeg*
-old*

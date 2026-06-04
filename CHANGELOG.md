@@ -1,4 +1,18 @@
 # Changelog
+### Patch Notes v2.2.0
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.1.1;
+name-me-pls: alloy;
+license: MIT, CC BY-NC-ND(branding only);
+Features:
+* Improved included libraries in header and class files for smaller file-size.
+* Added better ebook/document conversion logic
+* Small improvements and fixes.
+* Using .hpp extension hor header files instead of .h, so the compiler always treats them like Cpp header files
+```
 ### Patch Notes v2.1.1
 ```
 maintainer : Eraldo Bako;

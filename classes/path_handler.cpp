@@ -1,8 +1,10 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#include "path_handler.h"
+#include "path_handler.hpp"
+
 #include <iostream>
-#include <algorithm>
+#include <cctype>
+#include <limits>
 
 bool PathHandler::debug_mode = false; // default debug mode is inactive, may change later
 

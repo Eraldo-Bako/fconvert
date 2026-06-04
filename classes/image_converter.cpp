@@ -1,17 +1,16 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#include "image_converter.h"
-#include "path_handler.h"
-#include <opencv2/opencv.hpp>
+#include "image_converter.hpp"
+#include "path_handler.hpp"
+
+#include <opencv2/imgcodecs.hpp> // cv::imread, cv::imwrite, and IMWRITE flags
+#include <opencv2/imgproc.hpp>   // cv::cvtColor and cv::COLOR_RGB2BGR
+
 #include <iostream>
 #include <algorithm>
 #include <cctype>
 #include <set>
-#ifdef _WIN32
-    #include <libraw.h>
-#else
-    #include <libraw/libraw.h>
-#endif
+
 // sudo pacman -S libraw imagemagick ghostscript 
 // codecs: libheif libde265 x265
 cv::Mat read_camera_raw(const std::string& raw_path) {
@@ -56,7 +55,7 @@ void image_convert_logic(fs::path in, std::string fmt, bool silent) {
                in_ext == ".eps" || in_ext == ".ai" || in_ext == ".heic" || in_ext == ".heif") {
         
         PathHandler::log("[-] Status: OpenCV cannot read this format. Invoking ImageMagick fallback reader... [-]");
-        std::string temp_in_png = in.parent_path().string() + "/.temp_in_holder.png";
+        std::string temp_in_png = in.parent_path().string() + "/.fconvert_temp_in_holder.png";
         
         std::string cmd = "magick \"" + in.string() + "[0]\" \"" + temp_in_png + "\"";
         int result = std::system(cmd.c_str());
@@ -162,14 +161,16 @@ void image() {
         std::cout << "[!] Successfully stopped the conversion! [!]";
         return;
     }
-    
-    bool targetIsRAWImage = (fmt == "cr2" || fmt == "nef" || fmt == "arw" || 
-                             fmt == "dng" || fmt == "crw");
 
-    if (targetIsRAWImage) {
-        PathHandler::log("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]");
-        std::cerr << "[!] Error: Detected target is a RAW image format: '" + fmt + "' [!]";
-        return;
+    {    
+        bool targetIsRAWImage = (fmt == "cr2" || fmt == "nef" || fmt == "arw" || 
+                                fmt == "dng" || fmt == "crw");
+
+        if (targetIsRAWImage) {
+            PathHandler::log("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]");
+            std::cerr << "[!] Error: Detected target is a RAW image format: '" + fmt + "' [!]";
+            return;
+        }
     }
 
     static const std::set<std::string> valid_image = {

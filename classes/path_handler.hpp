@@ -1,7 +1,7 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#ifndef PATH_HANDLER_H
-#define PATH_HANDLER_H
+#ifndef PATH_HANDLER_HPP
+#define PATH_HANDLER_HPP
 
 #include <filesystem>
 #include <string>

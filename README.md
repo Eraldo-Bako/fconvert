@@ -122,6 +122,7 @@ Optional:
 * **ImageMagick** (for vector/composite)
 * **Ghostscript** (for vector/composite)
 * **Pandoc** (for experimental document processing)
+* **Typst**, **Weasyprint**, or **Xelatex** (as a PDF engine)
 
 ### Dependency-Hell
 #### Arch Based
@@ -130,23 +131,37 @@ Optional:
 $ sudo pacman -Syyu base-devel cmake ffmpeg opencv
 
 # Optional:
-$ sudo pacman -Syyu libraw imagemagick ghostscript pandoc libheif libde265 x265
+$ sudo pacman -Syyu libraw imagemagick ghostscript libheif libde265 x265
+$ sudo pacman -Syyu pandoc typst 
 ```
+> NOTE: For Arch-based distributions typst is recommended, but you can use:
+>
+> **Weasyprint**: `$ yay -S python-weasyprint`
+>
+> **Xelatex**: `$ sudo pacman -S texlive-xetex`
 #### Fedora Based
 ```bash
 # Required:
+$ sudo dnf check-update && sudo dnf upgrade
 $ sudo dnf install @development-tools && sudo dnf install cmake ffmpeg-free opencv-devel
 
 # Optional:
-$ sudo dnf install LibRaw-devel ImageMagick ghostscript pandoc libheif-devel libde265-devel x265-devel
+$ sudo dnf install LibRaw-devel ImageMagick ghostscript libheif-devel libde265-devel x265-devel
+$ sudo dnf install pandoc weasyprint
 ```
+> NOTE: If you want to use typs as the PDF engine, for Fedora-based distributions, use copr:
+>
+> Enable the community Copr repository: `$ sudo dnf copr enable -y claaj/typst`
+>
+> Install via DNF normally: `$ sudo dnf install typst`
 #### Debian Based(Ubuntu)
 ```bash
 # Required:
 $ sudo apt update && sudo apt install build-essential cmake ffmpeg libopencv-dev
 
 # Optional:
-$ sudo apt install libraw-dev imagemagick ghostscript pandoc libheif-dev libde265-dev libx265-dev
+$ sudo apt install libraw-dev imagemagick ghostscript libheif-dev libde265-dev libx265-dev
+$ sudo apt install pandoc weasyprint
 ```
 #### Windows (winget for tools, vcpkg for libraries)
 ```powershell
@@ -157,9 +172,10 @@ $ sudo apt install libraw-dev imagemagick ghostscript pandoc libheif-dev libde26
 
 # Optional:
 > vcpkg install libraw graphicsmagick libheif libde265 x265
-> winget install JohnMacFarlane.Pandoc
+> winget install JohnMacFarlane.Pandoc 
+> winget install Typst.Typst
 ```
-If you installed the optional packages(graphicsmagick/imagemagick), get and install ghostscript for Windows: [gs00000w64.exe](https://github.com/artifexsoftware/ghostpdl-downloads/releases)
+> NOTE: If you installed the optional packages(graphicsmagick/imagemagick), get and install ghostscript for Windows: [gs00000w64.exe](https://github.com/artifexsoftware/ghostpdl-downloads/releases)
 #### MacOS
 ```zsh
 # Required (Requires Xcode Command Line Tools installed):
@@ -167,7 +183,8 @@ $ xcode-select --install
 $ brew install cmake ffmpeg opencv
 
 # Optional:
-$ brew install libraw imagemagick ghostscript pandoc libheif libde265 x265
+$ brew install libraw imagemagick ghostscript libheif libde265 x265
+$ brew install pandoc typst
 ```
 ### Build Instructions
 For Arch Linux and most Linux distributions, use the following command:

@@ -1,7 +1,7 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#ifndef AUDIO_CONVERTER_H
-#define AUDIO_CONVERTER_H
+#ifndef AUDIO_CONVERTER_HPP
+#define AUDIO_CONVERTER_HPP
 
 #include <filesystem>
 #include <string>

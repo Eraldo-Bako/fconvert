@@ -1,13 +1,13 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#include "ebook_converter.h"
-#include "path_handler.h"
+#include "ebook_converter.hpp"
+#include "path_handler.hpp"
+
+#include <iostream>
 #include <cstdlib>
 #include <set>
 #include <algorithm>
 #include <cctype>
-#include <limits>
-#include <ios>
 
 bool EbookConverter::check_pandoc() {
 #ifdef _WIN32
@@ -17,20 +17,45 @@ bool EbookConverter::check_pandoc() {
 #endif
 }
 
-bool EbookConverter::convert(const fs::path& input, const std::string& target_ext) {
-    fs::path output = PathHandler::handle_conflicts(PathHandler::get_output_path(input, target_ext), false);
+bool EbookConverter::convert(const fs::path& input, const std::string& fmt) {
+    fs::path output = PathHandler::handle_conflicts(PathHandler::get_output_path(input, fmt), false);
     if (output.empty()) return false;
 
-    std::string args = "--standalone"; 
+    std::string args = "--standalone --from=markdown+smart"; 
 
-    if (target_ext == "pdf") {
-        args += " --variable margin-top=1 --variable margin-bottom=1";
+    if (fmt == "pdf") {
+        args += " --variable geometry:margin=1in --variable geometry:a4paper";
         
-        if (std::system("command -v weasyprint >/dev/null 2>&1") == 0) {
+#ifdef _WIN32
+        if (std::system("where typst >nul 2>nul") == 0) {
+            args += " --pdf-engine=typst --variable mainfont=\"Times New Roman\"";
+        } else if (std::system("where weasyprint >nul 2>nul") == 0) {
             args += " --pdf-engine=weasyprint";
+        } else {
+            args += " --pdf-engine=xelatex";
         }
-    } else if (target_ext == "html") {
+#else
+        if (std::system("command -v typst >/dev/null 2>&1") == 0) {
+            #ifdef __APPLE__
+            args += " --pdf-engine=typst --variable mainfont=\"Times New Roman\"";
+            #else
+            args += " --pdf-engine=typst --variable mainfont=\"Liberation Serif\"";
+            #endif
+        } else if (std::system("command -v weasyprint >/dev/null 2>&1") == 0) {
+            args += " --pdf-engine=weasyprint";
+        } else {
+            args += " --pdf-engine=xelatex";
+        }
+#endif
+    } else if (fmt == "html") {
         args += " --embed-resources --metadata title=\"fconvert_export\"";
+        args += " --variable max-width=40em --variable mathjax=true";
+    } else if (fmt == "txt" || fmt == "text" || fmt.empty()) {
+        args += " -t plain --wrap=auto";
+    } else if (fmt == "docx") {
+        args += " --toc --toc-depth=3";
+    } else if (fmt == "epub") {
+        args += " --split-level=1 --epub-chapter-level=1";
     }
 
     std::string cmd = PathHandler::build_pandoc_cmd(input.string(), output.string(), args);
@@ -68,6 +93,16 @@ void ebook() {
         PathHandler::log("[!] Error: Path could not be resolved. [!]");
         std::cout << " [!] File not found. [!]\n";
         return;
+    }
+
+    {
+        std::string ext = in.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        if ( ext == ".pdf") {
+            PathHandler::log("[!] Error: PDF files cannot be used as a source format for conversion. [!]");
+            std::cout << " [!] PDF input is not supported. Pandoc cannot read raw PDF structures. [!]\n";
+            return;
+        }
     }
 
     std::cout << "Target Format ([P]df / [H]tml / [E]pub / [T]xt / [D]ocx): "; 

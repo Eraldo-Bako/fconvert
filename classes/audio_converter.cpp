@@ -1,11 +1,13 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#include "audio_converter.h"
-#include "path_handler.h"
+#include "audio_converter.hpp"
+#include "path_handler.hpp"
+
 #include <iostream>
+#include <set>
 #include <algorithm>
 #include <cctype>
-#include <set>
+
 #ifndef _WIN32
     #include <sys/wait.h>
 #endif
@@ -72,18 +74,15 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
         #else
             if (WIFEXITED(execute)) {
                 int exitCode = WEXITSTATUS(execute);
-                if (WIFEXITED(execute)) {
-                    int exitCode = WEXITSTATUS(execute);
-                    if (exitCode == 0) { //successful conversion
-                        std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
-                    } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                        std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
-                    }
-                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                    std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
-                    std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
-                            << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
+                if (exitCode == 0) { //successful conversion
+                    std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                } else { // either the constructed cmd is wrong or FFmpeg is acting up
+                    std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
                 }
+                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
+                std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
+                std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
+                          << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
             }
         #endif
     }
@@ -117,7 +116,7 @@ void audio() {
         return;
     } // safe lowercase conversion down below
     std::transform(fmt.begin(), fmt.end(), fmt.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    // why u quitting +@+   jk, just providing a qutitng option at anytime(promise you'll come back Q-Q)
+    // why u quitting +@+   jk, just providing a quiting option at anytime(promise you'll come back Q-Q)
     if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
         PathHandler::log("[~] Detected: " + fmt + "\nQuitting... [~]");
         std::cout << "[!] Successfully stopped the conversion! [!]";
@@ -136,7 +135,6 @@ void audio() {
                   << "* Lossy Compressed: MP3, AAC, OGG, M4A, WMA, OPUS\n"
                   << "\n[-] If you believe this is a bug, make sure to report it. [-]\n";
         return;
-    }
-    // actual conversion logic
+    } // actual conversion logic
     audio_convert_logic(in, fmt, false);
 }

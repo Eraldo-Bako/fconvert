@@ -1,10 +1,13 @@
-// fconvert v2.1.0 (c) 2023 - 2026 Eraldo Bako - MIT License
+// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
 // Maintaier: eraldobako@gmail.com
-#include "video_converter.h"
-#include "path_handler.h"
+#include "video_converter.hpp"
+#include "path_handler.hpp"
+
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 #include <set>
+
 #ifndef _WIN32
     #include <sys/wait.h>
 #endif
@@ -91,18 +94,15 @@ void video_convert_logic(fs::path in, std::string fmt, char q, bool silent) {
         #else
             if (WIFEXITED(execute)) {
                 int exitCode = WEXITSTATUS(execute);
-                if (WIFEXITED(execute)) {
-                    int exitCode = WEXITSTATUS(execute);
-                    if (exitCode == 0) { //successful conversion
-                        std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
-                    } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                        std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
-                    }
-                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                    std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
-                    std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
-                            << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
+                if (exitCode == 0) { //successful conversion
+                    std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                } else { // either the constructed cmd is wrong or FFmpeg is acting up
+                    std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
                 }
+                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
+                std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
+                std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
+                          << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
             }
         #endif
     }
@@ -159,7 +159,7 @@ void video() {
         std::cin.clear();
         return;
     }
-    std::transform(fmt.begin(), fmt.end(), fmt.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    std::transform(qual.begin(), qual.end(), qual.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     if (qual == "quit" || qual == "exit" || qual == "cancel") {
         std::cout << "[!] Successfully stopped the conversion! [!]";
