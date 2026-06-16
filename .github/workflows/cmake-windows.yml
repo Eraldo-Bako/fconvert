@@ -22,9 +22,6 @@ jobs:
         vcpkg install `
           opencv `
           libraw `
-          libheif `
-          libde265 `
-          x265 `
           --triplet=x64-windows
 
     - name: Configure CMake
