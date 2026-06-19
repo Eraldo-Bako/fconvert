@@ -31,6 +31,8 @@ endif()
 file(GLOB CLASS_SOURCES CONFIGURE_DEPENDS 
     "classes/*.cpp"
     "classes/*.h"
+    "classes/program/*.cpp"
+    "classes/program/*.h"
 )
 
 if(WIN32)
@@ -49,6 +51,11 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
     target_link_libraries(fconvert PRIVATE stdc++fs)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(fconvert PRIVATE $<$<CONFIG:Release>:-O3>)
+    target_link_options(fconvert PRIVATE $<$<CONFIG:Release>:-s>)
 endif()
 
 # APPIMAGE

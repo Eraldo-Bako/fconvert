@@ -12,6 +12,7 @@ pkg/
 src/
 fconvert-binaries/
 docs/
+squashfs*/
 
 # CMake artifacts
 build*/
@@ -22,6 +23,7 @@ Makefile
 AppDir/
 
 # Offline Features
+*.test
 *debugging
 *shipping
 FFmpeg*

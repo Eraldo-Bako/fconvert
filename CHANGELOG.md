@@ -1,10 +1,45 @@
 # Changelog
+### Patch Notes v2.3.0
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.3.0;
+name-me-pls : drake;
+license : Apache Version 2.0(the "License"), CC BY-NC-ND(branding only);
+Features :
+* Written important inner-program logic.
+* Improved logging function:
+    - Uses clong instead of cout when printing to the screen.
+    - Writes a log file each time the program runs for debugging.
+* Simplified and removed functions which felt misplaced from path_handler class.
+* Introduced program_handler class that deals with the inner logic of the program.
+  It handles the following:
+    - Checks if DEBUG MODE is active;
+    - Holds the location of the active log file;
+    - Forcefully stops the program, if needed;
+    - Holds the new and improved log function, which logs everything;
+    - Holds the newly introduced print function which makes sure everything that gets printed onto the screen gets logged;
+    - Constructs the FFmpeg and Pandoc commands so they are ready for execution;
+    - Checks the existence of dependencies when used in runtime;
+    - Decides where to write the log file;
+    - Reads the current time and date(for logging);
+    - Reads, converts, manages, and logs input;
+    - Creates the log file;
+    - Makes a temporary file(future vision).
+* Improved efficiency by replacing repeated code with appropriate functions.
+* Added an option to list supported formats: fconvert -l/--list
+* Changed license from MIT to Apache Version 2.0 (the "License"):
+    - Older versions of the program are unaffected and still under the MIT license.
+    - Change happened to guaranteed that anyone who want to use fconvert, has a lifetime free-license, unless stated/decided otherwise.
+Comment : "Read more in [PROGRESS.md](./PROGRESS.md)"
+```
 ### Patch Notes v2.2.0
 ```
 maintainer : Eraldo Bako;
 email : <eraldobako@gmail.com>;
 package : fconvert;
-version : 2.1.1;
+version : 2.2.0;
 name-me-pls: alloy;
 license: MIT, CC BY-NC-ND(branding only);
 Features:
@@ -81,7 +116,7 @@ Features :
 * PKGBUILD using CMakeLists.txt and using gcc command as fallback
 * Added maintainer info and license disclaimer in file containing source code
 * Added PathHandler::build_pandoc_cmd method and changed the PathHandler::get_clean_cmd method for FFmpeg command construction to PathHandler::build_ffmpeg_cmd
-* Added support for .<ext> when usinf -f flag:
+* Added support for .<ext> when using -f flag:
     - Before: $ fconvert -f file.png -extension
     - Added:  $ fconvert -f file.png .extension
     - users can either use the -<ext> or .<ext> format

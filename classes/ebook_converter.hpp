@@ -1,20 +1,22 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
+#pragma once
 #ifndef EBOOK_CONVERTER_HPP
 #define EBOOK_CONVERTER_HPP
+
+#include "program_handler.hpp"
 
 #include <string>
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 class EbookConverter {
 public:
-    static bool check_pandoc();
-    static bool convert(const fs::path& input, const std::string& fmt);
+    static bool convert(const std::filesystem::path& input, const std::string& fmt);
 };
 
 void ebook();
-void ebook_convert_logic(fs::path in, std::string fmt, bool silent);
+void ebook_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
 
 #endif

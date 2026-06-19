@@ -1,7 +1,10 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
 #include "audio_converter.hpp"
 #include "path_handler.hpp"
+#include "program_handler.hpp"
 
 #include <iostream>
 #include <set>
@@ -12,15 +15,21 @@
     #include <sys/wait.h>
 #endif
 
-void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
+void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
+
+    if (!Program::Check::ffmpeg()) {
+        Program::print("[!] Error: FFmpeg not found. [!]\n", true);
+        return;
+    }
+
     // checking the existence of the input_file and the directory
     // defining the location and handling conflicts for the output_file
-    fs::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
+    std::filesystem::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
     if (out.empty()) return;
 
     // varied on the format, defining the best parameters to fetch to the FFmpeg command
     std::string params;
-    PathHandler::log("[~] Status: Defining conversion parameters. [~]");
+    Program::log("[~] Status: Defining conversion parameters. [~]");
     // UNCOMPRESSED AUDIO
     if (fmt == "wav") {
         params = "-c:a pcm_s16le";
@@ -55,9 +64,9 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
     }
 
     // constructs the FFmpeg command and then executes
-    std::string cmd = PathHandler::build_ffmpeg_cmd(in.string(), out.string(), params);
-    PathHandler::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
-    std::cout << " [~] Status: Converting Audio... [~]" << std::endl;
+    std::string cmd = Program::Build::command("ffmpeg", in.string(), out.string(), params);
+    Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
+    Program::print(" [~] Status: Converting Audio... [~]\n");
     int execute = std::system(cmd.c_str());
     // error catching -_-
     if (execute == -1) {
@@ -67,59 +76,43 @@ void audio_convert_logic(fs::path in, std::string fmt, bool silent) {
         #ifdef _WIN32
             int exitCode = execute; 
             if (exitCode == 0) {
-                std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                Program::print("[~] Status: Conversion completed successfully! [~]\n");
             } else {
-                std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
+                Program::print(" [!] Error: FFmpeg failed with exit code: " + exitCode + " [!]\n", true);
             }
         #else
             if (WIFEXITED(execute)) {
                 int exitCode = WEXITSTATUS(execute);
                 if (exitCode == 0) { //successful conversion
-                    std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                    Program::print("[~] Status: Conversion completed successfully! [~]\n");
                 } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                    std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
+                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", true);
                 }
-                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
-                std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
-                          << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
+            } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
+                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", true);
+                Program::print("[~] If you believe this is a bug, please report it. [~]\n"
+                               "[~] Run fconvert -h or --help for more instructions. [~]\n");
             }
         #endif
     }
 }
 
 void audio() {
-    std::string name, fmt;
-    std::cout << "Audio filename or path: "; // safely getting the file name
-    if(!(std::getline(std::cin >> std::ws, name))) {
-        if (std::cin.eof()) {
-                std::cout << std::endl;
-                PathHandler::log("[-] EOF input received. Exiting gracefully... [-]");
-            } else PathHandler::log("[!] Warning: Stream failed or input is illegal. Exiting... [!]");
-            PathHandler::log("[~] Status: Clearing input flags. [~]");
-            std::cin.clear();
-        return;
-    }
-    fs::path in = PathHandler::resolve_input(name);
+
+    std::string name = Program::Get::input("Audio filename or path: ", false);
+    std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
-        PathHandler::log("[!] Error: Path could not be resolved. [!]");
+        Program::log("[!] Error: Path could not be resolved. [!]");
         return;
     }
-    std::cout << "Format: "; // fetch me the desired format
-    if(!(std::getline(std::cin >> std::ws, fmt))) {
-        if (std::cin.eof()) {
-                std::cout << std::endl;
-                PathHandler::log("[-] EOF input received. Exiting gracefully... [-]");
-            } else PathHandler::log("[!] Warning: Stream failed or input is illegal. Exiting... [!]");
-            PathHandler::log("[~] Status: Clearing input flags. [~]");
-            std::cin.clear();
-        return;
-    } // safe lowercase conversion down below
-    std::transform(fmt.begin(), fmt.end(), fmt.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    // why u quitting +@+   jk, just providing a quiting option at anytime(promise you'll come back Q-Q)
+
+    // fetch me the desired format w/ safe lowercase conversion
+    std::string fmt = Program::Get::input("Format: ", true);
+
+    // why u quitting +@+   jk, just providing a quiting option at anytime(promise u'll come back Q-Q)
     if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
-        PathHandler::log("[~] Detected: " + fmt + "\nQuitting... [~]");
-        std::cout << "[!] Successfully stopped the conversion! [!]";
+        Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
+        Program::print("[!] Successfully stopped the conversion! [!]");
         return;
     }
     // seems like you either don't know how to read or write
@@ -127,7 +120,7 @@ void audio() {
                                                       "wma", "opus", "aiff", "pcm", "dsd", "alac",
                                                       "wavpack"};
     if (valid_audio.find(fmt) == valid_audio.end()) {
-        PathHandler::log("[~] Detected: The provided format is incorrect. [~]");
+        Program::log("[~] Detected: The provided format is incorrect. [~]");
         std::cout << "\n[!] Format '" << fmt << "' is not supported or doesn't exist. [!]\n"
                   << "Supported audio formats include:\n"
                   << "* Uncompressed: WAV, AIFF, PCM, DSD\n"

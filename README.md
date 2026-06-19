@@ -1,3 +1,7 @@
+<!-- fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako -->
+<!-- Licensed under the Apache License, Version 2.0 (the "License") -->
+<!-- Maintainer: eraldobako@gmail.com -->
+
 <div id="fconvert-logo" align="center">
     <br />
     <img src="./branding/icon.ico" alt="fconvert Logo" width="200"/>
@@ -191,12 +195,14 @@ For Arch Linux and most Linux distributions, use the following command:
 
 ```bash
 $ cd fconvert
-$ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp -o fconvert $(pkg-config --cflags --libs opencv4 libraw) # omit libraw if not needed 
+$ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv4 libraw) $CXXFLAGS $LDFLAGS
+# omit libraw if not needed
 ```
 For universal compatibility use CMake:
 ```bash
 $ cd fconvert
-$ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_STRIP=ON -DWITH_LIBRAW=ON # set -DWITH_LIBRAW=OFF if not needed
+$ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBRAW=ON 
+# set -DWITH_LIBRAW=OFF if not needed
 $ cmake --build build
 ```
 > **Note:** If you built it locally using CMake, the executable will be inside the `build/` directory (run with `./build/fconvert` on Linux/macOS or `.\build\Release\fconvert.exe` on Windows).
@@ -246,15 +252,18 @@ Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit:
 ## Flags
 * ```-v```, ```--version``` : Show package version and licensing information.
 * ```-h```, ```--help``` : Show the help message and supported formats.
-
+* ```-l```, ```--list``` : Show a list of the supported formats.
 * ```-d```, ```--debug```: Enable debug mode for detailed path-resolution logging.
-
+<br></br>
 * ```-f <file> -<ext>```: Execute a quick conversion.
-* ```-f <file> .<ext>```: Alternatively you can use `.<ext>` is a valid usage.
+* ```-f <file> .<ext>```: Alternatively, using `.<ext>` is a valid usage.
+<br></br>
+* ```-i```, ```-intr```, ```-interactive```: Explicitly start in CLI interactive mode.
 ## Contributing
 Contributions are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.
 ## License
-* Code: [MIT](LICENSE) 
+* Code: [Apache License, Version 2.0](LICENSE)
 * Branding/Logos: [CC BY-NC-ND 4.0](branding/LICENSE)
+* Read the Notice file: [NOTICE](NOTICE)
 ## Disclaimer
 Please use this utility responsibly and comply with relevant copyright laws. The authors are not responsible for any misuse of this software.

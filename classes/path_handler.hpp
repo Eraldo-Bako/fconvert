@@ -1,22 +1,21 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
+#pragma once
 #ifndef PATH_HANDLER_HPP
 #define PATH_HANDLER_HPP
+
+#include "program_handler.hpp"
 
 #include <filesystem>
 #include <string>
 
-namespace fs = std::filesystem;
-
 class PathHandler {
 public:
-    static bool debug_mode;
-    static void log(const std::string& msg);
-    static fs::path resolve_input(const std::string& filename);
-    static fs::path get_output_path(const fs::path& inputPath, const std::string& extension);
-    static fs::path handle_conflicts(fs::path target, bool silent = false);
-    static std::string build_ffmpeg_cmd(const std::string& input, const std::string& output, const std::string& params);
-    static std::string build_pandoc_cmd(const std::string& input, const std::string& output, const std::string& params);
+    static std::filesystem::path resolve_input(const std::string& filename);
+    static std::filesystem::path get_output_path(const std::filesystem::path& inputPath, const std::string& extension);
+    static std::filesystem::path handle_conflicts(std::filesystem::path target, bool silent = false);
 };
 
 #endif

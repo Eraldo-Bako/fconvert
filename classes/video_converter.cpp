@@ -1,7 +1,10 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
 #include "video_converter.hpp"
 #include "path_handler.hpp"
+#include "program_handler.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -12,9 +15,13 @@
     #include <sys/wait.h>
 #endif
 
-void video_convert_logic(fs::path in, std::string fmt, char q, bool silent) {
+void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent) {
+    if (!Program::Check::ffmpeg()) {
+        Program::print("[!] Error: FFmpeg not found. [!]\n", true);
+        return;
+    }
 
-    fs::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
+    std::filesystem::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
     if (out.empty()) return;
 
     std::string params;
@@ -76,13 +83,13 @@ void video_convert_logic(fs::path in, std::string fmt, char q, bool silent) {
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     }
 
-    std::string cmd = PathHandler::build_ffmpeg_cmd(in.string(), out.string(), params);
-    PathHandler::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
-    std::cout << "[~] Status: Converting Video... [~]" << std::endl;
+    std::string cmd = Program::Build::command("ffmpeg", in.string(), out.string(), params);
+    Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
+    Program::print("[~] Status: Converting Video... [~]\n");
     int execute = std::system(cmd.c_str());
     // error catching -_-
-    if (execute == -1) { // the system shell itself couldn't be started
-        std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]" << std::endl;
+    if (execute == -1) { // the system shell itself couldn't be started, critical
+        std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]\n";
     } else { // did the command even finish normally
         #ifdef _WIN32
             int exitCode = execute; 
@@ -95,46 +102,32 @@ void video_convert_logic(fs::path in, std::string fmt, char q, bool silent) {
             if (WIFEXITED(execute)) {
                 int exitCode = WEXITSTATUS(execute);
                 if (exitCode == 0) { //successful conversion
-                    std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                    Program::print("[~] Status: Conversion completed successfully! [~]\n");
                 } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                    std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
+                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", true);
                 }
-                } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                std::cerr << "[!] Error: FFmpeg was terminated abnormally. [!]" << std::endl;
-                std::cout << "[~] If you believe this is a bug, please report it. [~]\n"
-                          << "[~] Run fconvert -h or --help for more instructions. [~]" << std::endl;
+            } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
+                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", true);
+                Program::print("[~] If you believe this is a bug, please report it. [~]\n"
+                               "[~] Run fconvert -h or --help for more instructions. [~]\n");
             }
         #endif
     }
 }
 
 void video() {
-    std::string name, fmt, qual;
-    std::cout << "Video filename: ";
-    if(!(std::getline(std::cin >> std::ws, name))) {
-        PathHandler::log("[!] Error: No valid input provided! [!]");
-        PathHandler::log("[~] Status: Clearing flags and exiting. [~]");
-        std::cin.clear();
-        return;
-    }
-    fs::path in = PathHandler::resolve_input(name);
+    std::string name = Program::Get::input("Video filename: ", false);
+    std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
-        PathHandler::log("[!] Error: Path could not be resolved. [!]");
+        Program::log("[!] Error: Path could not be resolved. [!]");
         return;
     }
 
-    std::cout << "Format: ";
-    if(!(std::getline(std::cin >> std::ws, fmt))) {
-        PathHandler::log("[!] Error: No valid input provided! [!]");
-        PathHandler::log("[~] Status: Clearing flags and exiting. [~]");
-        std::cin.clear();
-        return;
-    } // safe lowercase conversion down below
-    std::transform(fmt.begin(), fmt.end(), fmt.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    std::string fmt = Program::Get::input("Format: ", true);
 
-    if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
-        PathHandler::log("[~] Detected: " + fmt + "\nQuitting... [~]");
-        std::cout << "[!] Successfully stopped the conversion! [!]";
+    if (fmt == "quit" || fmt == "exit" || fmt == "cancel") {
+        Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
+        Program::print("[!] Successfully stopped the conversion! [!]");
         return;
     }
 
@@ -144,27 +137,24 @@ void video() {
                                                       "m2ts", "ogv", "ogg", "prores", "dnxhd", 
                                                       "dnxhr"};
     if (valid_video.find(fmt) == valid_video.end()) {
-        std::cout << "\n[!] Format '" << fmt << "' is not supported or doesn't exist. [!]\n"
-                  << "Supported video formats include:\n"
+        Program::print("\n[!] Format '" + fmt + "' is not supported or doesn't exist. [!]\n");
+        std::cout << "Supported video formats include:\n"
                   << "MP4 (H.264), MOV, AVI, WMV, FLV, F4V, MKV, WebM, 3GP & 3G2,\n"
                   << "M4V, MPEG-2, AVCHD, MTS, M2TS, OGV, OGG, PRORES, DNXHD, DNXHR\n"
                   << "\n[-] If you believe this is a bug, make sure to report it. [-]\n";
         return;
     }
 
-    std::cout << "Select Quality ([Q]uick, [D]efault, [B]est): ";
-    if(!(std::getline(std::cin, qual))) {
-        PathHandler::log("[!] Error: No valid input provided! [!]");
-        PathHandler::log("[~] Status: Clearing flags and exiting. [~]");
-        std::cin.clear();
-        return;
-    }
-    std::transform(qual.begin(), qual.end(), qual.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
+    std::string qual = Program::Get::input("Select Quality ([Q]uick, [D]efault, [B]est): ", true);
     if (qual == "quit" || qual == "exit" || qual == "cancel") {
         std::cout << "[!] Successfully stopped the conversion! [!]";
         return;
     }
 
-    video_convert_logic(in, fmt, std::tolower(qual[0]), false);
+    if (!qual.empty() && (qual[0] == 'q' || qual[0] == 'd' || qual[0] == 'b'))
+        video_convert_logic(in, fmt, qual[0], false);
+    else {
+        Program::print("[!] Invalid qualtiy option provided: " + qual + " [!]\nExiting...");
+        return;
+    }
 }
