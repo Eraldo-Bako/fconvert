@@ -1,5 +1,8 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
+#pragma once
 #ifndef IMAGE_CONVERTER_HPP
 #define IMAGE_CONVERTER_HPP
 

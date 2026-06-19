@@ -1,31 +1,29 @@
-// fconvert v2.2.0 (c) 2023 - 2026 Eraldo Bako - MIT License
-// Maintaier: eraldobako@gmail.com
+// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// Licensed under the Apache License, Version 2.0 (the "License")
+// Maintainer: eraldobako@gmail.com
+
 #include "ebook_converter.hpp"
 #include "path_handler.hpp"
 
 #include <iostream>
-#include <cstdlib>
 #include <set>
 #include <algorithm>
 #include <cctype>
 
-bool EbookConverter::check_pandoc() {
-#ifdef _WIN32
-    return std::system("where pandoc >nul 2>nul") == 0;
-#else
-    return std::system("command -v pandoc >/dev/null 2>&1") == 0;
-#endif
-}
-
-bool EbookConverter::convert(const fs::path& input, const std::string& fmt) {
-    fs::path output = PathHandler::handle_conflicts(PathHandler::get_output_path(input, fmt), false);
+bool EbookConverter::convert(const std::filesystem::path& input, const std::string& fmt) {
+    std::filesystem::path output = PathHandler::handle_conflicts(PathHandler::get_output_path(input, fmt), false);
     if (output.empty()) return false;
 
-    std::string args = "--standalone --from=markdown+smart"; 
+    std::string args = "--standalone --from=markdown+smart";
 
     if (fmt == "pdf") {
         args += " --variable geometry:margin=1in --variable geometry:a4paper";
-        
+
+        if (!Program::Check::pdfEngine()) {
+            Program::print("[!] Error: A supported PDF Engine was not found. [!]\n", true);
+            return false;
+        }
+
 #ifdef _WIN32
         if (std::system("where typst >nul 2>nul") == 0) {
             args += " --pdf-engine=typst --variable mainfont=\"Times New Roman\"";
@@ -58,40 +56,34 @@ bool EbookConverter::convert(const fs::path& input, const std::string& fmt) {
         args += " --split-level=1 --epub-chapter-level=1";
     }
 
-    std::string cmd = PathHandler::build_pandoc_cmd(input.string(), output.string(), args);
-    PathHandler::log("[-] Status: Executing Ebook Conversion: " + cmd + " [-]");
+    std::string cmd = Program::Build::command("pandoc", input.string(), output.string(), args);
+    Program::log("[-] Status: Executing Ebook Conversion: " + cmd + " [-]");
     return (std::system(cmd.c_str()) == 0);
 }
 
-void ebook_convert_logic(fs::path in, std::string fmt, bool silent) {
-    PathHandler::log("[-] Status: Checking for pandoc... [-]");
-    if (!EbookConverter::check_pandoc()) {
-        std::cerr << " [!] Error: Pandoc not found. [!]\n";
+void ebook_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
+    Program::log("[-] Status: Checking for pandoc... [-]");
+    if (!Program::Check::pandoc()) {
+        Program::print("[!] Error: Pandoc not found. [!]\n", true);
         return;
     }
 
-    if (!silent) std::cout << "[>] Processing document... [>]" << std::endl;
+    if (!silent) Program::print("[>] Processing document... [>]\n");
 
     if (EbookConverter::convert(in, fmt)) {
-        if (!silent) std::cout << " [-] Status: Ebook conversion complete! [-]\n";
+        if (!silent) Program::print("[-] Status: Ebook conversion complete! [-]\n");
     } else {
-        std::cerr << " [!] Error: Pandoc failed to process the document. [!]\n";
+        Program::print("[!] Error: Pandoc failed to process the document. [!]\n", true);
     }
 }
 
 void ebook() {
-    std::string name, fmt;
-    std::cout << "Ebook/Document filename or path: ";
-    if(!(std::getline(std::cin >> std::ws, name))) {
-        PathHandler::log("[!] Error: No valid input provided! [!]");
-        PathHandler::log("[-] Status: Clearing flags and exiting. [-]");
-        std::cin.clear();
-        return;
-    }
-    fs::path in = PathHandler::resolve_input(name);
+
+    std::string name = Program::Get::input("Ebook/Document filename or path: ", false);
+    std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
-        PathHandler::log("[!] Error: Path could not be resolved. [!]");
-        std::cout << " [!] File not found. [!]\n";
+        Program::log("[!] Error: Path could not be resolved. [!]");
+        Program::print("[!] File not found. [!]\n");
         return;
     }
 
@@ -99,24 +91,17 @@ void ebook() {
         std::string ext = in.extension().string();
         std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
         if ( ext == ".pdf") {
-            PathHandler::log("[!] Error: PDF files cannot be used as a source format for conversion. [!]");
-            std::cout << " [!] PDF input is not supported. Pandoc cannot read raw PDF structures. [!]\n";
+            Program::log("[!] Error: PDF files cannot be used as a source format for conversion. [!]");
+            Program::print("[!] PDF input is not supported. Pandoc cannot read raw PDF structures. [!]\n");
             return;
         }
     }
 
-    std::cout << "Target Format ([P]df / [H]tml / [E]pub / [T]xt / [D]ocx): "; 
-    if(!(std::getline(std::cin >> std::ws, fmt))) {
-        PathHandler::log("[!] Error: No valid input provided! [!]");
-        PathHandler::log("[~] Status: Clearing flags and exiting. [~]");
-        std::cin.clear();
-        return;
-    }
-    std::transform(fmt.begin(), fmt.end(), fmt.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
-    if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
-        PathHandler::log("[~] Detected: " + fmt + "\nQuitting... [~]");
-        std::cout << "[!] Successfully stopped the conversion! [!]";
+    std::string fmt = Program::Get::input("Target Format ([P]df / [H]tml / [E]pub / [T]xt / [D]ocx): ", true);
+    
+    if (fmt == "quit" || fmt == "exit" || fmt == "cancel") {
+        Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
+        Program::print("[!] Successfully stopped the conversion! [!]");
         return;
     }
 
