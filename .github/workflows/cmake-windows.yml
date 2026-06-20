@@ -17,19 +17,22 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4 
-
+        
     - name: Export GitHub Actions Cache Environment
       uses: actions/github-script@v7
       with:
         script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: '**/vcpkg.json'
     
     - name: Install vcpkg Dependencies
       run: |
-        vcpkg install `
-          opencv `
-          libraw
+        vcpkg install opencv:x64-windows libraw:x64-windows
 
     - name: Configure CMake
       run: |
@@ -48,9 +51,19 @@ jobs:
       shell: powershell
       run: |
         $cert = New-SelfSignedCertificate -Type CodeSigning -CertStoreLocation Cert:\CurrentUser\My -Subject "CN=github/Eraldo-Bako"
-        $signtool = Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin\10.*\x64" -Filter signtool.exe -Recurse | Select-Object -First 1 -ExpandProperty FullName
+        $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits" -Filter signtool.exe -Recurse | Where-Object {$_.FullName -match 'x64'} | Select-Object -First 1).FullName
         & $signtool sign /sha1 $cert.Thumbprint /fd sha256 "dist/fconvert.exe"
-        
+
+    - name: Add Licensing and Docs
+      shell: powershell
+      run: |
+        @("README.md", "LICENSE", "NOTICE") | ForEach-Object {
+            if (Test-Path $_) { Copy-Item $_ -Destination dist/ -Force }
+        }
+        @("input_file", "output_file") | ForEach-Object {
+            if (Test-Path $_) { Copy-Item $_ -Destination dist/ -Recurse -Force }
+        }
+    
     - name: Upload Clean Windows Binary
       uses: actions/upload-artifact@v4
       with:
