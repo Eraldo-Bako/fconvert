@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
+#include "program_handler.hpp"
 #include "path_handler.hpp"
 
 #include <iostream>

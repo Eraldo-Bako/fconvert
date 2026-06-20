@@ -13,9 +13,10 @@ src/
 fconvert-binaries/
 docs/
 squashfs*/
+.idea/
 
 # CMake artifacts
-build*/
+*build*/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake

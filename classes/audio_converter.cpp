@@ -9,7 +9,6 @@
 #include <iostream>
 #include <set>
 #include <algorithm>
-#include <cctype>
 
 #ifndef _WIN32
     #include <sys/wait.h>

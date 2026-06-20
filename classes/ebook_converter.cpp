@@ -3,6 +3,7 @@
 // Maintainer: eraldobako@gmail.com
 
 #include "ebook_converter.hpp"
+#include "program_handler.hpp"
 #include "path_handler.hpp"
 
 #include <iostream>

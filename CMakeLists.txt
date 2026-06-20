@@ -1,3 +1,7 @@
+# fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+# Licensed under the Apache License, Version 2.0 (the "License")
+# Maintainer: eraldobako@gmail.com
+
 cmake_minimum_required(VERSION 3.15)
 project(fconvert LANGUAGES CXX)
 
@@ -69,8 +73,8 @@ target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS})
 
 if(WITH_LIBRAW AND LIBRAW_FOUND)
 
-    if(TARGET ${LIBRAW_LIBRARIES})
-        target_link_libraries(fconvert PRIVATE ${LIBRAW_LIBRARIES})
+    if(TARGET "${LIBRAW_LIBRARIES}")
+        target_link_libraries(fconvert PRIVATE "${LIBRAW_LIBRARIES}")
     else()
         target_include_directories(fconvert PRIVATE ${LIBRAW_INCLUDE_DIRS})
         if(LIBRAW_LIBRARY_DIRS)

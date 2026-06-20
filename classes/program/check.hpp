@@ -8,8 +8,7 @@
 
 #include <string>
 
-namespace Program {
-    namespace Check {
+namespace Program::Check {
         bool command_exists(const std::string& win_cmd, const std::string& nix_cmd);
         bool ffmpeg();
         bool imghost();
@@ -17,7 +16,6 @@ namespace Program {
         bool opencv();
         bool pandoc();
         bool pdfEngine();
-    }
 }
 
 #endif

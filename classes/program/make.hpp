@@ -9,11 +9,9 @@
 #include <string>
 #include <filesystem>
 
-namespace Program {
-    namespace Make {
+namespace Program::Make {
         std::filesystem::path logFile(const std::string& time);
         std::filesystem::path tempFile(const std::filesystem::path& original_inputPath);
-    }
 }
 
 #endif

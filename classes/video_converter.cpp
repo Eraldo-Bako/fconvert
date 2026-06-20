@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include <cctype>
 #include <set>
 
 #ifndef _WIN32

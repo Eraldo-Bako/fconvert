@@ -8,10 +8,9 @@
 
 #include <string>
 
-namespace Program {
-    namespace Build {
+namespace Program::Build {
         std::string command(const std::string& type, const std::string& input, const std::string& output, const std::string& params);
-    }
 }
+
 
 #endif

@@ -9,12 +9,10 @@
 #include <filesystem>
 #include <string>
 
-namespace Program {
-    namespace Get {
-        std::filesystem::path logDirectory();
-        std::string currentTimestamp();
-        std::string input(const std::string& prompt, bool lower = false, bool useWS = true);
-    }
+namespace Program::Get {
+    std::filesystem::path logDirectory();
+    std::string currentTimestamp();
+    std::string input(const std::string& prompt, bool lower = false, bool useWS = true);
 }
 
 #endif

@@ -6,8 +6,6 @@
 #ifndef PATH_HANDLER_HPP
 #define PATH_HANDLER_HPP
 
-#include "program_handler.hpp"
-
 #include <filesystem>
 #include <string>
 
