@@ -55,12 +55,14 @@ add_executable(fconvert main.cpp ${CLASS_SOURCES} ${WINDOWS_RESOURCES})
 target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS}) 
 
 if(WITH_LIBRAW AND LIBRAW_FOUND)
-    target_include_directories(fconvert PRIVATE ${LIBRAW_INCLUDE_DIRS})
-    
-    if(LIBRAW_LIBRARY_DIRS)
-        target_link_directories(fconvert PRIVATE ${LIBRAW_LIBRARY_DIRS})
-    endif()
 
+    if(NOT TARGET ${LIBRAW_LIBRARIES})
+        target_include_directories(fconvert PRIVATE ${LIBRAW_INCLUDE_DIRS})
+        if(LIBRAW_LIBRARY_DIRS)
+            target_link_directories(fconvert PRIVATE ${LIBRAW_LIBRARY_DIRS})
+        endif()
+    endif()
+    
     target_link_libraries(fconvert PRIVATE ${LIBRAW_LIBRARIES})
     target_compile_definitions(fconvert PRIVATE HAS_LIBRAW)
 endif()
