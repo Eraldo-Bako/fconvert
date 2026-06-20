@@ -8,6 +8,10 @@ option(WITH_LIBRAW "Compile with LibRaw support for RAW image formats" ON)
 
 find_package(OpenCV REQUIRED)
 
+if(WIN32 AND VCPKG_TARGET_TRIPLET)
+    link_directories("${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+endif()
+
 if(WITH_LIBRAW)
     find_package(PkgConfig QUIET)
     if(PKG_CONFIG_FOUND)
@@ -15,8 +19,15 @@ if(WITH_LIBRAW)
     endif()
 
     if(NOT LIBRAW_FOUND)
-        find_package(LibRaw QUIET) 
-        if(LibRaw_FOUND)
+        find_package(LibRaw CONFIG QUIET)
+        if(NOT LibRaw_FOUND)
+            find_package(LibRaw QUIET)
+        endif()
+
+        if(TARGET LibRaw::LibRaw)
+            set(LIBRAW_FOUND TRUE)
+            set(LIBRAW_LIBRARIES LibRaw::LibRaw)
+        elseif(LibRaw_FOUND)
             set(LIBRAW_FOUND TRUE)
             set(LIBRAW_INCLUDE_DIRS ${LibRaw_INCLUDE_DIR})
             set(LIBRAW_LIBRARIES ${LibRaw_LIBRARIES})
@@ -45,6 +56,11 @@ target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS})
 
 if(WITH_LIBRAW AND LIBRAW_FOUND)
     target_include_directories(fconvert PRIVATE ${LIBRAW_INCLUDE_DIRS})
+    
+    if(LIBRAW_LIBRARY_DIRS)
+        target_link_directories(fconvert PRIVATE ${LIBRAW_LIBRARY_DIRS})
+    endif()
+
     target_link_libraries(fconvert PRIVATE ${LIBRAW_LIBRARIES})
     target_compile_definitions(fconvert PRIVATE HAS_LIBRAW)
 endif()

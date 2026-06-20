@@ -15,7 +15,7 @@ std::filesystem::path Program::Get::logDirectory() {
     std::filesystem::path logDir;
 
 #if defined(_WIN32)
-    const wchar_t* localAppData = _wgetenv("LOCALAPPDATA");
+    const wchar_t* localAppData = _wgetenv(L"LOCALAPPDATA");
     if (localAppData) {
         logDir = std::filesystem::path(localAppData) / "fconvert" / "Logs";
     } else {
