@@ -32,7 +32,7 @@ jobs:
     
     - name: Install vcpkg Dependencies
       run: |
-        vcpkg install opencv:x64-windows libraw:x64-windows
+        vcpkg install --triplet x64-windows
 
     - name: Configure CMake
       run: |
