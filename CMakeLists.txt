@@ -35,7 +35,7 @@ if(WITH_LIBRAW)
     endif()
 
     if(NOT LIBRAW_FOUND)
-        message(WARNING "LibRaw not found. Building without RAW image support.")
+        message(FATAL_ERROR "LibRaw requested but not found!")
     endif()
 endif()
 
