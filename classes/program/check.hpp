@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -9,6 +9,7 @@
 #include <string>
 
 namespace Program::Check {
+        bool is_running_as_root();
         bool command_exists(const std::string& win_cmd, const std::string& nix_cmd);
         bool ffmpeg();
         bool imghost();

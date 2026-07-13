@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -45,18 +45,26 @@ std::filesystem::path Program::Get::logDirectory() {
 std::string Program::Get::currentTimestamp() {
     time_t timestamp;
     time(&timestamp);
-    std::string timeStr = std::ctime(&timestamp);
-    if (timeStr.empty()) return "Date/Time Error";
 
-    if (!timeStr.empty() && timeStr.back() == '\n') {
-        timeStr.pop_back();
-    }
+    struct tm timeInfo{};
+#ifdef _WIN32
+    localtime_s(&timeInfo, &timestamp);
+#else
+    localtime_r(&timestamp, &timeInfo);
+#endif
 
-    return timeStr;
+    char buffer[26];
+    size_t len = std::strftime(buffer, sizeof(buffer), "%a %b %d %Y %H:%M:%S", &timeInfo);
+
+    if (len == 0) return "Date/Time Error";
+
+    return std::string(buffer, len);
 }
 
-std::string Program::Get::input(const std::string& prompt, bool lower, bool useWS) {
-    if (!prompt.empty()) Program::print(prompt);
+std::string Program::Get::input(const std::string& prompt, Program::Case lower, Program::InputType useWS) {
+    if (!prompt.empty()) {
+        Program::print(prompt);
+    }
     std::string input;
     
     if (!std::cin) {
@@ -64,12 +72,11 @@ std::string Program::Get::input(const std::string& prompt, bool lower, bool useW
         return "";
     }
 
+    bool safeInput = (useWS == Program::InputType::WS);
     bool readSuccess = false;
-    if (useWS) {
+    if (safeInput)
         readSuccess = static_cast<bool>(std::getline(std::cin >> std::ws, input));
-    } else {
-        readSuccess = static_cast<bool>(std::getline(std::cin, input));
-    }
+    else readSuccess = static_cast<bool>(std::getline(std::cin, input));
 
     if (!readSuccess) {
         Program::log("[!] Error: No valid input provided (Stream error or EOF)! [!]");
@@ -77,7 +84,7 @@ std::string Program::Get::input(const std::string& prompt, bool lower, bool useW
         
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return "";
+        Program::end("[ Stream reached EOF, ending the program. ]");
     }
 
     if (input.empty()) {
@@ -85,7 +92,7 @@ std::string Program::Get::input(const std::string& prompt, bool lower, bool useW
         return "";
     }
 
-    if (lower) { // safe lowercase conversion down below
+    if (lower == Program::Case::Lower) { // safe lowercase conversion down below
         Program::log("[-] Status: Converting input to lowercase. [-]");
         std::transform(
             input.begin(), input.end(), input.begin(), [](unsigned char c) { 
@@ -94,6 +101,6 @@ std::string Program::Get::input(const std::string& prompt, bool lower, bool useW
         );
     }
 
-    Program::log("[-] Status: Succesfully aquired input: " + input + " [-]");
+    Program::log("[-] Status: Successfully acquired input: " + input + " [-]");
     return input;
 }

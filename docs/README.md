@@ -257,7 +257,7 @@ For universal compatibility use CMake:
 $ cd fconvert
 $ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBRAW=ON 
 # set -DWITH_LIBRAW=OFF if not needed
-$ cmake --build build --config Release
+$ cmake --build build
 ```
 > **Note:** If you built it locally using CMake, the executable will be inside the `build/` directory (run with `./build/fconvert` on Linux/macOS or `.\build\Release\fconvert.exe` on Windows).
 

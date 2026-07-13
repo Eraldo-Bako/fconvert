@@ -1,8 +1,8 @@
 /*
 ------------------------------------------------------------------------
 
-    fconvert v2.3.0
-    A fast CLI converter for Images, Videos, Audios, and Ebooks!
+    fconvert v2.4.0
+    A fast C++ CLI converter for Images, Videos, Audios, and Ebooks!
     License: Apache 2.0
     Written by Eraldo Bako.
     Maintainer: eraldobako@gmail.com
@@ -12,7 +12,7 @@
      | |_ ___ ___  _ ____   _____ _ __| |_ 
      |  _/ __/ _ \| '_ \ \ / / _ \ '__| __|
      | || (_| (_) | | | \ V /  __/ |  | |_ 
-     |_| \___\___/|_| |_|\_/ \___|_|   \__\/v2.3.0
+     |_| \___\___/|_| |_|\_/ \___|_|   \__\/v2.4.0
 
 ----------------------- fconvert - File Converter ----------------------
 ------------------------------------------------------------------------
@@ -46,10 +46,8 @@ limitations under the License.
 #include <algorithm>
 #include <cctype>
 
-namespace fs = std::filesystem;
-
 void print_version() {
-    std::cout << "fconvert v2.3.0\n"
+    std::cout << "fconvert v2.4.0\n"
               << "Copyright (C) 2023-2026 Eraldo Bako\n"
               << "Licensed under the Apache License, Version 2.0 (the \"License\")\n"
               << "\nWritten by Eraldo Bako.\n"
@@ -84,6 +82,8 @@ void print_help() {
               << "  -h, --help        Show this help message\n"
               << "  -l, --list        Show the list of supported formats\n"
               << "  -d, --debug       Enable debug mode (extra logging)\n"
+              << "  -cc,              Clear the saved cache and log files\n"
+              << "  --clear-cache     of fconvert\n"
               << "  -f, --file <file-name> -<ext>  Quick Convert: convert <file-name> to target extension <ext>\n\n"
               << "  Note: fconvert accepts absolute or relative paths. If no path is provided, it looks in the sandbox directory.\n\n"
               << "Example: \n"
@@ -109,37 +109,36 @@ void print_banner() {
  |  _/ __/ _ \| '_ \ \ / / _ \ '__| __|
  | || (_| (_) | | | \ V /  __/ |  | |_ 
  |_| \___\___/|_| |_|\_/ \___|_|   \__\)";
-    if (Program::debug_mode) std::cout << "/2.3.0";
+    if (Program::debug_mode) std::cout << "/2.4.0" << std::flush;
     std::cout << std::endl << R"(
  ----------------------- fconvert - File Converter ----------------------
- ----- A fast CLI converter for Images, Videos, Audios, and Ebooks! -----
+ --- A fast C++ CLI converter for Images, Videos, Audios, and eBooks! ---
  ------------------------------------------------------------------------
-    )";
-    Program::log("[~] Detected: Debug mode active. [~]", true, false);
+    )" << std::flush;
+    Program::log("[~] Detected: Debug mode active. [~]", Program::LogDest::Console);
     std::cout << "\n";
 }
 
 void interactive_mode() {
     while (true) {
-        clear_screen();
-        print_banner();
-        std::string input = Program::Get::input("Convert [I]mage / [V]ideo / [A]udio / [e]Book / [Q]uit: ", true);
+        clear_screen(); print_banner();
+        std::string input = Program::Get::input("Convert [I]mage / [V]ideo / [A]udio / [e]Book / [Q]uit: ", Program::Case::Lower, Program::InputType::noWS);
 
         if (input.empty() || input == "q" || input == "quit" || input == "exit") {
             Program::log("[-] Exit Key Received: " + input + " [-]");
             break;
         }
 
-        if (input == "i" || input == "image") {
+        if (input == "i" || input == "img" || input == "image") {
             Program::log("[~] Detected: Image key received '" + input + "'. Applying... [~]");
             image();
-        } else if (input == "v" || input == "video") {
+        } else if (input == "v" || input == "vid" || input == "video") {
             Program::log("[~] Detected: Video key received '" + input + "'. Applying... [~]");
             video();
-        } else if (input == "a" || input == "audio") {
+        } else if (input == "a"  || input == "aud"|| input == "audio" || input == "snd" || input == "sound") {
             Program::log("[~] Detected: Audio key received '" + input + "'. Applying... [~]");
             audio();
-        } else if (input == "e" || input == "ebook" || input == "doc" || input == "document") {
+        } else if (input == "e" || input == "ebook" || input == "doc" || input == "document" || input == "pdf") {
             Program::log("[~] Detected: eBook key received '" + input + "'. Applying... [~]");
             Program::print("[!] eBook is currently highly experimental! [!]\n");
             Program::print("[!] Only use it if you know what you are doing. [!]\n");
@@ -149,7 +148,7 @@ void interactive_mode() {
             Program::log("[~] Detected: Invalid key received '" + input + "'. Exiting... [~]");
         }
 
-        std::string again = Program::Get::input("\nDo you want to convert another file? (y/N): ", false, false);
+        std::string again = Program::Get::input("\nDo you want to convert another file? (y/N): ", Program::Case::Lower, Program::InputType::noWS);
 
         if (std::tolower(static_cast<unsigned char>(again[0])) != 'y') {
             Program::log("[~] Status: Exit key received. Exiting... [~]");
@@ -160,13 +159,54 @@ void interactive_mode() {
 }
 
 int main(int argc, char* argv[]) {
+
+    if (Program::Check::is_running_as_root()) {
+        std::cout << Program::Color::RED
+                  << "\n\n=================================================================\n"
+                  << "[CRITICAL WARNING] fconvert is running with elevated privileges.\n"
+                  << "=================================================================\n\n"
+                  << "Executing file conversions as root bypasses vital OS safeguards.\n"
+                  << "Malformed files or unexpected behavior CAN irreversibly corrupt\n"
+                  << "system binaries or compromise OS integrity.\n\n"
+                  << "=================================================================\n\n"
+                  << "If you do not know what you are doing or what is happening,\n"
+                  << "abort this operation immediately to prevent startup!\n\n"
+                  << "=================================================================\n"
+                  << Program::Color::RESET;
+        std::string confirmation1;
+        std::cout << "Type 'YES, I ACCEPT THE RISK - PROCEED' to proceed: ";
+        std::getline(std::cin, confirmation1);
+
+        if (confirmation1 != "YES, I ACCEPT THE RISK - PROCEED") {
+            std::cout << Program::Color::YELLOW
+                      << "[~] Operation successfully aborted. [~]\n"
+                      << "[-] Never do that again! [-]\n";
+            return 0;
+        }
+
+        std::string confirmation2;
+        std::cout << Program::Color::YELLOW << "Are you sure about that?\n"
+                  << Program::Color::RESET << "Type 'PROCEED' to proceed: ";
+        std::getline(std::cin, confirmation2);
+
+        if (confirmation2 != "PROCEED") {
+            std::cout << Program::Color::YELLOW
+                      << "[~] Operation successfully aborted. [~]\n"
+                      << "[-] Never do that again! OKAY? [-]\n";
+            return 0;
+        }
+
+        std::cout << Program::Color::YELLOW
+                  << "[!] Bootstrapping execution context with root clearance...\n"
+                  << "[-] Status: You are on your own now! [-]\n"
+                  << Program::Color::RESET;
+
+    }
     
     std::vector<std::string> args(argv, argv + argc);
-    std::filesystem::path quick_file;
-    std::string quick_ext;
 
-    for (size_t i = 1; i < args.size(); ++i) {
-        const std::string& arg = args[i];
+    if (args.size() > 1) {
+        const std::string& arg = args[1];
 
         if (arg == "-h" || arg == "--help") {
             print_help();
@@ -177,57 +217,68 @@ int main(int argc, char* argv[]) {
         }else if (arg == "-v" || arg == "--version") {
             print_version();
             return 0;
+        } else if (arg == "-cc" || arg == "--clear-cache") {
+            Program::clearCache();
+            return 0;
         }
     }
 
     const std::string startTime = Program::Get::currentTimestamp();
     Program::activeLogPath = Program::Make::logFile(startTime);
+
+    std::cerr.tie(&std::cout);
     std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
 
-    bool file_flag_passed = false;
-    
-    for (size_t i = 1; i < args.size(); ++i) {
-        const std::string& arg = args[i];
+    std::filesystem::path quick_file;
+    std::string quick_ext;
 
-        if (arg == "-d" || arg == "--debug") {
-            Program::debug_mode = true;
-            Program::log("[~] DEBUG MODE ACTIVE [~]", false);
-        }
+    {
+        bool FILE_FLAG_PASSED = false;
 
-        if (arg == "-i" || arg == "--intr" || arg == "--interactive") {
-            interactive_mode();
-            return 0;
-        } else if (arg == "-f" || arg == "--file") {
-            if (i + 1 >= args.size()) { // didn't find any argument
-                Program::print("[!] Error: -f requires a file path argument [!]\n", true);
-                return 1;
+        for (size_t i = 1; i < args.size(); ++i) {
+            const std::string& arg = args[i];
+
+            if (arg == "-d" || arg == "--debug") {
+                Program::debug_mode = true;
+                Program::log("[~] DEBUG MODE ACTIVE [~]", Program::LogDest::File);
             }
-            std::string next_arg = args[i + 1];
-            if (next_arg[0] == '-') { // found flag instead of file path
-                Program::print("[!] Error: -f requires a file path, but found a flag: " + next_arg + " [!]\n", true);
-                return 1;
+
+            if (arg == "-i" || arg == "--intr" || arg == "--interactive") {
+                interactive_mode();
+                return 0;
+            } else if (arg == "-f" || arg == "--file") {
+                if (i + 1 >= args.size()) { // didn't find any argument
+                    Program::print("[!] Error: -f requires a file path argument [!]\n", Program::PrintType::Error);
+                    return 1;
+                }
+                std::string next_arg = args[i + 1];
+                if (next_arg[0] == '-') { // found flag instead of file path
+                    Program::print("[!] Error: -f requires a file path, but found a flag: " + next_arg + " [!]\n", Program::PrintType::Error);
+                    return 1;
+                }
+                quick_file = args[++i];
+                FILE_FLAG_PASSED = true;
+                Program::print("[-] File to be converted: " + quick_file.string() + " [-]\n");
+                continue;
+            } // checks and assigns the desired format
+            if (FILE_FLAG_PASSED && arg.size() > 1 && (arg[0] == '-' || arg[0] == '.')) {
+                quick_ext = arg.substr(1);
+                Program::print("[-] Converting to: " + quick_ext + " [-]\n");
+                continue;
             }
-            quick_file = args[++i];
-            file_flag_passed = true;
-            Program::print("[-] File to be converted: " + quick_file.string() + " [-]\n");
-            continue;
-        } // checks and assigns the desired format
-        if (file_flag_passed && arg.size() > 1 && (arg[0] == '-' || arg[0] == '.')) {
-            quick_ext = arg.substr(1);
-            Program::print("[-] Converting to: " + quick_ext + " [-]\n");
-            continue;
         }
     }
 
     if (!quick_file.empty() && quick_ext.empty()) { // if no extension is provided
-        Program::print("[!] Error: -f requires a file extension after file path, but found nothing. [!]\n", true);
+        Program::print("[!] Error: -f requires a file extension after file path, but found nothing. [!]\n", Program::PrintType::Error);
         return 1;
     }
 
     if (!quick_file.empty() && !quick_ext.empty()) { // the -f logic for quick conversion
         std::filesystem::path in = PathHandler::resolve_input(quick_file.string());
         if (in.empty()) { 
-            Program::print("[!] Error: File '" + quick_file.string() + "' not found. [!]\n", true);
+            Program::print("[!] Error: File '" + quick_file.string() + "' not found. [!]\n", Program::PrintType::Error);
             return 1; 
         }
         
@@ -255,7 +306,7 @@ int main(int argc, char* argv[]) {
                               quick_ext == "psd" || quick_ext == "ai" || quick_ext == "xcf" ||
                               quick_ext == "eps" || quick_ext == "ico" || quick_ext == "pdf" ||
                               quick_ext == "heic" || quick_ext == "heif");
-        bool targetIsRAWImage = (quick_ext == "cr2" || quick_ext == "nef" || quick_ext == "arw" || 
+        bool targetIsRAWImage = (quick_ext == "cr2" || quick_ext == "nef" || quick_ext == "arw" ||
                                  quick_ext == "dng" || quick_ext == "crw");
         
         bool targetIsDOC = (quick_ext == "epub" || quick_ext == "html" || quick_ext == "pdf" || 
@@ -265,7 +316,7 @@ int main(int argc, char* argv[]) {
             audio_convert_logic(in, quick_ext, true);
         } else if (targetIsRAWImage) {
             Program::log("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]");
-            Program::print("[!] Error: Detected target is a RAW image format: '" + quick_ext + "' [!]", true);
+            Program::print("[!] Error: Detected target is a RAW image format: '" + quick_ext + "' [!]", Program::PrintType::Error);
             return 1;
         } else if (inputIsVideo) {
             video_convert_logic(in, quick_ext, 'd', true);
@@ -276,7 +327,7 @@ int main(int argc, char* argv[]) {
         } else if (targetIsDOC) {
             ebook_convert_logic(in, quick_ext, true);
         } else {
-            Program::print("[!] Error: Format '-" + quick_ext + "' is not supported. [!]\n", true);
+            Program::print("[!] Error: Format '-" + quick_ext + "' is not supported. [!]\n", Program::PrintType::Error);
             return 1;
         }
         return 0;

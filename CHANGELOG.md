@@ -1,4 +1,31 @@
-# Changelog
+# CHANGELOGS
+### Patch Notes v2.4.0
+```
+maintainer : Eraldo Bako;
+email : <eraldobako@gmail.com>;
+package : fconvert;
+version : 2.4.0;
+name-me-pls : stout;
+license : Apache Version 2.0(the "License"), CC BY-NC-ND(branding only);
+Features :
+* Added colored text: Red(Errors, Critical Warnings), Yellow(Warnings), Green(normal output), Cyan(logs)
+* Added better functionality to the program_handler class.
+* Added -cc --clear-cache option for clearing the log directory cache.
+* Added safe conversion methods:
+    - fetched file necer gets tempered with
+    - it gets copied to the log-directory/cache/
+    - gets read/converted there
+    - the output is copied in the specified location
+    - files are cleared from the temporary cache directory 
+    (only if the program doesn't crash)
+* Added security warnings to that appear if fconvert is running with 
+administrator/root privileges. 
+    - fconvert should NEVER need to run with such privileges, it can cause 
+    undefined behaviour and possibly corrupt system files.
+* Added contributing guidelines and code of conduct.
+* Added OpenCV and LibRAW info in the NOTICE file.
+Comment : "Read more in [PROGRESS.md](./PROGRESS.md)"
+```
 ### Patch Notes v2.3.0
 ```
 maintainer : Eraldo Bako;

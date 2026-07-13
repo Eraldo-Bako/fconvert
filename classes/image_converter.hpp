@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -10,12 +10,6 @@
 #include <string>
 
 #include <opencv2/core.hpp> // #include <opencv2/opencv.hpp>
-
-#ifdef _WIN32
-    #include <libraw.h>
-#else
-    #include <libraw/libraw.h>
-#endif
 
 cv::Mat read_camera_raw(const std::string& raw_path);
 void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent);

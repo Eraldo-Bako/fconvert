@@ -11,9 +11,8 @@ fconvert*.bin
 pkg/
 src/
 fconvert-binaries/
-docs/
 squashfs*/
-.idea/
+.id*/
 
 # CMake artifacts
 *build*/

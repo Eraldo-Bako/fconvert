@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -7,11 +7,9 @@
 
 #include <iostream>
 #include <set>
-#include <cctype>
-#include <limits>
 
 std::filesystem::path PathHandler::resolve_input(const std::string& filename) {
-    // self explonatory, read the Program::log calls if needed
+    // self-explanatory, read the Program::log calls if needed
     Program::log("[-] Searching for the file: " + filename + " [-]");
     std::filesystem::path p(filename);
     
@@ -39,17 +37,17 @@ std::filesystem::path PathHandler::resolve_input(const std::string& filename) {
     } else Program::log("[-] Result: " + filename + " is NOT in the sandbox directory. [-]");
 
     Program::log("[!] Warning: Checks failed to find the file. [!]");
-    std::cerr << "[!] Error: Could not find '" << filename << "' in the absolute, working, or sandbox directory. [!]" << std::endl;
+    Program::print ("\n[!] Error: Could not find '" + filename + "' in the absolute, working, or sandbox directory. [!]\n", Program::PrintType::Error);
     Program::log("[!] Warning: Applying default, if any... [!]");
     Program::log("[~] Status: This may fail. [~]");
-    return p; // trusting the user
+    return {}; // trusting the user
 }
 
 std::filesystem::path PathHandler::get_output_path(const std::filesystem::path& inputPath, const std::string& extension) {
 
     Program::log("[~] Status: Defining the output directory. [~]");
-    std::filesystem::path absoluteInput = std::filesystem::absolute(inputPath);
-    std::filesystem::path inputDir = absoluteInput.parent_path();
+    const std::filesystem::path absoluteInput = std::filesystem::absolute(inputPath);
+    const std::filesystem::path inputDir = absoluteInput.parent_path();
     std::filesystem::path outDir;
 
     if (inputDir.filename() == "input_file") { // for sandbox conversion
@@ -68,27 +66,27 @@ std::filesystem::path PathHandler::get_output_path(const std::filesystem::path& 
             std::cerr << "[!] Permission denied: Could not create " << outDir.string() << " [!]\n"
                       << "[!] Warning: Check your folder permissions or run with appropriate privileges. [!]" << std::endl;
             Program::log("[!] Error: Could not create directory " + outDir.string() + "[!]");
-            return std::filesystem::path();
+            return {};
         }
-        if(std::filesystem::exists(outDir)) Program::log("[-] Result: Sucessfully created " + outDir.string() + " [-]");
+        if(std::filesystem::exists(outDir)) Program::log("[-] Result: Successfully created " + outDir.string() + " [-]");
     }
 
     std::string formattedExt;
     if (extension.empty()) {
         Program::log("[!] Critical Error: Extension is empty. [!]");
-        Program::log("[!] Warning: Programm may be corrupt. Try restarting or reinstalling if this issue presists. [!]");
+        Program::log("[!] Warning: Program may be corrupt. Try restarting or reinstalling if this issue persists. [!]");
         throw std::runtime_error("[!] Critical Error: Empty extension provided to PathHandler. Internal error. ");
     }
     if (!extension.empty() && extension[0] == '.') {
         formattedExt = extension;
         Program::log("[~] Detected: Extension already formatted. [~]");
     } else {
-        formattedExt = "." + extension; // impossible case, repporting as a error catcher
+        formattedExt = "." + extension; // impossible case, reporting as an error catcher
         Program::log("[~] Status: Prepending dot to extension: " + formattedExt);
     }
     std::filesystem::path out = outDir / absoluteInput.stem(); // full path + file name
     out.replace_extension(formattedExt); // appending extension
-    Program::log("[-] Result: Sucessfully defined output file directory and extension as: " + out.string());
+    Program::log("[-] Result: Successfully defined output file directory and extension as: " + out.string());
     return out;
 }
 
@@ -102,29 +100,20 @@ std::filesystem::path PathHandler::handle_conflicts(std::filesystem::path target
     
     if (!silent) {
         Program::log("[!] Warning: File '" + target.string() + "' already exists, defaulting to conflict handler. [!]");
-        std::cout << " [!] Conflict: " << target.filename().string() << " exists. (o)verwrite, (r)ename, (c)ancel: ";
-        char c; 
-        if (!(std::cin >> std::ws >> c)) {
-            Program::log("[!] Error: No input received. [!]");
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            return "";
-        }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        c = std::tolower(static_cast<unsigned char>(c));
-        Program::log("[~] Status: Option '" + std::string(1, c) + "' chosen. Applying... [~]");
-        if (c == 'o') return target;
-        if (c == 'c') return "";
+        std::string c = Program::Get::input(" [!] Conflict: " + target.filename().string() + " exists. (o)verwrite, (r)ename, (c)ancel: ", Program::Case::Lower);
+        Program::log("[~] Status: Option '" + c + "' chosen. Applying... [~]");
+        if (c[0] == 'o') return target;
+        if (c[0] == 'c') return "";
     }
     // program defaults to renaming for safety
     Program::log("[~] Status: Initializing renaming logic. [~]");
-    int i = 1; // index for renaminf file(1).mp3
+    int i = 1; // index for renaming file(1).mp3
     Program::log("[~] Status: Acquiring full directory. [~]");
-    std::filesystem::path baseDir = target.parent_path();
+    const std::filesystem::path baseDir = target.parent_path();
     Program::log("[~] Status: Acquiring file name. [~]");
-    std::string stem = target.stem().string();
+    const std::string stem = target.stem().string();
     Program::log("[~] Status: Acquiring extension. [~]");
-    std::string ext = target.extension().string();
+    const std::string ext = target.extension().string();
     
     Program::log("[~] Status: Checking for available indexes. [~]");
     std::filesystem::path newPath = target;

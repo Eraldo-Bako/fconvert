@@ -1,10 +1,11 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
 #include "audio_converter.hpp"
 #include "path_handler.hpp"
 #include "program_handler.hpp"
+#include "secure_conversion_session.hpp"
 
 #include <iostream>
 #include <set>
@@ -17,7 +18,7 @@
 void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
 
     if (!Program::Check::ffmpeg()) {
-        Program::print("[!] Error: FFmpeg not found. [!]\n", true);
+        Program::print("[!] Error: FFmpeg not found. [!]\n", Program::PrintType::Error);
         return;
     }
 
@@ -25,6 +26,9 @@ void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     // defining the location and handling conflicts for the output_file
     std::filesystem::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
     if (out.empty()) return;
+
+    // isolating the original input into a shell-safe path
+    SecureConversionSession session(in, fmt);
 
     // varied on the format, defining the best parameters to fetch to the FFmpeg command
     std::string params;
@@ -63,42 +67,54 @@ void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     }
 
     // constructs the FFmpeg command and then executes
-    std::string cmd = Program::Build::command("ffmpeg", in.string(), out.string(), params);
+    std::string cmd = Program::Build::command("ffmpeg", session.safe_input(), session.safe_output(), params);
     Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
     Program::print(" [~] Status: Converting Audio... [~]\n");
-    int execute = std::system(cmd.c_str());
-    // error catching -_-
-    if (execute == -1) {
+
+    bool success = false; // error catching -_-
+    if (int execute = std::system(cmd.c_str()); execute == -1) {
         // the system shell itself couldn't be started
         std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]" << std::endl;
     } else { // did the command even finish normally
         #ifdef _WIN32
-            int exitCode = execute; 
+            int exitCode = execute;
             if (exitCode == 0) {
                 Program::print("[~] Status: Conversion completed successfully! [~]\n");
+                success = true;
             } else {
-                Program::print(" [!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + " [!]\n", true);
+                Program::print(" [!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + " [!]\n", Program::PrintType::Error);
             }
         #else
             if (WIFEXITED(execute)) {
                 int exitCode = WEXITSTATUS(execute);
                 if (exitCode == 0) { //successful conversion
                     Program::print("[~] Status: Conversion completed successfully! [~]\n");
+                    success = true;
                 } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", true);
+                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", Program::PrintType::Error);
                 }
             } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", true);
+                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", Program::PrintType::Error);
                 Program::print("[~] If you believe this is a bug, please report it. [~]\n"
                                "[~] Run fconvert -h or --help for more instructions. [~]\n");
             }
         #endif
     }
+
+    if (success) { // Move file out of cache to the actual directory with conflict handler name
+        if (session.commit(out)) {
+            Program::print("[~] Status: Conversion completed successfully! [~]\n");
+        } else {
+            Program::print("[!] Error: Failed to safely export output file from sandbox. [!]\n", Program::PrintType::Error);
+        }
+    } else {
+        Program::print("[!] Error: FFmpeg execution failed or terminated prematurely. [!]\n", Program::PrintType::Error);
+    }
 }
 
 void audio() {
 
-    std::string name = Program::Get::input("Audio filename or path: ", false);
+    std::string name = Program::Get::input("Audio filename or path: ");
     std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
         Program::log("[!] Error: Path could not be resolved. [!]");
@@ -106,7 +122,7 @@ void audio() {
     }
 
     // fetch me the desired format w/ safe lowercase conversion
-    std::string fmt = Program::Get::input("Format: ", true);
+    std::string fmt = Program::Get::input("Format: ", Program::Case::Lower);
 
     // why u quitting +@+   jk, just providing a quiting option at anytime(promise u'll come back Q-Q)
     if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {

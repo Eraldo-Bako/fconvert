@@ -1,10 +1,11 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
 #include "video_converter.hpp"
 #include "path_handler.hpp"
 #include "program_handler.hpp"
+#include "secure_conversion_session.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -16,15 +17,17 @@
 
 void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent) {
     if (!Program::Check::ffmpeg()) {
-        Program::print("[!] Error: FFmpeg not found. [!]\n", true);
+        Program::print("[!] Error: FFmpeg not found. [!]\n", Program::PrintType::Error);
         return;
     }
 
     std::filesystem::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
     if (out.empty()) return;
 
+    SecureConversionSession session(in, fmt);
+
     std::string params;
-    if (fmt == "mp4" || fmt == "m4v" || fmt == "f4v") {
+    if (fmt == "mp4" || fmt == "m4v" || fmt == "f4v" || fmt == "mov") {
         if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
         else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
@@ -36,10 +39,6 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
         if (q == 'b')      params = "-c:v libvpx-vp9 -crf 20 -b:v 0 -deadline best -c:a libopus -b:a 192k";
         else if (q == 'q') params = "-c:v libvpx-vp9 -crf 35 -b:v 0 -deadline realtime -c:a libopus -b:a 96k";
         else               params = "-c:v libvpx-vp9 -crf 30 -b:v 0 -deadline good -c:a libopus -b:a 128k";
-    } else if (fmt == "mov") {
-        if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
-        else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     } else if (fmt == "avi") {
         if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a mp3 -b:a 192k";
         else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a mp3 -b:a 128k";
@@ -76,53 +75,63 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
         if (q == 'b')      params = "-c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a pcm_s16le";
         else if (q == 'q') params = "-c:v dnxhd -profile:v dnxhr_lb -pix_fmt yuv422p -c:a pcm_s16le";
         else               params = "-c:v dnxhd -profile:v dnxhr_sq -pix_fmt yuv422p -c:a pcm_s16le";
-    } else {
+    } else { //intentional repetition of the first if block, may change in the future
         if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
         else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     }
 
-    std::string cmd = Program::Build::command("ffmpeg", in.string(), out.string(), params);
+    std::string cmd = Program::Build::command("ffmpeg", session.safe_input(), session.safe_output(), params);
     Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
     Program::print("[~] Status: Converting Video... [~]\n");
-    int execute = std::system(cmd.c_str());
-    // error catching -_-
-    if (execute == -1) { // the system shell itself couldn't be started, critical
+
+    bool success = false; // error catching -_-
+    if (int execute = std::system(cmd.c_str()); execute == -1) { // the system shell itself couldn't be started, critical
         std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]\n";
     } else { // did the command even finish normally
         #ifdef _WIN32
-            int exitCode = execute; 
-            if (exitCode == 0) {
+            if (execute == 0) {
                 std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                success = true;
             } else {
-                std::cerr << " [!] Error: FFmpeg failed with exit code: " << exitCode << std::endl;
+                std::cerr << " [!] Error: FFmpeg failed with exit code: " << execute << std::endl;
             }
         #else
             if (WIFEXITED(execute)) {
-                int exitCode = WEXITSTATUS(execute);
-                if (exitCode == 0) { //successful conversion
+                if (int exitCode = WEXITSTATUS(execute); exitCode == 0) { //successful conversion
                     Program::print("[~] Status: Conversion completed successfully! [~]\n");
+                    success = true;
                 } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", true);
+                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", Program::PrintType::Error);
                 }
             } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", true);
+                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", Program::PrintType::Error);
                 Program::print("[~] If you believe this is a bug, please report it. [~]\n"
                                "[~] Run fconvert -h or --help for more instructions. [~]\n");
             }
         #endif
     }
+
+    if (success) {
+        if (session.commit(out)) {
+            Program::print("[~] Status: Conversion completed successfully! [~]\n");
+        } else {
+            Program::print("[!] Error: Failed to safely export output file from sandbox. [!]\n", Program::PrintType::Error);
+        }
+    } else {
+        Program::print("[!] Error: FFmpeg execution failed or terminated prematurely. [!]\n", Program::PrintType::Error);
+    }
 }
 
 void video() {
-    std::string name = Program::Get::input("Video filename: ", false);
+    std::string name = Program::Get::input("Video filename: ");
     std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
         Program::log("[!] Error: Path could not be resolved. [!]");
         return;
     }
 
-    std::string fmt = Program::Get::input("Format: ", true);
+    std::string fmt = Program::Get::input("Format: ", Program::Case::Lower);
 
     if (fmt == "quit" || fmt == "exit" || fmt == "cancel") {
         Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
@@ -144,7 +153,7 @@ void video() {
         return;
     }
 
-    std::string qual = Program::Get::input("Select Quality ([Q]uick, [D]efault, [B]est): ", true);
+    std::string qual = Program::Get::input("Select Quality ([Q]uick, [D]efault, [B]est): ", Program::Case::Lower);
     if (qual == "quit" || qual == "exit" || qual == "cancel") {
         std::cout << "[!] Successfully stopped the conversion! [!]";
         return;
@@ -153,7 +162,7 @@ void video() {
     if (!qual.empty() && (qual[0] == 'q' || qual[0] == 'd' || qual[0] == 'b'))
         video_convert_logic(in, fmt, qual[0], false);
     else {
-        Program::print("[!] Invalid qualtiy option provided: " + qual + " [!]\nExiting...");
+        Program::print("[!] Invalid quality option provided: " + qual + " [!]\nExiting...");
         return;
     }
 }

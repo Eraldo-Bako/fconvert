@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -9,9 +9,14 @@
 #include <string>
 #include <filesystem>
 
-namespace Program::Make {
+namespace Program {
+
+    enum class TempExist { Create, Copy, Delete };
+
+    namespace Make {
         std::filesystem::path logFile(const std::string& time);
-        std::filesystem::path tempFile(const std::filesystem::path& original_inputPath);
+        std::filesystem::path tempFile(const std::filesystem::path& inputPath, Program::TempExist operation = Program::TempExist::Create, const std::filesystem::path& outputPath = "");
+    }
 }
 
 #endif

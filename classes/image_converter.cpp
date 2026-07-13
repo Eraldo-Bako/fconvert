@@ -1,13 +1,22 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
 #include "image_converter.hpp"
 #include "path_handler.hpp"
 #include "program_handler.hpp"
+#include "secure_conversion_session.hpp"
 
 #include <opencv2/imgcodecs.hpp> // cv::imread, cv::imwrite, and IMWRITE flags
 #include <opencv2/imgproc.hpp>   // cv::cvtColor and cv::COLOR_RGB2BGR
+
+#ifdef HAS_LIBRAW
+#ifdef _WIN32
+    #include <libraw.h>
+#else
+    #include <libraw/libraw.h>
+#endif
+#endif
 
 #include <iostream>
 #include <algorithm>
@@ -18,10 +27,10 @@
 // codecs: libheif libde265 x265
 cv::Mat read_camera_raw(const std::string& raw_path) {
 
-    if (!Program::Check::libraw()) {
-        Program::print("[!] Error: LibRAW not found. [!]\n", true);
+    if (!Program::Check::libraw()) { // if LibRaw is not present/deleted at runtime
+        Program::print("[!] Error: LibRAW not found. [!]\n", Program::PrintType::Error);
         Program::end("[!] This part of the program cannot function without LibRAW. [!]");
-        return cv::Mat(); //shouldnt run, Program::end must always succeed!!!
+        return cv::Mat(); //shouldnt run, Program::end must always succeed!!! if it does run...something is very wrong...
     }
 
     LibRaw processor;
@@ -49,7 +58,7 @@ cv::Mat read_camera_raw(const std::string& raw_path) {
 void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
 
     if (!Program::Check::opencv()) {
-        Program::print("[!] Error: OpenCV not found. [!]\n", true);
+        Program::print("[!] Error: OpenCV not found. [!]\n", Program::PrintType::Error);
         return;
     }
 
@@ -57,23 +66,31 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     std::filesystem::path out = PathHandler::handle_conflicts(PathHandler::get_output_path(in, "." + fmt), silent);
     if (out.empty()) return;
 
+    SecureConversionSession session(in, fmt);
+
     Program::log("[-] Status: Reading the image file. [-]");
     cv::Mat img;
 
-    std::string in_ext = in.extension().string();
+    std::string in_ext = std::filesystem::path(session.safe_input()).extension().string();
     std::transform(in_ext.begin(), in_ext.end(), in_ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     if (in_ext == ".cr2" || in_ext == ".nef" || in_ext == ".arw" || in_ext == ".dng" || in_ext == ".crw") {
+#ifdef HAS_LIBRAW
         Program::log("[-] Status: Developing Camera RAW file via LibRaw. [-]");
-        img = read_camera_raw(in.string());
+        img = read_camera_raw(session.safe_input());
+#else // built w/ -DWITH_LIBRAW=OFF
+        Program::print("[!] Error: This binary was built without LibRAW support. [!]\n", Program::PrintType::Error);
+        Program::end("[!] RAW image loading is disabled. [!]");
+        return; //never reached bc of end() but good to have
+#endif
     } else if (in_ext == ".psd" || in_ext == ".svg" || in_ext == ".pdf" || 
                in_ext == ".gif" || in_ext == ".ico" || in_ext == ".xcf" || 
                in_ext == ".eps" || in_ext == ".ai" || in_ext == ".heic" || in_ext == ".heif") {
         
         Program::log("[-] Status: OpenCV cannot read this format. Invoking ImageMagick fallback reader... [-]");
-        std::string temp_in_png = in.parent_path().string() + "/.fconvert_temp_in_holder.png";
+        std::string temp_in_png = (std::filesystem::path(session.safe_input()).parent_path()/ "temp_in_holder.png").string();
         
-        std::string cmd = "magick \"" + in.string() + "[0]\" \"" + temp_in_png + "\"";
+        std::string cmd = "magick \"" + session.safe_input() + "[0]\" \"" + temp_in_png + "\"";
         int result = std::system(cmd.c_str());
         
         if (result == 0 && std::filesystem::exists(temp_in_png)) {
@@ -83,7 +100,7 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
             Program::print(" [!] Error: ImageMagick failed to read '" + in_ext + "'. [!]\n");
         }
     } else {
-        img = cv::imread(in.string(), cv::IMREAD_UNCHANGED);
+        img = cv::imread(session.safe_input(), cv::IMREAD_UNCHANGED);
     }
 
     if (img.empty()) {
@@ -91,7 +108,7 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
         return;
     }
 
-    Program::log("[-] Status: Converting to fromat:'" + fmt + "' [-]");
+    Program::log("[-] Status: Converting to format:'" + fmt + "' [-]");
     std::vector<int> p; // bpm* uses empty vector
     bool external_write = false;
     if (fmt == "jpg" || fmt == "jpeg") { 
@@ -117,45 +134,57 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
             || fmt == "gif" || fmt == "ico" || fmt == "xcf" 
             || fmt == "eps" || fmt == "ai") external_write = true;
 
+    bool conversion_success = false;
     if (external_write) { // fallback using imagemagic + opencv
         if (!Program::Check::imghost()) {
-            Program::print("[!] Error: ImageMagick or Ghostscript not found. [!]\n", true);
+            Program::print("[!] Error: ImageMagick or Ghostscript not found. [!]\n", Program::PrintType::Error);
             return;
         }
         Program::log("[-] Status: Writing temporary file. [-]");
-        std::string temp_png = out.parent_path().string() + "/.temp_holder.png";
+        std::string temp_png = (std::filesystem::path(session.safe_output()).parent_path() / "temp_holder.png").string();
         cv::imwrite(temp_png, img); // temp png using opencv
         
         Program::log("[-] Status: Writing the file. [-]");
-        std::string cmd = "magick " + temp_png + " " + out.string();
+        std::string cmd = "magick " + temp_png + " " + session.safe_output();
         int result = std::system(cmd.c_str()); // using imagemagick to wrap it into svg
         Program::log("[-] Status: Cleaning temporary files. [-]");
         std::filesystem::remove(temp_png);
 
         if (result != 0) Program::print(" [!] Error: ImageMagick failed to convert to '" 
-                    + fmt + "' Make sure 'imagemagick' is installed. [!]\n", true);
-        if (result == 0) 
-            Program::print("[+] Saved Wrapped Vector: " + out.filename().string() + " [+]\n");
-        return;
+                    + fmt + "' Make sure 'imagemagick' is installed. [!]\n", Program::PrintType::Error);
+        else {
+            Program::print("[+] Saved Wrapped Vector: " + session.safe_output() + " [+]\n");
+            conversion_success = true;
+        }
+    } else {
+        Program::log("[-] Status: Writing the file. [-]");
+        if (cv::imwrite(session.safe_output(), img, p)) {
+            Program::print("[+] Saved: " + session.safe_output() + " [+]\n");
+            conversion_success = true;
+        }
     }
 
-    Program::log("[-] Status: Writing the file. [-]");
-    if (cv::imwrite(out.string(), img, p)) {
-        Program::print("[+] Saved: " + out.filename().string() + " [+]\n");
-    }
+    if (conversion_success) {
+
+        if (session.commit(out)) Program::print("[+] Saved: " + out.filename().string() + " [+]\n");
+        else Program::print("[!] Error: Failed to safely export output file from sandbox. [!]\n", Program::PrintType::Error);
+
+    } else Program::print("[!] Error: Image writing or processing failed. [!]\n", Program::PrintType::Error);
+
 }
 
 void image() {
 
-    std::string name = Program::Get::input("Image filename or path: ", false);
+    std::string name = Program::Get::input("Image filename or path: ");
     std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
         Program::log("[!] Error: Path could not be resolved. [!]");
-        std::cout << " [!] File not found. [!]\n";
+        Program::print("[!] File not found. [!]\n", Program::PrintType::Error);
+        std::cerr << std::flush;
         return;
     }
 
-    std::string fmt = Program::Get::input("Format: ", true);
+    std::string fmt = Program::Get::input("Format: ", Program::Case::Lower);
     if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
         Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
         std::cout << "[!] Successfully stopped the conversion! [!]";
@@ -168,7 +197,7 @@ void image() {
 
         if (targetIsRAWImage) {
             Program::log("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]");
-            Program::print("[!] Error: Detected target is a RAW image format: '" + fmt + "' [!]", true);
+            Program::print("[!] Error: Detected target is a RAW image format: '" + fmt + "' [!]", Program::PrintType::Error);
             return;
         }
     }

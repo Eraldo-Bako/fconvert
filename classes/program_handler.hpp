@@ -1,4 +1,4 @@
-// fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -8,33 +8,27 @@
 
 #include <filesystem>
 #include <string>
+#include <string_view>
 
 namespace Program {
-    inline bool debug_mode = false;
+
+    enum class PrintType { Normal, Error };
+    enum class LogDest { None, Console, File, All };
+
     inline std::filesystem::path activeLogPath = "";
+    inline bool debug_mode = false;
 
     [[noreturn]] void end(const std::string& msg);
-    void log(const std::string& msg, bool print = true, bool write = true);
-    void print(const std::string& msg, bool error = false);
-    
+    void log(const std::string_view msg, LogDest dest = LogDest::All);
+    void print(const std::string_view msg, PrintType type = PrintType::Normal);
+    void clearCache();
+
 }
 
 #include "program/build.hpp"
 #include "program/check.hpp"
+#include "program/color.hpp"
 #include "program/get.hpp"
 #include "program/make.hpp"
 
 #endif
-
-// Program::debug_mode
-// Program::activeLogPath
-// Program::log("Hello")
-
-
-// Program::Get::currentTimestamp()
-// Program::Get::input("What is your input? ", lower = true)
-
-// Program::Make::tempFile(path/to/original/file.ext)
-// Program::Make::logFile("formatted time")
-
-// Program::Build::cmd("ffmpeg", "file.png", "file.jpg", "-flags --and-extra --stuff")
