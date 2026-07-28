@@ -12,6 +12,7 @@ namespace Program::Check {
         bool is_running_as_root();
         bool command_exists(const std::string& win_cmd, const std::string& nix_cmd);
         bool ffmpeg();
+        bool vtracer();
         bool imghost();
         bool libraw();
         bool opencv();

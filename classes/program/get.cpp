@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cctype>
 #include <ctime>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 
@@ -103,4 +104,29 @@ std::string Program::Get::input(const std::string& prompt, Program::Case lower, 
 
     Program::log("[-] Status: Successfully acquired input: " + input + " [-]");
     return input;
+}
+
+std::string Program::Get::toolPath(const std::string& baseToolName) {
+#if defined(_WIN32) || defined(__CYGWIN__)
+    std::string toolName = baseToolName + ".exe";
+#else
+    std::string toolName = baseToolName;
+#endif
+
+    // checks AppImage runtime environment
+    const char* appdir = std::getenv("APPDIR");
+    if (appdir != nullptr) {
+        std::filesystem::path bundledPath = std::filesystem::path(appdir) / "usr" / "bin" / toolName;
+        if (std::filesystem::exists(bundledPath)) {
+            return "\"" + bundledPath.string() + "\"";
+        }
+    }
+
+    // maybe in the future, bundling runtime stuff for windows too
+    std::filesystem::path localBundled = std::filesystem::path("bin") / toolName;
+    if (std::filesystem::exists(localBundled)) {
+        return "\"" + std::filesystem::absolute(localBundled).string() + "\"";
+    }
+
+    return toolName;
 }

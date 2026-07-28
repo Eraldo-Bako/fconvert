@@ -8,7 +8,10 @@
 
 #include <filesystem>
 #include <string>
-#include <string_view>
+#include <libintl.h>
+#include <clocale>
+
+#define _(String) gettext(String)
 
 namespace Program {
 
@@ -19,8 +22,8 @@ namespace Program {
     inline bool debug_mode = false;
 
     [[noreturn]] void end(const std::string& msg);
-    void log(const std::string_view msg, LogDest dest = LogDest::All);
-    void print(const std::string_view msg, PrintType type = PrintType::Normal);
+    void log(const std::string& msg, LogDest dest = LogDest::All);
+    void print(const std::string& msg, PrintType type = PrintType::Normal);
     void clearCache();
 
 }

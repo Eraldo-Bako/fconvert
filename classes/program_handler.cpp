@@ -17,17 +17,17 @@ void Program::clearCache() {
             ec.clear();
             std::filesystem::remove_all(entry.path(), ec);
             if (ec)
-                Program::print("[!] Failed to delete: " + entry.path().string() + " (" + ec.message() + ")\n", Program::PrintType::Error);
+                Program::print(_("[!] Failed to delete: ") + entry.path().string() + " (" + ec.message() + ")\n", Program::PrintType::Error);
         }
     }
 }
 
-void Program::log(const std::string_view msg, const Program::LogDest dest) {
+void Program::log(const std::string& msg, const Program::LogDest dest) {
 
     const bool shouldPrint = (Program::debug_mode && (dest == Program::LogDest::Console || dest == Program::LogDest::All));
     const bool shouldWrite = (dest == Program::LogDest::File || dest == Program::LogDest::All);
 
-    if (shouldPrint) std::clog << Program::Color::CYAN << "[DEBUG] ------ " << msg << Program::Color::RESET << "\n" << std::flush;
+    if (shouldPrint) std::clog << Program::Color::CYAN << "[DEBUG] ------ " << _(msg.c_str()) << Program::Color::RESET << "\n" << std::flush;
 
     if (shouldWrite) {
         if (std::ofstream logFile(Program::activeLogPath, std::ios::app); logFile.is_open()) {
@@ -39,7 +39,7 @@ void Program::log(const std::string_view msg, const Program::LogDest dest) {
             logFile << msg << "\n";
         } else {
             std::cerr << Program::Color::RED
-                      << "[!] Error: Could not open log file! [!]\n"
+                      << _("[!] Error: Could not open log file! [!]\n")
                       << Program::Color::RESET << std::flush;
         }
     }
@@ -48,20 +48,20 @@ void Program::log(const std::string_view msg, const Program::LogDest dest) {
 // aggressive, using this as a last resort if sth goes rly bad
 void Program::end(const std::string& msg) {
 
-    std::cerr << msg << std::endl;
+    std::cerr << _(msg.c_str()) << std::endl;
     std::cerr << Program::Color::RED
-              << "[!!] Critical Warning: Forcefully ending the program. [!!]\n"
+              << _("[!!] Critical Warning: Forcefully ending the program. [!!]\n")
               << Program::Color::RESET << std::flush;
 
     try {
         Program::log(msg);
     } catch (const std::exception& e) {
         std::cerr << Program::Color::RED
-                  << "[!!] Failed to write to log file: " << e.what() << "\n"
+                  << _("[!!] Failed to write to log file: ") << e.what() << "\n"
                   << Program::Color::RESET << std::flush;
     } catch (...) {
         std::cerr << Program::Color::RED
-                  << "[!!] Failed to write to log file due to an unknown error.\n"
+                  << _("[!!] Failed to write to log file due to an unknown error.\n")
                   << Program::Color::RESET << std::flush;
     }
     
@@ -70,13 +70,13 @@ void Program::end(const std::string& msg) {
 
 }
 
-void Program::print(const std::string_view msg, PrintType type) {
+void Program::print(const std::string& msg, PrintType type) {
 
     if (type != PrintType::Error)
-        std::cout << Program::Color::GREEN << msg << Program::Color::RESET << std::flush;
+        std::cout << Program::Color::GREEN << _(msg.c_str()) << Program::Color::RESET << std::flush;
     else {
         std::cout << std::flush;
-        std::cerr << Program::Color::RED << msg << Program::Color::RESET << std::flush;
+        std::cerr << Program::Color::RED << _(msg.c_str()) << Program::Color::RESET << std::flush;
     }
 
     std::string logMsg = (type != PrintType::Error) ? "[fconvert] - " : "[fconvert Error] - ";

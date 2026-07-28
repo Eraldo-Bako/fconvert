@@ -44,6 +44,10 @@ bool Program::Check::ffmpeg() {
     return Program::Check::command_exists("where ffmpeg", "command -v ffmpeg");
 }
 
+bool Program::Check::vtracer() {
+    return Program::Check::command_exists("where vtracer", "command -v vtracer");
+}
+
 bool Program::Check::imghost() {
     return Program::Check::command_exists("where magick", "command -v magick") && 
            Program::Check::command_exists("where gswin64c", "command -v gs");

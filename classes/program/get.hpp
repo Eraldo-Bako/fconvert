@@ -10,7 +10,6 @@
 #include <string>
 
 namespace Program {
-    // currently only being use by ::Get, but may move to Program:: once it is used by multiple subclasses
     enum class Case { Normal, Lower, Upper }; // upper is unused atm, but it is there if I want to implement it
     enum class InputType { noWS, WS };
 
@@ -18,6 +17,7 @@ namespace Program {
         std::filesystem::path logDirectory();
         std::string currentTimestamp();
         std::string input(const std::string& prompt, Case lower = Program::Case::Normal, InputType useWS = Program::InputType::WS);
+        std::string toolPath(const std::string& baseToolName);
     }
 }
 

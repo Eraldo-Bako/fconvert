@@ -9,14 +9,8 @@
 #include <string>
 #include <filesystem>
 
-namespace Program {
-
-    enum class TempExist { Create, Copy, Delete };
-
-    namespace Make {
-        std::filesystem::path logFile(const std::string& time);
-        std::filesystem::path tempFile(const std::filesystem::path& inputPath, Program::TempExist operation = Program::TempExist::Create, const std::filesystem::path& outputPath = "");
-    }
+namespace Program::Make {
+    std::filesystem::path logFile(const std::string& time);
 }
 
 #endif

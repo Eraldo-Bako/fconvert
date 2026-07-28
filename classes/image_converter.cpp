@@ -24,6 +24,7 @@
 #include <set>
 
 // sudo pacman -S libraw imagemagick ghostscript 
+// AUR: vtracer
 // codecs: libheif libde265 x265
 cv::Mat read_camera_raw(const std::string& raw_path) {
 
@@ -55,7 +56,7 @@ cv::Mat read_camera_raw(const std::string& raw_path) {
     return bgr_mat; // full-res image matrix
 }
 
-void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
+void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent, Image::SVG vector_precision) {
 
     if (!Program::Check::opencv()) {
         Program::print("[!] Error: OpenCV not found. [!]\n", Program::PrintType::Error);
@@ -76,6 +77,10 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
 
     if (in_ext == ".cr2" || in_ext == ".nef" || in_ext == ".arw" || in_ext == ".dng" || in_ext == ".crw") {
 #ifdef HAS_LIBRAW
+        if (!Program::Check::libraw()) {
+            Program::print("[!] Error: LibRAW not found. [!]\n", Program::PrintType::Error);
+            return;
+        }
         Program::log("[-] Status: Developing Camera RAW file via LibRaw. [-]");
         img = read_camera_raw(session.safe_input());
 #else // built w/ -DWITH_LIBRAW=OFF
@@ -87,10 +92,14 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
                in_ext == ".gif" || in_ext == ".ico" || in_ext == ".xcf" || 
                in_ext == ".eps" || in_ext == ".ai" || in_ext == ".heic" || in_ext == ".heif") {
         
-        Program::log("[-] Status: OpenCV cannot read this format. Invoking ImageMagick fallback reader... [-]");
+        Program::log("[-] Status: OpenCV cannot read this format. Invoking foreign fallback reader... [-]");
         std::string temp_in_png = (std::filesystem::path(session.safe_input()).parent_path()/ "temp_in_holder.png").string();
         
-        std::string cmd = "magick \"" + session.safe_input() + "[0]\" \"" + temp_in_png + "\"";
+        std::string cmd;
+        // magick
+        if (in_ext != ".gif") cmd = Program::Build::command("magick", session.safe_input(), temp_in_png, "layered"); // general
+        else cmd = Program::Build::command("magick", session.safe_input(), temp_in_png, "fast"); // for gifs only frame 0
+
         int result = std::system(cmd.c_str());
         
         if (result == 0 && std::filesystem::exists(temp_in_png)) {
@@ -135,25 +144,127 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
             || fmt == "eps" || fmt == "ai") external_write = true;
 
     bool conversion_success = false;
-    if (external_write) { // fallback using imagemagic + opencv
-        if (!Program::Check::imghost()) {
-            Program::print("[!] Error: ImageMagick or Ghostscript not found. [!]\n", Program::PrintType::Error);
-            return;
-        }
+    if (external_write) { // fallback using imagemagic + opencv or vtracer
+
         Program::log("[-] Status: Writing temporary file. [-]");
         std::string temp_png = (std::filesystem::path(session.safe_output()).parent_path() / "temp_holder.png").string();
         cv::imwrite(temp_png, img); // temp png using opencv
+        std::string externalType;
+        std::string cmd;
+
+        if (vector_precision != Image::SVG::INACTIVE) { // vtracer
+
+            if (!Program::Check::vtracer()) {
+                Program::print("[!] Error: VTracer not found. [!]\n", Program::PrintType::Error);
+                return;
+            }
+
+            std::string tempParams;
+            switch (vector_precision) {
+                case Image::SVG::VECTOR:
+                    tempParams = "--colormode bw";
+                    break;
+                case Image::SVG::CVECTOR:
+                    tempParams = "--colormode color --color_precision 8 --gradient_step 80 --filter_speckle 16";
+                    break;
+                case Image::SVG::BIMGV:
+                    tempParams = "--colormode color --color_precision 8 --gradient_step 20 --filter_speckle 8";
+                    break;
+                case Image::SVG::PIMGV:
+                    tempParams = "--colormode color --color_precision 8 --gradient_step 1 --filter_speckle 1";
+                    break;
+                case Image::SVG::CUSTOM: {
+                    Program::log("[-] Status: Initiating custom profile setting. [-]");
+
+                    bool color;
+                    std::string userChoice = Program::Get::input("Do you want color in your vector tracing? [Y/n] ", Program::Case::Lower, Program::InputType::noWS);
+                    if (userChoice.empty()) color = true;
+                    else color = (userChoice[0] != 'n');
+                    
+                    if (color) {
+                        tempParams = "--colormode color";
+
+                        int color_precision = 8;
+                        while(true) {
+                            std::string input = Program::Get::input("Specify the color precision in vector tracing [1-8]: ", Program::Case::Lower, Program::InputType::noWS);
+                            if (input.empty()) break;
+                            
+                            if (input == "q" || input == "quit" || input == "exit" || input == "cancel") {
+                                Program::end("[!!] Operation quit by user. Exiting... [!!]");
+                                break; // doesnt resolve
+                            }
+
+                            try {
+                                color_precision = std::stoi(input);
+                                if (color_precision >= 1 && color_precision <= 8) break;
+                            } catch (...) {}
+                            Program::print("[!] Error: Color Precision needs to be a value between 1-8. [!]", Program::PrintType::Error);
+                        }
+                        tempParams += " --color_precision " + std::to_string(color_precision);
+
+                        int gradient_step = 20;
+                        while(true) {
+                            std::string input = Program::Get::input("Specify the gradient step in vector tracing [0-255]: ", Program::Case::Lower, Program::InputType::noWS);
+                            if (input.empty()) break;
+                            
+                            if (input == "q" || input == "quit" || input == "exit" || input == "cancel") {
+                                Program::end("[!!] Operation quitted by user. Exiting... [!!]");
+                                break; // doesnt resolve
+                            }
+
+                            try {
+                                gradient_step = std::stoi(input);
+                                if (gradient_step >= 0 && gradient_step <= 255) break;
+                            } catch (...) {}
+                            Program::print("[!] Error: Gradient Step needs to be a value between 0-255. [!]", Program::PrintType::Error);
+                        }
+                        tempParams += " --gradient_step " + std::to_string(gradient_step);
+
+                        int filter_speckle = 8;
+                        while(true) {
+                            std::string input = Program::Get::input("Specify the amount of filter speckle in vector tracing [0-16]: ", Program::Case::Lower, Program::InputType::noWS);
+                            if (input.empty()) break;
+                            
+                            if (input == "q" || input == "quit" || input == "exit" || input == "cancel") {
+                                Program::end("[!!] Operation quit by user. Exiting... [!!]");
+                                break; // doesnt resolve
+                            }
+
+                            try {
+                                filter_speckle = std::stoi(input);
+                                if (filter_speckle >= 0 && filter_speckle <= 16) break;
+                            } catch (...) {}
+                            Program::print("[!] Error: Filter Speckle needs to be a value between 0-16. [!]", Program::PrintType::Error);
+                        }
+                        tempParams += " --filter_speckle " + std::to_string(filter_speckle);
+                    } else tempParams = "--colormode bw";
+                    break;
+                }
+                default: break;
+            }
+            externalType = "VTracer";
+            cmd = Program::Build::command("vtracer", temp_png, session.safe_output(), tempParams);
+        } else { //magick
+            if (!Program::Check::imghost()) {
+                Program::print("[!] Error: ImageMagick or Ghostscript not found. [!]\n", Program::PrintType::Error);
+                return;
+            }
+
+            externalType = "ImageMagick";
+            
+            Program::log("[-] Status: Writing the file. [-]");
+            if (in_ext != ".gif") cmd = Program::Build::command("magick", temp_png, session.safe_output(), "layered");
+            else cmd = Program::Build::command("magick", temp_png, session.safe_output(), "fast"); // gifs
+        }
         
-        Program::log("[-] Status: Writing the file. [-]");
-        std::string cmd = "magick " + temp_png + " " + session.safe_output();
         int result = std::system(cmd.c_str()); // using imagemagick to wrap it into svg
         Program::log("[-] Status: Cleaning temporary files. [-]");
         std::filesystem::remove(temp_png);
 
-        if (result != 0) Program::print(" [!] Error: ImageMagick failed to convert to '" 
-                    + fmt + "' Make sure 'imagemagick' is installed. [!]\n", Program::PrintType::Error);
+        if (result != 0) Program::print(" [!] Error: " + externalType + " failed to convert to '" 
+                    + fmt + " [!]\n", Program::PrintType::Error);
         else {
-            Program::print("[+] Saved Wrapped Vector: " + session.safe_output() + " [+]\n");
+            Program::print("[+] Saved Wrapped Image: " + session.safe_output() + " [+]\n");
             conversion_success = true;
         }
     } else {
@@ -167,9 +278,9 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     if (conversion_success) {
 
         if (session.commit(out)) Program::print("[+] Saved: " + out.filename().string() + " [+]\n");
-        else Program::print("[!] Error: Failed to safely export output file from sandbox. [!]\n", Program::PrintType::Error);
+        else Program::print("[!!] Error: Failed to safely export output file from the internal sandbox. [!!]\n", Program::PrintType::Error);
 
-    } else Program::print("[!] Error: Image writing or processing failed. [!]\n", Program::PrintType::Error);
+    } else Program::print("[!!] Error: Image writing or processing failed. [!!]\n", Program::PrintType::Error);
 
 }
 
@@ -214,6 +325,69 @@ void image() {
                   << "\n[-] If you believe this is a bug, make sure to report it. [-]\n";
         return;
     }
+    
+    Image::SVG SVG_Precision = Image::SVG::INACTIVE; // when non-vector conversion
+    {
+        std::string in_ext = in.extension().string();
+        bool targetIsVector = (fmt == "svg" || fmt == "ai" || fmt == "pdf");
+        if (targetIsVector) {
+            Program::log("[-] Detected: Converting to a vector-based format! [-]");
+            std::string prompt = 
+            "[-] Converting to " + fmt + ". [-]\n"
+            "[-] Select Profile: \n"
+            "    1  Vector Tracing\n"
+            "    2  Colorful Vector Tracing\n"
+            "   [3] Basic Image Precision\n"
+            "    4  Perfect Image Precision\n"
+            "    5  Custom\n"
+            "Choice [3]: ";
 
-    image_convert_logic(in, fmt, false);
+            while (true) {
+                std::string input = Program::Get::input(prompt, Program::Case::Lower, Program::InputType::noWS);
+
+                if (input.empty()) {
+                    SVG_Precision = Image::SVG::BIMGV;
+                    break;
+                }
+
+                if (input == "q" || input == "quit" || input == "exit" || input == "cancel") {
+                    SVG_Precision = Image::SVG::QUIT;
+                    break;
+                }
+
+                bool valid_choice = true;
+                try {
+                    int choice = std::stoi(input);
+                    switch (choice) {
+                        case 1:
+                            SVG_Precision = Image::SVG::VECTOR;
+                            break;
+                        case 2:
+                            SVG_Precision = Image::SVG::CVECTOR;
+                            break;
+                        case 3:
+                            SVG_Precision = Image::SVG::BIMGV;
+                            break;
+                        case 4:
+                            SVG_Precision = Image::SVG::PIMGV;
+                            break;
+                        case 5:
+                            SVG_Precision = Image::SVG::CUSTOM;
+                            break;
+                        default:
+                            valid_choice = false;
+                            break;
+                    }
+                } catch (...) {
+                    valid_choice = false;
+                }
+
+                if (valid_choice) break;
+
+                Program::log("[!] Invalid selection. Please enter a number between 1 and 5. [!]");
+            }
+        }
+    }
+
+    if (SVG_Precision != Image::SVG::QUIT) image_convert_logic(in, fmt, false, SVG_Precision);
 }

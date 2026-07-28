@@ -110,11 +110,11 @@ void print_banner() {
  | || (_| (_) | | | \ V /  __/ |  | |_ 
  |_| \___\___/|_| |_|\_/ \___|_|   \__\)";
     if (Program::debug_mode) std::cout << "/2.4.0" << std::flush;
-    std::cout << std::endl << R"(
+    std::cout << std::endl << std::flush << _(R"(
  ----------------------- fconvert - File Converter ----------------------
  --- A fast C++ CLI converter for Images, Videos, Audios, and eBooks! ---
  ------------------------------------------------------------------------
-    )" << std::flush;
+    )") << std::flush;
     Program::log("[~] Detected: Debug mode active. [~]", Program::LogDest::Console);
     std::cout << "\n";
 }
@@ -163,42 +163,42 @@ int main(int argc, char* argv[]) {
     if (Program::Check::is_running_as_root()) {
         std::cout << Program::Color::RED
                   << "\n\n=================================================================\n"
-                  << "[CRITICAL WARNING] fconvert is running with elevated privileges.\n"
+                  << _("[CRITICAL WARNING] fconvert is running with elevated privileges.\n")
                   << "=================================================================\n\n"
-                  << "Executing file conversions as root bypasses vital OS safeguards.\n"
-                  << "Malformed files or unexpected behavior CAN irreversibly corrupt\n"
-                  << "system binaries or compromise OS integrity.\n\n"
+                  << _("Executing file conversions as root bypasses vital OS safeguards.\n")
+                  << _("Malformed files or unexpected behavior CAN irreversibly corrupt\n")
+                  << _("system binaries or compromise OS integrity.\n\n")
                   << "=================================================================\n\n"
-                  << "If you do not know what you are doing or what is happening,\n"
-                  << "abort this operation immediately to prevent startup!\n\n"
+                  << _("If you do not know what you are doing or what is happening,\n")
+                  << _("abort this operation immediately to prevent startup!\n\n")
                   << "=================================================================\n"
                   << Program::Color::RESET;
         std::string confirmation1;
-        std::cout << "Type 'YES, I ACCEPT THE RISK - PROCEED' to proceed: ";
+        std::cout << std::flush << _("Type") << " 'YES, I ACCEPT THE RISK - PROCEED' " << _("to proceed: ");
         std::getline(std::cin, confirmation1);
 
         if (confirmation1 != "YES, I ACCEPT THE RISK - PROCEED") {
             std::cout << Program::Color::YELLOW
-                      << "[~] Operation successfully aborted. [~]\n"
-                      << "[-] Never do that again! [-]\n";
+                      << _("[~] Operation successfully aborted. [~]\n")
+                      << _("[-] Never do that again! [-]\n");
             return 0;
         }
 
         std::string confirmation2;
-        std::cout << Program::Color::YELLOW << "Are you sure about that?\n"
-                  << Program::Color::RESET << "Type 'PROCEED' to proceed: ";
+        std::cout << Program::Color::YELLOW << _("Are you sure about that?\n")
+                  << Program::Color::RESET << _("Type ") << "'PROCEED'" << _(" to proceed: ");
         std::getline(std::cin, confirmation2);
 
         if (confirmation2 != "PROCEED") {
             std::cout << Program::Color::YELLOW
-                      << "[~] Operation successfully aborted. [~]\n"
-                      << "[-] Never do that again! OKAY? [-]\n";
+                      << _("[~] Operation successfully aborted. [~]\n")
+                      << _("[-] Never do that again! M'KAY? [-]\n");
             return 0;
         }
 
         std::cout << Program::Color::YELLOW
-                  << "[!] Bootstrapping execution context with root clearance...\n"
-                  << "[-] Status: You are on your own now! [-]\n"
+                  << _("[!] Bootstrapping execution context with root clearance...\n")
+                  << _("[-] Status: You are on your own now! [-]\n")
                   << Program::Color::RESET;
 
     }
@@ -323,7 +323,12 @@ int main(int argc, char* argv[]) {
         } else if (targetIsAudio) {
             audio_convert_logic(in, quick_ext, true);
         } else if (targetIsImage) {
-            image_convert_logic(in, quick_ext, true);
+            bool targetIsVector = (quick_ext == "svg" || quick_ext == "ai" || quick_ext == "pdf");
+            if (targetIsVector) {
+                Program::log("[-] Detected: Converting to a vector-based format! [-]");
+                Program::log("[~] Status: Defaulting to color-based vector tracing! [~]");
+                image_convert_logic(in, quick_ext, true, Image::SVG::CVECTOR);
+            } else image_convert_logic(in, quick_ext, true);
         } else if (targetIsDOC) {
             ebook_convert_logic(in, quick_ext, true);
         } else {

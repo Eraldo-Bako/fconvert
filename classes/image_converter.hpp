@@ -11,8 +11,12 @@
 
 #include <opencv2/core.hpp> // #include <opencv2/opencv.hpp>
 
+namespace Image {
+    enum class SVG { VECTOR, CVECTOR, BIMGV, PIMGV, CUSTOM, INACTIVE, QUIT };
+}
+
 cv::Mat read_camera_raw(const std::string& raw_path);
-void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
+void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent, Image::SVG vector_precision = Image::SVG::INACTIVE);
 void image();
 
 #endif

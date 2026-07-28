@@ -8,7 +8,26 @@
 #include <iostream>
 #include <set>
 
-std::filesystem::path PathHandler::resolve_input(const std::string& filename) {
+std::filesystem::path PathHandler::resolve_input(const std::string& input_filename) {
+
+    std::string filename = input_filename;
+
+    // trims leading whitespace
+    auto start = filename.find_first_not_of(" \t\r\n");
+    if (start == std::string::npos) filename = "";
+    else {
+        auto end = filename.find_last_not_of(" \t\r\n");
+        filename = filename.substr(start, end - start + 1);
+    }
+
+    // remove single or double quotes added by terminal drag n`drop
+    if (filename.size() >= 2) {
+        char front = filename.front();
+        char back = filename.back();
+        if ((front == '\'' && back == '\'') || (front == '"' && back == '"'))
+            filename = filename.substr(1, filename.size() - 2);
+    }
+
     // self-explanatory, read the Program::log calls if needed
     Program::log("[-] Searching for the file: " + filename + " [-]");
     std::filesystem::path p(filename);
