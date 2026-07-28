@@ -9,7 +9,8 @@
 #include <string>
 
 namespace Program::Build {
-        std::string command(const std::string& type, const std::string& input, const std::string& output, const std::string& params);
+        enum class cmdType { FFmpeg, Magick, VTracer, Pandoc, STB };
+        std::string command(const cmdType type, const std::string& input, const std::string& output, const std::string& params);
 }
 
 

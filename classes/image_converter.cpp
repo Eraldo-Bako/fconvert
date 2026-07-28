@@ -97,8 +97,8 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent,
         
         std::string cmd;
         // magick
-        if (in_ext != ".gif") cmd = Program::Build::command("magick", session.safe_input(), temp_in_png, "layered"); // general
-        else cmd = Program::Build::command("magick", session.safe_input(), temp_in_png, "fast"); // for gifs only frame 0
+        if (in_ext != ".gif") cmd = Program::Build::command(Program::Build::cmdType::Magick, session.safe_input(), temp_in_png, "layered"); // general
+        else cmd = Program::Build::command(Program::Build::cmdType::Magick, session.safe_input(), temp_in_png, "fast"); // for gifs only frame 0
 
         int result = std::system(cmd.c_str());
         
@@ -243,7 +243,7 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent,
                 default: break;
             }
             externalType = "VTracer";
-            cmd = Program::Build::command("vtracer", temp_png, session.safe_output(), tempParams);
+            cmd = Program::Build::command(Program::Build::cmdType::VTracer, temp_png, session.safe_output(), tempParams);
         } else { //magick
             if (!Program::Check::imghost()) {
                 Program::print("[!] Error: ImageMagick or Ghostscript not found. [!]\n", Program::PrintType::Error);
@@ -253,8 +253,8 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent,
             externalType = "ImageMagick";
             
             Program::log("[-] Status: Writing the file. [-]");
-            if (in_ext != ".gif") cmd = Program::Build::command("magick", temp_png, session.safe_output(), "layered");
-            else cmd = Program::Build::command("magick", temp_png, session.safe_output(), "fast"); // gifs
+            if (in_ext != ".gif") cmd = Program::Build::command(Program::Build::cmdType::Magick, temp_png, session.safe_output(), "layered");
+            else cmd = Program::Build::command(Program::Build::cmdType::Magick, temp_png, session.safe_output(), "fast"); // gifs
         }
         
         int result = std::system(cmd.c_str()); // using imagemagick to wrap it into svg

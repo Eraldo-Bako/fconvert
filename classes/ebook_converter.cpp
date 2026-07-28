@@ -60,7 +60,7 @@ bool EbookConverter::convert(const std::filesystem::path& input, const std::stri
         args += " --split-level=1 --epub-chapter-level=1";
     }
 
-    std::string cmd = Program::Build::command("pandoc", session.safe_input(), session.safe_output(), args);
+    std::string cmd = Program::Build::command(Program::Build::cmdType::Pandoc, session.safe_input(), session.safe_output(), args);
     Program::log("[-] Status: Executing Ebook Conversion: " + cmd + " [-]");
     if (std::system(cmd.c_str()) == 0) {
         if (session.commit(output)) {

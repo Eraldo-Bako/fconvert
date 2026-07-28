@@ -81,7 +81,7 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     }
 
-    std::string cmd = Program::Build::command("ffmpeg", session.safe_input(), session.safe_output(), params);
+    std::string cmd = Program::Build::command(Program::Build::cmdType::FFmpeg, session.safe_input(), session.safe_output(), params);
     Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
     Program::print("[~] Status: Converting Video... [~]\n");
 

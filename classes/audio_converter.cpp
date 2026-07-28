@@ -67,7 +67,7 @@ void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     }
 
     // constructs the FFmpeg command and then executes
-    std::string cmd = Program::Build::command("ffmpeg", session.safe_input(), session.safe_output(), params);
+    std::string cmd = Program::Build::command(Program::Build::cmdType::FFmpeg, session.safe_input(), session.safe_output(), params);
     Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
     Program::print(" [~] Status: Converting Audio... [~]\n");
 

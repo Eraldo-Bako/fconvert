@@ -10,11 +10,11 @@
 #include <iostream>
 
 
-std::string Program::Build::command(const std::string& type, const std::string& input, const std::string& output, const std::string& params) {
+std::string Program::Build::command(const Program::Build::cmdType type, const std::string& input, const std::string& output, const std::string& params) {
     std::string cleanInput = std::filesystem::path(input).make_preferred().string();
     std::string cleanOutput = std::filesystem::path(output).make_preferred().string();
     
-    if (type == "ffmpeg") {
+    if (type == Program::Build::cmdType::FFmpeg) {
         Program::log("[~] Status: Constructing the FFmpeg command for conversion. [~]");
         std::string ffmpegPATH = Program::Get::toolPath("ffmpeg");
 
@@ -22,7 +22,7 @@ std::string Program::Build::command(const std::string& type, const std::string& 
                cleanInput + "\" " + 
                params + " \"" + 
                cleanOutput + "\" -y -loglevel error -stats";
-    } else if (type == "pandoc") {
+    } else if (type == Program::Build::cmdType::Pandoc) {
         Program::log("[~] Status: Constructing the Pandoc command for conversion. [~]");
         std::string pandocPATH = Program::Get::toolPath("pandoc");
 
@@ -30,7 +30,7 @@ std::string Program::Build::command(const std::string& type, const std::string& 
                cleanInput + "\" " + 
                params + " -o \"" + 
                cleanOutput + "\"";
-    } else if (type == "magick") {
+    } else if (type == Program::Build::cmdType::Magick) {
         Program::log("[~] Status: Constructing the ImageMagick command for conversion. [~]");
         std::string magickPATH = Program::Get::toolPath("magick");
 
@@ -49,7 +49,7 @@ std::string Program::Build::command(const std::string& type, const std::string& 
                    cleanInput + "\" \"" + 
                    cleanOutput + "\"";
         }
-    } else if (type == "vtracer") {
+    } else if (type == Program::Build::cmdType::VTracer) {
         Program::log("[~] Status: Constructing the VTracer command for conversion. [~]");
         std::string vtracerPATH = Program::Get::toolPath("vtracer");
 
