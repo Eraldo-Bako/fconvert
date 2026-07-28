@@ -1,4 +1,4 @@
-<!-- fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako -->
+<!-- fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License") -->
 <!-- Maintainer: eraldobako@gmail.com -->
 
@@ -116,13 +116,14 @@
 ### Prerequisites
 Ensure you have the following installed on your system:
 
-Build Dependencies:
+#### Build Dependencies:
 * **C++17** compatible compiler (GCC/Clang)
-* **FFmpeg** (for video and audio processing)
 * **OpenCV 4+** (for image processing)
 
-Runtime Dependencies (optional):
-* **LibRaw** (for RAW image processing)
+Optional: **LibRaw** (for RAW image processing)
+
+#### Runtime Dependencies (optional):
+* **FFmpeg** (for video and audio processing)
 * **ImageMagick** (for vector/composite)
 * **Ghostscript** (for vector/composite)
 * **Pandoc** (for experimental document processing)
@@ -130,9 +131,9 @@ Runtime Dependencies (optional):
 
 ### Installation (Universal)
 Download the latest release in the Releases Page of the repository.
-- Linux: Download `fconvert-vX.X.X-x86_64.AppImage` (no dependencies required, contains the full program)
-- Windows: Download `fconvert-vX.X.X-windows-x86_64.zip` (no dependencies required, contains the full program)
-- macOS: There is no official release of fconvert for macOS. Try building it manually following the build instructions below.
+- Linux: Download `fconvert-vX.X.X-x86_64.AppImage` (no build dependencies required, needs the runtime dependencies)
+- Windows: Download `fconvert-vX.X.X-windows-x86_64.zip` (no build dependencies required, needs the runtime dependencies)
+- macOS: There is no official release of fconvert for macOS. Try building it manually following the CMake build instructions.
 
 ### Installation (Arch Linux)
 Clone the repo and use `makepkg` to install system-wide:
@@ -143,7 +144,7 @@ $ makepkg -si
 ```
 > **Note:** You could use a package helper like ```yay``` or ```paru``` since the package is in the AUR: ```yay -S fconvert``` or ```paru -S fconvert```
 ## Usage
-> **Note:** If you installed the package system-wide, you can simply use `fconvert`. If you are running the binary locally from the build folder, use `./fconvert`.
+> **Note:** If you installed the package system-wide, you can simply run `fconvert`. If you are executing the binary locally from the build folder, run `./fconvert`.
 ### Quick Convert (CLI Mode)
 Convert a file instantly without entering the menu:
 
@@ -173,9 +174,9 @@ Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit:
 
 ```
 ### Sandbox Logic
-1. Place your files in the input_file/ folder.
-2. Run fconvert.
-3. Find your processed files in the output_file/ folder.
+1. Place your files in the `input_file/` folder.
+2. Run `fconvert`.
+3. Find your processed files in the `output_file/` folder.
 
 ## Flags
 * ```-v```, ```--version``` : Show package version and licensing information.
@@ -185,7 +186,7 @@ Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit:
 * ```-cc```, ```--clear-cache```: Clear the saved cache and log files of fconvert
 <br></br>
 * ```-f <file> -<ext>```: Execute a quick conversion.
-* ```-f <file> .<ext>```: Alternatively, using `.<ext>` is a valid usage.
+* ```-f <file> .<ext>```: Alternatively, using `.<ext>` is valid.
   <br></br>
 * ```-i```, ```-intr```, ```-interactive```: Explicitly start in CLI interactive mode.
 
@@ -193,10 +194,10 @@ Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit:
 #### Linux: Arch Based
 ```bash
 # Build:
-$ sudo pacman -Syyu base-devel cmake ffmpeg opencv
+$ sudo pacman -Syyu base-devel cmake opencv libraw
 
 # Runtime:
-$ sudo pacman -Syyu libraw imagemagick ghostscript libheif libde265 x265
+$ sudo pacman -Syyu ffmpeg imagemagick ghostscript libheif libde265 x265
 $ sudo pacman -Syyu pandoc typst 
 ```
 > NOTE: For Arch-based distributions typst is recommended, but you can use:
@@ -208,10 +209,10 @@ $ sudo pacman -Syyu pandoc typst
 ```bash
 # Build:
 $ sudo dnf check-update && sudo dnf upgrade
-$ sudo dnf install @development-tools && sudo dnf install cmake ffmpeg-free opencv-devel
+$ sudo dnf install @development-tools && sudo dnf install cmake opencv-devel LibRaw-devel
 
 # Runtime:
-$ sudo dnf install LibRaw-devel ImageMagick ghostscript libheif-devel libde265-devel x265-devel
+$ sudo dnf install ffmpeg-free ImageMagick ghostscript libheif-devel libde265-devel x265-devel
 $ sudo dnf install pandoc weasyprint
 ```
 > NOTE: If you want to use typst as the PDF engine, for Fedora-based distributions, use copr:
@@ -222,10 +223,10 @@ $ sudo dnf install pandoc weasyprint
 #### Linux: Debian Based(Ubuntu)
 ```bash
 # Build:
-$ sudo apt update && sudo apt install build-essential cmake ffmpeg libopencv-dev
+$ sudo apt update && sudo apt install build-essential cmake libopencv-dev libraw-dev
 
 # Runtime:
-$ sudo apt install libraw-dev imagemagick ghostscript libheif-dev libde265-dev libx265-dev
+$ sudo apt install ffmpeg imagemagick ghostscript libheif-dev libde265-dev libx265-dev
 $ sudo apt install pandoc weasyprint
 ```
 #### Windows (winget for tools, vcpkg for libraries)
@@ -233,10 +234,10 @@ $ sudo apt install pandoc weasyprint
 # Build:
 > winget install Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools"
 > winget install Kitware.CMake
-> vcpkg install ffmpeg opencv4
+> vcpkg install opencv4 libraw
 
 # Runtime:
-> vcpkg install libraw graphicsmagick libheif libde265 x265
+> vcpkg install ffmpeg graphicsmagick libheif libde265 x265
 > winget install JohnMacFarlane.Pandoc 
 > winget install Typst.Typst
 ```
@@ -245,10 +246,10 @@ $ sudo apt install pandoc weasyprint
 ```zsh
 # Build (Requires Xcode Command Line Tools installed):
 $ xcode-select --install
-$ brew install cmake ffmpeg opencv
+$ brew install cmake opencv libraw
 
 # Runtime:
-$ brew install libraw imagemagick ghostscript libheif libde265 x265
+$ brew install ffmpeg imagemagick ghostscript libheif libde265 x265
 $ brew install pandoc typst
 ```
 ### Build Instructions
@@ -271,6 +272,8 @@ $ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert
 $ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv5 libraw) $CXXFLAGS $LDFLAGS
 # omit libraw if not needed
 ```
+> **Note:** The official Arch Linux repos have moved to OpenCV5. If you have manually build/installed OpenCV4, it is recommended that you build fconvert with OpenCV4.
+> OpenCV5 works fine, it is just more bloated with AI vision functionallity that fconvert doesn't really need.
 
 ## Contributing
 Contributions are welcome! If you find a bug or have a feature request, please open an issue and then submit a pull request with your version of the fix/feature.
