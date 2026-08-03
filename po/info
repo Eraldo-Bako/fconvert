@@ -1,0 +1,8 @@
+Generate Template:
+$ xgettext --keyword=_ --language=C++ --add-comments -o po/fconvert.pot main.cpp classes/*.cpp classes/*/*.cpp
+
+Generate Language Pack:
+$ msginit -i po/fconvert.pot -o po/{country identifier}.po -l {country code}.UTF-8 --no-translator
+
+Example:
+$ msginit -i po/fconvert.pot -o po/it.po -l it_IT.UTF-8 --no-translator

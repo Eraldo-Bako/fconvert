@@ -10,6 +10,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <fmt/core.h>
 
 #ifndef _WIN32
     #include <sys/wait.h>
@@ -17,7 +18,7 @@
 
 void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent) {
     if (!Program::Check::ffmpeg()) {
-        Program::print("[!] Error: FFmpeg not found. [!]\n", Program::PrintType::Error);
+        Program::print(_("[!] Error: FFmpeg not found. [!]\n"), Program::PrintType::Error);
         return;
     }
 
@@ -82,60 +83,60 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
     }
 
     std::string cmd = Program::Build::command(Program::Build::cmdType::FFmpeg, session.safe_input(), session.safe_output(), params);
-    Program::log("[-] Status: Executing Video Conversion: " + cmd + " [-]");
-    Program::print("[~] Status: Converting Video... [~]\n");
+    Program::log(fmt::format(_("[-] Executing Video Conversion: {0} [-]"), cmd));
+    Program::print(_("[~] Status: Converting Video... [~]\n"));
 
     bool success = false; // error catching -_-
     if (int execute = std::system(cmd.c_str()); execute == -1) { // the system shell itself couldn't be started, critical
-        std::cerr << "[!] Critical Error: Failed to initiate the command shell. [!]\n";
+        std::cerr << _("[!] Critical Error: Failed to initiate the command shell. [!]\n");
     } else { // did the command even finish normally
         #ifdef _WIN32
             if (execute == 0) {
-                std::cout << "[~] Status: Conversion completed successfully! [~]" << std::endl;
+                std::cout << _("[~] Status: Conversion completed successfully! [~]") << std::endl;
                 success = true;
             } else {
-                std::cerr << " [!] Error: FFmpeg failed with exit code: " << execute << std::endl;
+                std::cerr << _("[!] Error: FFmpeg failed with exit code: ") << execute << std::endl;
             }
         #else
             if (WIFEXITED(execute)) {
                 if (int exitCode = WEXITSTATUS(execute); exitCode == 0) { //successful conversion
-                    Program::print("[~] Status: Conversion completed successfully! [~]\n");
+                    Program::print(_("[~] Status: Conversion completed successfully! [~]\n"));
                     success = true;
                 } else { // either the constructed cmd is wrong or FFmpeg is acting up
-                    Program::print("[!] Error: FFmpeg failed with exit code: " + std::to_string(exitCode) + "[!]\n", Program::PrintType::Error);
+                    Program::print(fmt::format(_("[!] Error: FFmpeg failed with exit code: {0} [!]\n"), std::to_string(exitCode)), Program::PrintType::Error);
                 }
             } else { // so FFmpeg was terminated either by the user or the system itself(might have crashed)
-                Program::print("[!] Error: FFmpeg was terminated abnormally. [!]\n", Program::PrintType::Error);
-                Program::print("[~] If you believe this is a bug, please report it. [~]\n"
-                               "[~] Run fconvert -h or --help for more instructions. [~]\n");
+                Program::print(_("[!] Error: FFmpeg was terminated abnormally. [!]\n"), Program::PrintType::Error);
+                Program::print(_("[~] If you believe this is a bug, please report it. [~]\n"));
+                Program::print(_("[~] Run fconvert -h or --help for more instructions. [~]\n"));
             }
         #endif
     }
 
     if (success) {
         if (session.commit(out)) {
-            Program::print("[~] Status: Conversion completed successfully! [~]\n");
+            Program::print(_("[~] Status: Conversion completed successfully! [~]\n"));
         } else {
-            Program::print("[!] Error: Failed to safely export output file from sandbox. [!]\n", Program::PrintType::Error);
+            Program::print(_("[!] Error: Failed to safely export output file from sandbox. [!]\n"), Program::PrintType::Error);
         }
     } else {
-        Program::print("[!] Error: FFmpeg execution failed or terminated prematurely. [!]\n", Program::PrintType::Error);
+        Program::print(_("[!] Error: FFmpeg execution failed or terminated prematurely. [!]\n"), Program::PrintType::Error);
     }
 }
 
 void video() {
-    std::string name = Program::Get::input("Video filename: ");
+    std::string name = Program::Get::input(_("Video filename: "));
     std::filesystem::path in = PathHandler::resolve_input(name);
     if (in.empty()) {
-        Program::log("[!] Error: Path could not be resolved. [!]");
+        Program::log(_("[!] Error: Path could not be resolved. [!]"));
         return;
     }
 
     std::string fmt = Program::Get::input("Format: ", Program::Case::Lower);
 
     if (fmt == "quit" || fmt == "exit" || fmt == "cancel") {
-        Program::log("[~] Detected: " + fmt + "\nQuitting... [~]");
-        Program::print("[!] Successfully stopped the conversion! [!]");
+        Program::log(fmt::format(_("[~] Detected: {0} [~]\n[~] Quitting... [~]"), fmt));
+        Program::print(_("[!] Successfully stopped the conversion! [!]"));
         return;
     }
 
@@ -145,24 +146,24 @@ void video() {
                                                       "m2ts", "ogv", "ogg", "prores", "dnxhd", 
                                                       "dnxhr"};
     if (valid_video.find(fmt) == valid_video.end()) {
-        Program::print("\n[!] Format '" + fmt + "' is not supported or doesn't exist. [!]\n");
-        std::cout << "Supported video formats include:\n"
+        Program::print(fmt::format(_("\n[!] Format '{0}' is not supported or doesn't exist. [!]\n"), fmt));
+        std::cout << _("Supported video formats include:\n")
                   << "MP4 (H.264), MOV, AVI, WMV, FLV, F4V, MKV, WebM, 3GP & 3G2,\n"
                   << "M4V, MPEG-2, AVCHD, MTS, M2TS, OGV, OGG, PRORES, DNXHD, DNXHR\n"
-                  << "\n[-] If you believe this is a bug, make sure to report it. [-]\n";
+                  << _("\n[-] If you believe this is a bug, make sure to report it. [-]\n");
         return;
     }
 
-    std::string qual = Program::Get::input("Select Quality ([Q]uick, [D]efault, [B]est): ", Program::Case::Lower);
+    std::string qual = Program::Get::input(_("Select Quality ([Q]uick, [D]efault, [B]est): "), Program::Case::Lower);
     if (qual == "quit" || qual == "exit" || qual == "cancel") {
-        std::cout << "[!] Successfully stopped the conversion! [!]";
+        std::cout << _("[!] Successfully stopped the conversion! [!]");
         return;
     }
 
     if (!qual.empty() && (qual[0] == 'q' || qual[0] == 'd' || qual[0] == 'b'))
         video_convert_logic(in, fmt, qual[0], false);
     else {
-        Program::print("[!] Invalid quality option provided: " + qual + " [!]\nExiting...");
+        Program::print(fmt::format(_("[!] Invalid quality option provided: {0} [!]\nExiting..."), qual));
         return;
     }
 }

@@ -1,7 +1,7 @@
 # Binaries
 fconvert*.bin
 *.AppImage
-*fconvert*
+*fconvert
 *.o
 *.so
 *.dll
@@ -11,6 +11,7 @@ fconvert*.bin
 pkg/
 src/
 fconvert-binaries/
+fconvert/
 squashfs*/
 .id*/
 

@@ -31,7 +31,7 @@ SecureConversionSession::SecureConversionSession(
         std::filesystem::copy_file(originalInput, safe_input_path, std::filesystem::copy_options::overwrite_existing);
 
     } catch (const std::filesystem::filesystem_error& e) {
-        std::cerr << "[fconvert Error] - Security Staging Failed: " << e.what() << "\n";
+        std::cerr << _("[fconvert Error] - Security Staging Failed: ") << e.what() << "\n";
         throw;
     }
 }
@@ -54,7 +54,7 @@ bool SecureConversionSession::commit(const std::filesystem::path& finalUserDesti
         is_committed = true;
         return true;
     } catch (const std::filesystem::filesystem_error& e) {
-        std::cerr << "[!] Failed to export converted file: " << e.what() << "\n";
+        std::cerr << _("[!] Failed to export converted file: ") << e.what() << "\n";
         return false;
     }
 }

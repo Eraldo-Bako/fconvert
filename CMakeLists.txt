@@ -16,6 +16,10 @@ option(WITH_LIBRAW "Compile with LibRaw support for RAW image formats" ON)
 
 find_package(OpenCV REQUIRED)
 
+find_package(fmt REQUIRED)
+find_package(Intl REQUIRED)
+find_package(Gettext REQUIRED)
+
 if(WIN32 AND VCPKG_TARGET_TRIPLET)
     link_directories("${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
 endif()
@@ -69,7 +73,7 @@ endif()
 
 add_executable(fconvert main.cpp ${CLASS_SOURCES} ${WINDOWS_RESOURCES})
 
-target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS}) 
+target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS} Intl::Intl fmt::fmt)
 
 if(WITH_LIBRAW AND LIBRAW_FOUND)
 
@@ -95,6 +99,32 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"
     target_compile_options(fconvert PRIVATE $<$<CONFIG:Release>:-O3>)
     target_link_options(fconvert PRIVATE $<$<CONFIG:Release>:-s>)
 endif()
+
+# Translations
+file(GLOB PO_FILES "${CMAKE_SOURCE_DIR}/po/*.po")
+set(MO_FILES "")
+
+foreach(PO_FILE ${PO_FILES})
+    get_filename_component(LANG ${PO_FILE} NAME_WE)
+    set(MO_FILE "${CMAKE_BINARY_DIR}/po/${LANG}/LC_MESSAGES/fconvert.mo")
+    
+    add_custom_command(
+        OUTPUT ${MO_FILE}
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/po/${LANG}/LC_MESSAGES"
+        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${MO_FILE} ${PO_FILE}
+        DEPENDS ${PO_FILE}
+    )
+    list(APPEND MO_FILES ${MO_FILE})
+
+    if(NOT WIN32)
+        include(GNUInstallDirs)
+        install(FILES ${MO_FILE}
+                DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES"
+                RENAME fconvert.mo)
+    endif()
+endforeach()
+
+add_custom_target(translations ALL DEPENDS ${MO_FILES})
 
 # APPIMAGE
 if(NOT WIN32)

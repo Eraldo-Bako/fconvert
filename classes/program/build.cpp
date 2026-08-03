@@ -15,7 +15,7 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
     std::string cleanOutput = std::filesystem::path(output).make_preferred().string();
     
     if (type == Program::Build::cmdType::FFmpeg) {
-        Program::log("[~] Status: Constructing the FFmpeg command for conversion. [~]");
+        Program::log(_("[~] Status: Constructing the FFmpeg command for conversion. [~]"));
         std::string ffmpegPATH = Program::Get::toolPath("ffmpeg");
 
         return ffmpegPATH + " -hide_banner -i \"" + 
@@ -23,7 +23,7 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
                params + " \"" + 
                cleanOutput + "\" -y -loglevel error -stats";
     } else if (type == Program::Build::cmdType::Pandoc) {
-        Program::log("[~] Status: Constructing the Pandoc command for conversion. [~]");
+        Program::log(_("[~] Status: Constructing the Pandoc command for conversion. [~]"));
         std::string pandocPATH = Program::Get::toolPath("pandoc");
 
         return pandocPATH + " \"" + 
@@ -31,7 +31,7 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
                params + " -o \"" + 
                cleanOutput + "\"";
     } else if (type == Program::Build::cmdType::Magick) {
-        Program::log("[~] Status: Constructing the ImageMagick command for conversion. [~]");
+        Program::log(_("[~] Status: Constructing the ImageMagick command for conversion. [~]"));
         std::string magickPATH = Program::Get::toolPath("magick");
 
         if (params == "fast") 
@@ -50,7 +50,7 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
                    cleanOutput + "\"";
         }
     } else if (type == Program::Build::cmdType::VTracer) {
-        Program::log("[~] Status: Constructing the VTracer command for conversion. [~]");
+        Program::log(_("[~] Status: Constructing the VTracer command for conversion. [~]"));
         std::string vtracerPATH = Program::Get::toolPath("vtracer");
 
         return vtracerPATH + 
@@ -59,6 +59,6 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
                params;
 
     }
-    std::cerr << "[!] Critical Error: Program couldn't define a conversion method. [!]";
+    std::cerr << _("[!] Critical Error: Program couldn't define a conversion method. [!]");
     return "";
 }

@@ -14,6 +14,7 @@ namespace Program {
     enum class InputType { noWS, WS };
 
     namespace Get {
+        std::string localeDirectory();
         std::filesystem::path logDirectory();
         std::string currentTimestamp();
         std::string input(const std::string& prompt, Case lower = Program::Case::Normal, InputType useWS = Program::InputType::WS);

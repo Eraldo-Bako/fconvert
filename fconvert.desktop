@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=fconvert
+Comment=File conversion utility built with C++
+Exec= fconvert %F
+Icon=fconvert-icon
+Terminal=true
+Categories=Utility;Graphics;AudioVideo;

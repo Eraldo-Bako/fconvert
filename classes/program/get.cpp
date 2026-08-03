@@ -12,6 +12,55 @@
 #include <iostream>
 #include <limits>
 
+#if defined(_WIN32)
+#include <windows.h>
+
+#elif defined(__APPLE__)
+
+#include <mach-o/dyld.h>
+#include <climits>
+
+#endif
+
+std::string Program::Get::localeDirectory() {
+    const char* appdir = std::getenv("APPDIR");
+    if (appdir) return std::string(appdir) + LOCALEDIR;
+
+    try {
+        std::filesystem::path exec_path;
+
+#if defined(__linux__)
+        exec_path = std::filesystem::canonical("/proc/self/exe");
+#elif defined(__APPLE__)
+        char path[PATH_MAX];
+        uint32_t size = sizeof(path);
+        if (_NSGetExecutablePath(path, &size) == 0) exec_path = std::filesystem::canonical(path);
+#elif defined(_WIN32)
+        wchar_t path[MAX_PATH];
+        DWORD length = GetModuleFileNameW(NULL, path, MAX_PATH);
+        if (length > 0 && length < MAX_PATH) {
+            exec_path = std::filesystem::canonical(path);
+        }
+#endif
+
+        if (!exec_path.empty()) {
+            std::filesystem::path exec_dir = exec_path.parent_path();
+
+            std::filesystem::path build_po = exec_dir / "po";
+            if (std::filesystem::exists(build_po)) return build_po.string();
+
+            std::filesystem::path source_build_po = exec_dir.parent_path() / "build" / "po";
+            if (std::filesystem::exists(source_build_po)) return source_build_po.string();
+
+            std::filesystem::path relative_loc = exec_dir.parent_path() / "share" / "locale";
+            if (std::filesystem::exists(relative_loc)) return relative_loc.string();
+        }
+
+    } catch (...) {}
+
+    return (exec_dir / "share" / "locale").string();
+}
+
 std::filesystem::path Program::Get::logDirectory() {
     std::filesystem::path logDir;
 

@@ -1,0 +1,1081 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-31 20:14+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: main.cpp:52
+msgid "Copyright (C) 2023-2026 Eraldo Bako\n"
+msgstr ""
+
+#: main.cpp:53
+msgid "Licensed under the Apache License, Version 2.0 (the \"License\")\n"
+msgstr ""
+
+#: main.cpp:54
+msgid ""
+"\n"
+"Written by Eraldo Bako.\n"
+msgstr ""
+
+#: main.cpp:55
+#, c++-format
+msgid "Maintainer: {0}"
+msgstr ""
+
+#: main.cpp:59
+msgid "Supported Extensions:\n"
+msgstr ""
+
+#: main.cpp:60
+msgid "  Image: \n"
+msgstr ""
+
+#: main.cpp:61
+msgid "   STANDARD IMAGES:      jpg/jpeg, png, webp, tiff/tif, bmp\n"
+msgstr ""
+
+#: main.cpp:62
+msgid "   CAMERA RAW:           cr2, nef, arw, dng, crw\n"
+msgstr ""
+
+#: main.cpp:63
+msgid "   VECTOR/COMPOSITE:     psd, svg, pdf, gif, ico, xcf, eps, ai\n"
+msgstr ""
+
+#: main.cpp:64
+msgid "   MODERN COMPRESSED:    heic, heif\n"
+msgstr ""
+
+#: main.cpp:65
+msgid "  Audio: \n"
+msgstr ""
+
+#: main.cpp:66
+msgid "   UNCOMPRESSED:         wav, aiff, pcm, dsd\n"
+msgstr ""
+
+#: main.cpp:67
+msgid "   LOSSLESS COMPRESSED:  flac, alac, wavpack\n"
+msgstr ""
+
+#: main.cpp:68
+msgid "   LOSSY COMPRESSED:     mp3, ogg, aac, m4a, opus, wma\n"
+msgstr ""
+
+#: main.cpp:69
+msgid "  Video: \n"
+msgstr ""
+
+#: main.cpp:70
+msgid "   COMPRESSED/DELIVERY:  mp4, mkv, mov, m4v\n"
+msgstr ""
+
+#: main.cpp:71
+msgid "   WEB OPTIMIZED:        webm, ogg\n"
+msgstr ""
+
+#: main.cpp:72
+msgid "   EDITING/INTERMEDIATE: prores, dnxhr, dnxhd\n"
+msgstr ""
+
+#: main.cpp:73
+msgid "   HARDWARE/ACQUISITION: avchd, mpeg2\n"
+msgstr ""
+
+#: main.cpp:74
+msgid "   LEGACY:               avi, wmv, flv, f4v, 3gp, 3g2\n"
+msgstr ""
+
+#: main.cpp:75
+msgid "  eBook(experimental): \n"
+msgstr ""
+
+#: main.cpp:76
+msgid ""
+"   DOCUMENTS:            epub, pdf, html, txt, docx\n"
+"\n"
+msgstr ""
+
+#: main.cpp:77
+msgid ""
+"  Note: Inputting a video with an audio extension auto-extracts audio.\n"
+msgstr ""
+
+#: main.cpp:81
+msgid ""
+"Usage: fconvert [OPTIONS]\n"
+"\n"
+msgstr ""
+
+#: main.cpp:82
+msgid "Options:\n"
+msgstr ""
+
+#: main.cpp:83
+msgid "  -h, --help        Show this help message\n"
+msgstr ""
+
+#: main.cpp:84
+msgid "  -l, --list        Show the list of supported formats\n"
+msgstr ""
+
+#: main.cpp:85
+msgid "  -d, --debug       Enable debug mode (extra logging)\n"
+msgstr ""
+
+#: main.cpp:86
+msgid "  -cc,              Clear the saved cache and log files\n"
+msgstr ""
+
+#: main.cpp:87
+msgid "  --clear-cache     of fconvert\n"
+msgstr ""
+
+#: main.cpp:88
+msgid ""
+"  -f, --file <file-name> -<ext>  Quick Convert: convert <file-name> to "
+"target extension <ext>\n"
+"\n"
+msgstr ""
+
+#: main.cpp:89
+msgid ""
+"  Note: fconvert accepts absolute or relative paths. If no path is provided, "
+"it looks in the sandbox directory.\n"
+"\n"
+msgstr ""
+
+#: main.cpp:90
+msgid "Example: \n"
+msgstr ""
+
+#: main.cpp:91
+msgid ""
+"  fconvert -f /path/to/file.jpg -png\n"
+"\n"
+msgstr ""
+
+#: main.cpp:92
+msgid "Interactive Mode:\n"
+msgstr ""
+
+#: main.cpp:93
+msgid ""
+"  Run fconvert without flags to enter the guided menu.\n"
+"\n"
+msgstr ""
+
+#: main.cpp:114
+msgid ""
+"\n"
+" ----------------------- fconvert - File Converter ----------------------\n"
+" --- A fast C++ CLI converter for Images, Videos, Audios, and eBooks! ---\n"
+" ------------------------------------------------------------------------\n"
+"    "
+msgstr ""
+
+#: main.cpp:119
+msgid "[~] Detected: Debug mode active. [~]"
+msgstr ""
+
+#: main.cpp:126
+msgid "Convert [I]mage / [V]ideo / [A]udio / [e]Book / [Q]uit: "
+msgstr ""
+
+#: main.cpp:129
+#, c++-format
+msgid "[-] Exit Key Received: {} [-]"
+msgstr ""
+
+#: main.cpp:134
+#, c++-format
+msgid "[~] Detected: Image key received '{}'. Applying... [~]"
+msgstr ""
+
+#: main.cpp:137
+#, c++-format
+msgid "[~] Detected: Video key received '{}'. Applying... [~]"
+msgstr ""
+
+#: main.cpp:140
+#, c++-format
+msgid "[~] Detected: Audio key received '{}'. Applying... [~]"
+msgstr ""
+
+#: main.cpp:143
+#, c++-format
+msgid "[~] Detected: eBook key received '{}'. Applying... [~]"
+msgstr ""
+
+#: main.cpp:144
+msgid "[!] eBook is currently highly experimental! [!]\n"
+msgstr ""
+
+#: main.cpp:145
+msgid "[!] Only use it if you know what you are doing. [!]\n"
+msgstr ""
+
+#: main.cpp:148
+#, c++-format
+msgid "[!] Invalid input '{}'. Please try again! [!]\n"
+msgstr ""
+
+#: main.cpp:149
+#, c++-format
+msgid "[~] Detected: Invalid key received '{}'. Exiting... [~]"
+msgstr ""
+
+#: main.cpp:152
+msgid ""
+"\n"
+"Do you want to convert another file? (y/N): "
+msgstr ""
+
+#: main.cpp:155
+msgid "[~] Status: Exit key received. Exiting... [~]"
+msgstr ""
+
+#. shouldn't be visible in interactive mode, unless ur pc is really-really-really slow
+#: main.cpp:158
+#, c++-format
+msgid "[~] Status: '{}' received. Restarting... [~]"
+msgstr ""
+
+#: main.cpp:174
+msgid "[CRITICAL WARNING] fconvert is running with elevated privileges.\n"
+msgstr ""
+
+#: main.cpp:176
+msgid "Executing file conversions as root bypasses vital OS safeguards.\n"
+msgstr ""
+
+#: main.cpp:177
+msgid "Malformed files or unexpected behavior CAN irreversibly corrupt\n"
+msgstr ""
+
+#: main.cpp:178
+msgid ""
+"system binaries or compromise OS integrity.\n"
+"\n"
+msgstr ""
+
+#: main.cpp:180
+msgid ""
+"If you do not know what you are doing or what is happening,\n"
+"abort this operation immediately to prevent startup!\n"
+"\n"
+msgstr ""
+
+#: main.cpp:185 main.cpp:197
+#, c++-format
+msgid "Type '{}' to proceed: "
+msgstr ""
+
+#: main.cpp:190 main.cpp:202
+msgid "[~] Operation successfully aborted. [~]\n"
+msgstr ""
+
+#: main.cpp:191
+msgid "[-] Never do that again! [-]\n"
+msgstr ""
+
+#: main.cpp:196
+msgid "Are you sure about that?\n"
+msgstr ""
+
+#: main.cpp:203
+msgid "[-] Never do that again! M'KAY? [-]\n"
+msgstr ""
+
+#: main.cpp:208
+msgid "[!] Bootstrapping execution context with root clearance...\n"
+msgstr ""
+
+#: main.cpp:209
+msgid "[-] Status: You are on your own now! [-]\n"
+msgstr ""
+
+#: main.cpp:253
+msgid "[~] DEBUG MODE ACTIVE [~]"
+msgstr ""
+
+#. didn't find any argument
+#: main.cpp:261
+msgid "[!] Error: -f requires a file path argument [!]\n"
+msgstr ""
+
+#. found flag instead of file path
+#: main.cpp:266
+#, c++-format
+msgid "[!] Error: -f requires a file path, but found a flag: '{}' [!]\n"
+msgstr ""
+
+#: main.cpp:271
+#, c++-format
+msgid "[-] File to be converted: '{}' [-]\n"
+msgstr ""
+
+#: main.cpp:276
+#, c++-format
+msgid "[-] Converting to: '{}' [-]\n"
+msgstr ""
+
+#. if no extension is provided
+#: main.cpp:283
+msgid ""
+"[!] Error: -f requires a file extension after file path, but found nothing. "
+"[!]\n"
+msgstr ""
+
+#: main.cpp:290
+#, c++-format
+msgid "[!] Error: File '{}' not found. [!]\n"
+msgstr ""
+
+#: main.cpp:327 classes/image_converter.cpp:318
+msgid ""
+"[!] Warning: Converting to a RAW image format is not supported, nor "
+"recommended! [!]"
+msgstr ""
+
+#: main.cpp:328 classes/image_converter.cpp:319
+#, c++-format
+msgid "[!] Error: Detected target is a RAW image format: '{}' [!]"
+msgstr ""
+
+#: main.cpp:337 classes/image_converter.cpp:342
+msgid "[-] Detected: Converting to a vector-based format! [-]"
+msgstr ""
+
+#: main.cpp:338
+msgid "[~] Status: Defaulting to color-based vector tracing! [~]"
+msgstr ""
+
+#: main.cpp:344
+#, c++-format
+msgid "[!] Error: Format '-{}' is not supported. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:22 classes/video_converter.cpp:21
+msgid "[!] Error: FFmpeg not found. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:36
+msgid "[~] Status: Defining conversion parameters. [~]"
+msgstr ""
+
+#: classes/audio_converter.cpp:72
+#, c++-format
+msgid "[-] Executing Audio Conversion: {} [-]"
+msgstr ""
+
+#: classes/audio_converter.cpp:73
+msgid "[~] Status: Converting Audio... [~]\n"
+msgstr ""
+
+#. the system shell itself couldn't be started
+#: classes/audio_converter.cpp:78
+msgid "[!] Critical Error: Failed to initiate the command shell. [!]"
+msgstr ""
+
+#. successful conversion
+#: classes/audio_converter.cpp:83 classes/audio_converter.cpp:92
+#: classes/audio_converter.cpp:107 classes/ebook_converter.cpp:68
+#: classes/video_converter.cpp:103 classes/video_converter.cpp:118
+msgid "[~] Status: Conversion completed successfully! [~]\n"
+msgstr ""
+
+#. either the constructed cmd is wrong or FFmpeg is acting up
+#: classes/audio_converter.cpp:86 classes/audio_converter.cpp:95
+#: classes/video_converter.cpp:106
+#, c++-format
+msgid "[!] Error: FFmpeg failed with exit code: {0} [!]\n"
+msgstr ""
+
+#. so FFmpeg was terminated either by the user or the system itself(might have crashed)
+#: classes/audio_converter.cpp:98 classes/video_converter.cpp:109
+msgid "[!] Error: FFmpeg was terminated abnormally. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:99
+msgid ""
+"[~] If you believe this is a bug, please report it. [~]\n"
+"[~] Run fconvert -h or --help for more instructions. [~]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:109 classes/ebook_converter.cpp:70
+#: classes/video_converter.cpp:120
+msgid "[!] Error: Failed to safely export output file from sandbox. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:112 classes/video_converter.cpp:123
+msgid "[!] Error: FFmpeg execution failed or terminated prematurely. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:118
+msgid "Audio filename or path: "
+msgstr ""
+
+#: classes/audio_converter.cpp:121 classes/ebook_converter.cpp:98
+#: classes/image_converter.cpp:300 classes/video_converter.cpp:131
+msgid "[!] Error: Path could not be resolved. [!]"
+msgstr ""
+
+#. fetch me the desired format w/ safe lowercase conversion
+#: classes/audio_converter.cpp:126 classes/image_converter.cpp:306
+msgid "Format: "
+msgstr ""
+
+#: classes/audio_converter.cpp:130
+#, c++-format
+msgid "[~] Detected: '{}' Quitting... [~]"
+msgstr ""
+
+#: classes/audio_converter.cpp:131 classes/ebook_converter.cpp:117
+#: classes/image_converter.cpp:309 classes/video_converter.cpp:139
+#: classes/video_converter.cpp:159
+msgid "[!] Successfully stopped the conversion! [!]"
+msgstr ""
+
+#: classes/audio_converter.cpp:139
+msgid "[~] Detected: The provided format is incorrect. [~]"
+msgstr ""
+
+#: classes/audio_converter.cpp:140
+#, c++-format
+msgid ""
+"\n"
+"[!] Format '{}' is not supported or doesn't exist. [!]\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:141
+msgid "Supported audio formats include:\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:142
+msgid "* Uncompressed: WAV, AIFF, PCM, DSD\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:143
+msgid "* Lossless Compressed: FLAC, ALAC, WAVPACK\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:144
+msgid "* Lossy Compressed: MP3, AAC, OGG, M4A, WMA, OPUS\n"
+msgstr ""
+
+#: classes/audio_converter.cpp:145 classes/ebook_converter.cpp:132
+#: classes/image_converter.cpp:333 classes/video_converter.cpp:153
+msgid ""
+"\n"
+"[-] If you believe this is a bug, make sure to report it. [-]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:28
+msgid "[!] Error: A supported PDF Engine was not found. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:65
+#, c++-format
+msgid "[-] Status: Executing Ebook Conversion: '{0}' [-]"
+msgstr ""
+
+#: classes/ebook_converter.cpp:78
+msgid "[-] Status: Checking for pandoc... [-]"
+msgstr ""
+
+#: classes/ebook_converter.cpp:80
+msgid "[!] Error: Pandoc not found. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:84
+msgid "[>] Processing document... [>]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:87
+msgid "[-] Status: Ebook conversion complete! [-]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:89
+msgid "[!] Error: Pandoc failed to process the document. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:95
+msgid "Ebook/Document filename or path: "
+msgstr ""
+
+#: classes/ebook_converter.cpp:99 classes/image_converter.cpp:301
+msgid "[!] File not found. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:107
+msgid ""
+"[!] Error: PDF files cannot be used as a source format for conversion. [!]"
+msgstr ""
+
+#: classes/ebook_converter.cpp:108
+msgid ""
+"[!] PDF input is not supported. Pandoc cannot read raw PDF structures. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:116
+#, c++-format
+msgid ""
+"[~] Detected: '{0}' [~]\n"
+"[~] Quitting... [~]"
+msgstr ""
+
+#: classes/ebook_converter.cpp:129 classes/image_converter.cpp:329
+#: classes/video_converter.cpp:149
+#, c++-format
+msgid ""
+"\n"
+"[!] Format '{0}' is not supported or doesn't exist. [!]\n"
+msgstr ""
+
+#: classes/ebook_converter.cpp:130
+msgid "Supported experimental formats include:\n"
+msgstr ""
+
+#. if LibRaw is not present/deleted at runtime
+#: classes/image_converter.cpp:33 classes/image_converter.cpp:82
+msgid "[!] Error: LibRAW not found. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:34
+msgid "[!] This part of the program cannot function without LibRAW. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:63
+msgid "[!] Error: OpenCV not found. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:67
+msgid "[-] Status: Initializing image conversion. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:73
+msgid "[-] Status: Reading the image file. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:85
+msgid "[-] Status: Developing Camera RAW file via LibRaw. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:88
+msgid "[!] Error: This binary was built without LibRAW support. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:89
+msgid "[!] RAW image loading is disabled. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:96
+msgid ""
+"[-] Status: OpenCV cannot read this format. Invoking foreign fallback "
+"reader... [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:110
+#, c++-format
+msgid "[!] Error: ImageMagick failed to read '{0}'. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:117
+msgid "[!] Error: Image data is empty or corrupt. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:121
+#, c++-format
+msgid "[-] Status: Converting to format:'{0}' [-]"
+msgstr ""
+
+#. fallback using imagemagic + opencv or vtracer
+#: classes/image_converter.cpp:150
+msgid "[-] Status: Writing temporary file. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:159
+msgid "[!] Error: VTracer not found. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:178
+msgid "[-] Status: Initiating custom profile setting. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:181
+msgid "Do you want color in your vector tracing? [Y/n] "
+msgstr ""
+
+#: classes/image_converter.cpp:190
+msgid "Specify the color precision in vector tracing [1-8]: "
+msgstr ""
+
+#: classes/image_converter.cpp:194 classes/image_converter.cpp:230
+msgid "[!!] Operation quit by user. Exiting... [!!]"
+msgstr ""
+
+#: classes/image_converter.cpp:202
+msgid "[!] Error: Color Precision needs to be a value between 1-8. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:208
+msgid "Specify the gradient step in vector tracing [0-255]: "
+msgstr ""
+
+#: classes/image_converter.cpp:212
+msgid "[!!] Operation quitted by user. Exiting... [!!]"
+msgstr ""
+
+#: classes/image_converter.cpp:220
+msgid "[!] Error: Gradient Step needs to be a value between 0-255. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:226
+msgid "Specify the amount of filter speckle in vector tracing [0-16]: "
+msgstr ""
+
+#: classes/image_converter.cpp:238
+msgid "[!] Error: Filter Speckle needs to be a value between 0-16. [!]"
+msgstr ""
+
+#: classes/image_converter.cpp:250
+msgid "[!] Error: ImageMagick or Ghostscript not found. [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:256 classes/image_converter.cpp:279
+msgid "[-] Status: Writing the file. [-]"
+msgstr ""
+
+#. using imagemagick to wrap it into svg
+#: classes/image_converter.cpp:262
+msgid "[-] Status: Cleaning temporary files. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:268
+msgid "[!] Error: {foreign} failed to convert to '{format}' [!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:275
+#, c++-format
+msgid "[+] Saved Wrapped Image: {0} [+]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:281 classes/image_converter.cpp:288
+#, c++-format
+msgid "[+] Saved: {0} [+]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:289
+msgid ""
+"[!!] Error: Failed to safely export output file from the internal sandbox. "
+"[!!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:291
+msgid "[!!] Error: Image writing or processing failed. [!!]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:297
+msgid "Image filename or path: "
+msgstr ""
+
+#: classes/image_converter.cpp:308 classes/video_converter.cpp:138
+#, c++-format
+msgid ""
+"[~] Detected: {0} [~]\n"
+"[~] Quitting... [~]"
+msgstr ""
+
+#: classes/image_converter.cpp:330
+msgid "Supported image formats include:\n"
+msgstr ""
+
+#: classes/image_converter.cpp:332
+msgid "RAW Image formats should never be your target format.\n"
+msgstr ""
+
+#: classes/image_converter.cpp:344
+#, c++-format
+msgid "[-] Converting to {0}. [-]\n"
+msgstr ""
+
+#: classes/image_converter.cpp:345
+msgid "[-] Select Profile: \n"
+msgstr ""
+
+#: classes/image_converter.cpp:346
+msgid "    1  Vector Tracing\n"
+msgstr ""
+
+#: classes/image_converter.cpp:347
+msgid "    2  Colorful Vector Tracing\n"
+msgstr ""
+
+#: classes/image_converter.cpp:348
+msgid "   [3] Basic Image Precision\n"
+msgstr ""
+
+#: classes/image_converter.cpp:349
+msgid "    4  Perfect Image Precision\n"
+msgstr ""
+
+#: classes/image_converter.cpp:350
+msgid "    5  Custom\n"
+msgstr ""
+
+#: classes/image_converter.cpp:351
+msgid "Choice [3]: "
+msgstr ""
+
+#: classes/image_converter.cpp:395
+msgid "[!] Invalid selection. Please enter a number between 1 and 5. [!]"
+msgstr ""
+
+#. self-explanatory, read the Program::log calls if needed
+#: classes/path_handler.cpp:33
+#, c++-format
+msgid "[-] Searching for the file: {0} [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:36
+#, c++-format
+msgid "[-] Checking: Is {0} an absolute path? [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:38
+#, c++-format
+msgid "[-] Result: {0} is an absolute path. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:39 classes/path_handler.cpp:47
+#: classes/path_handler.cpp:55
+msgid "[-] Proceeding... [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:41
+msgid "[-] Result: Input is NOT an absolute path. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:44
+#, c++-format
+msgid "[-] Checking: Is {0} in the current working directory? [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:46
+#, c++-format
+msgid "[-] Result: {0} is in the current working directory. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:49
+#, c++-format
+msgid "[-] Result: {0} is NOT in the current local directory. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:52
+#, c++-format
+msgid "[-] Checking: Is {0} in the sandbox directory? [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:54
+#, c++-format
+msgid "[-] Result: {0} is in the sandbox directory. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:57
+#, c++-format
+msgid "[-] Result: {0} is NOT in the sandbox directory. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:59
+msgid "[!] Warning: Checks failed to find the file. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:61
+#, c++-format
+msgid ""
+"\n"
+"[!] Error: Could not find '{0}' in the absolute, working, or sandbox "
+"directory. [!]\n"
+msgstr ""
+
+#: classes/path_handler.cpp:64
+msgid "[!] Warning: Applying default, if any... [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:65
+msgid "[~] Status: This may fail. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:71
+msgid "[~] Status: Defining the output directory. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:81
+#, c++-format
+msgid "[-] Result: Output directory set to '{0}' [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:84
+#, c++-format
+msgid "[!] Warning: Output directory '{0}' does NOT exist. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:85
+msgid "[~] Status: Creating the Directory! [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:89
+#, c++-format
+msgid "[!] Permission denied: Could not create '{0}' [!]\n"
+msgstr ""
+
+#: classes/path_handler.cpp:90
+msgid ""
+"[!] Warning: Check your folder permissions or run with appropriate "
+"privileges. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:91
+#, c++-format
+msgid "[!] Error: Could not create directory '{0}' [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:95
+#, c++-format
+msgid "[-] Result: Successfully created '{0}' [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:100
+msgid "[!] Critical Error: Extension is empty. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:101
+msgid ""
+"[!] Warning: Program may be corrupt. Try restarting or reinstalling if this "
+"issue persists. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:102
+msgid ""
+"[!] Critical Error: Empty extension provided to PathHandler. Internal error."
+msgstr ""
+
+#: classes/path_handler.cpp:106
+msgid "[~] Detected: Extension already formatted. [~]"
+msgstr ""
+
+#. impossible case, reporting as an error catcher
+#: classes/path_handler.cpp:109
+msgid "[~] Status: Prepending dot to extension: "
+msgstr ""
+
+#. full path + file name
+#. appending extension
+#: classes/path_handler.cpp:113
+msgid ""
+"[-] Result: Successfully defined output file directory and extension as: "
+msgstr ""
+
+#: classes/path_handler.cpp:119
+msgid "[~] Status: Handling naming conflicts. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:121
+msgid "[-] Result: PATH is available, no conflicts found. Skipping. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:126
+#, c++-format
+msgid ""
+"[!] Warning: File '{0}' already exists, defaulting to conflict handler. [!]"
+msgstr ""
+
+#: classes/path_handler.cpp:127
+#, c++-format
+msgid "[!] Conflict: '{0}' exists. [O]verwrite, [R]ename, [C]ancel: "
+msgstr ""
+
+#: classes/path_handler.cpp:128
+#, c++-format
+msgid "[~] Status: Option '{0}' chosen. Applying... [~]"
+msgstr ""
+
+#. program defaults to renaming for safety
+#: classes/path_handler.cpp:133
+msgid "[~] Status: Initializing renaming logic. [~]"
+msgstr ""
+
+#. index for renaming file(1).mp3
+#: classes/path_handler.cpp:135
+msgid "[~] Status: Acquiring full directory. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:137
+msgid "[~] Status: Acquiring file name. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:139
+msgid "[~] Status: Acquiring extension. [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:142
+msgid "[~] Status: Checking for available indexes. [~]"
+msgstr ""
+
+#. testing indexes until one works without overwriting any existing file
+#: classes/path_handler.cpp:145
+#, c++-format
+msgid "[~] Status: Testing index: '{0}' [~]"
+msgstr ""
+
+#: classes/path_handler.cpp:148
+#, c++-format
+msgid "[-] Result: Index '{0}' succeeded. [-]"
+msgstr ""
+
+#: classes/path_handler.cpp:149
+#, c++-format
+msgid "[~] Status: Saving as: {0} [~]"
+msgstr ""
+
+#: classes/program_handler.cpp:22
+msgid ""
+"[!] Failed to delete: {path} [!]\n"
+" [Error Message] {error}\n"
+msgstr ""
+
+#: classes/program_handler.cpp:38
+msgid "[DEBUG] ------ "
+msgstr ""
+
+#: classes/program_handler.cpp:50
+msgid "[!] Error: Could not open log file! [!]\n"
+msgstr ""
+
+#: classes/program_handler.cpp:61
+msgid "[!!] Critical Warning: Forcefully ending the program. [!!]\n"
+msgstr ""
+
+#: classes/program_handler.cpp:68
+#, c++-format
+msgid "[!!] Failed to write to log file: {} [!!]\n"
+msgstr ""
+
+#: classes/program_handler.cpp:72
+msgid "[!!] Failed to write to log file due to an unknown error.\n"
+msgstr ""
+
+#: classes/program_handler.cpp:90
+msgid "[fconvert Error] - "
+msgstr ""
+
+#: classes/secure_conversion_session.cpp:34
+msgid "[fconvert Error] - Security Staging Failed: "
+msgstr ""
+
+#: classes/secure_conversion_session.cpp:57
+msgid "[!] Failed to export converted file: "
+msgstr ""
+
+#: classes/video_converter.cpp:86
+#, c++-format
+msgid "[-] Executing Video Conversion: {0} [-]"
+msgstr ""
+
+#: classes/video_converter.cpp:87
+msgid "[~] Status: Converting Video... [~]\n"
+msgstr ""
+
+#. error catching -_-
+#. the system shell itself couldn't be started, critical
+#: classes/video_converter.cpp:91
+msgid "[!] Critical Error: Failed to initiate the command shell. [!]\n"
+msgstr ""
+
+#: classes/video_converter.cpp:95
+msgid "[~] Status: Conversion completed successfully! [~]"
+msgstr ""
+
+#: classes/video_converter.cpp:98
+msgid "[!] Error: FFmpeg failed with exit code: "
+msgstr ""
+
+#: classes/video_converter.cpp:110
+msgid "[~] If you believe this is a bug, please report it. [~]\n"
+msgstr ""
+
+#: classes/video_converter.cpp:111
+msgid "[~] Run fconvert -h or --help for more instructions. [~]\n"
+msgstr ""
+
+#: classes/video_converter.cpp:128
+msgid "Video filename: "
+msgstr ""
+
+#: classes/video_converter.cpp:150
+msgid "Supported video formats include:\n"
+msgstr ""
+
+#: classes/video_converter.cpp:157
+msgid "Select Quality ([Q]uick, [D]efault, [B]est): "
+msgstr ""
+
+#: classes/video_converter.cpp:166
+#, c++-format
+msgid ""
+"[!] Invalid quality option provided: {0} [!]\n"
+"Exiting..."
+msgstr ""
+
+#: classes/program/build.cpp:18
+msgid "[~] Status: Constructing the FFmpeg command for conversion. [~]"
+msgstr ""
+
+#: classes/program/build.cpp:26
+msgid "[~] Status: Constructing the Pandoc command for conversion. [~]"
+msgstr ""
+
+#: classes/program/build.cpp:34
+msgid "[~] Status: Constructing the ImageMagick command for conversion. [~]"
+msgstr ""
+
+#: classes/program/build.cpp:53
+msgid "[~] Status: Constructing the VTracer command for conversion. [~]"
+msgstr ""
+
+#: classes/program/build.cpp:62
+msgid "[!] Critical Error: Program couldn't define a conversion method. [!]"
+msgstr ""
+
+#: classes/program/make.cpp:27
+#, c++-format
+msgid "Could not create file stream at {0}"
+msgstr ""
+
+#: classes/program/make.cpp:32
+#, c++-format
+msgid "[!!] Failed to make the log file: {0} [!!]"
+msgstr ""
+
+#: classes/program/make.cpp:36
+msgid "[!!] Failed to make the log file due to an unknown error."
+msgstr ""
+
+#: classes/program/make.cpp:59
+msgid "[!] Error: Could not open log file after creation! [!]"
+msgstr ""

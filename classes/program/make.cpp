@@ -24,16 +24,16 @@ std::filesystem::path Program::Make::logFile(const std::string& time) {
             std::ofstream create_file(logPath);
             
             if (!create_file) {
-                throw std::runtime_error("Could not create file stream at " + logPath.string());
+                throw std::runtime_error(fmt::format(_("Could not create file stream at {0}"), logPath.string()));
             }
         }
     } catch (const std::exception& e) {
         std::cerr << Program::Color::RED
-                  << "[!!] Failed to make the log file: " << e.what() << " [!!]"
+                  << fmt::format(_("[!!] Failed to make the log file: {0} [!!]"), e.what())
                   << Program::Color::RESET << std::endl << std::flush;
     } catch (...) {
         std::cerr << Program::Color::RED
-                  << "[!!] Failed to make the log file due to an unknown error."
+                  << _("[!!] Failed to make the log file due to an unknown error.")
                   << Program::Color::RESET << std::endl << std::flush;
     }
 
@@ -56,7 +56,7 @@ R"(
         logFile.close();
     } else {
         std::cerr << Program::Color::RED
-                  << "[!] Error: Could not open log file after creation! [!]"
+                  << _("[!] Error: Could not open log file after creation! [!]")
                   << Program::Color::RESET << std::endl <<std::flush;
     }
 

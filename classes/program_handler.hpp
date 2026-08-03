@@ -10,8 +10,15 @@
 #include <string>
 #include <libintl.h>
 #include <clocale>
+#include <fmt/format.h>
 
 #define _(String) gettext(String)
+
+#ifndef LOCALEDIR
+#define LOCALEDIR "/usr/share/locale"
+#endif
+
+// sudo pacman -S gettext
 
 namespace Program {
 
