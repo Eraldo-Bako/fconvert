@@ -12,7 +12,7 @@ pkg/
 src/
 fconvert-binaries/
 fconvert/
-squashfs*/
+squash*/
 .id*/
 
 # CMake artifacts

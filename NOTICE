@@ -3,11 +3,34 @@ Copyright 2023-2026 Eraldo Bako
 
 This product includes software developed under the Apache License 2.0.
 
-TRADEMARK & BRANDING NOTICE:
-Notwithstanding the Apache 2.0 license applied to the source code, all 
-assets in the ./branding/ directory are explicitly excluded from the 
-Apache 2.0 grant. These assets remain the property of the copyright owner 
-and are licensed under the separate terms found in ./branding/LICENSE.
+========================================================================
+MODULE & ASSET LICENSING
+========================================================================
+
+1. SOURCE CODE & LOCALIZATION
+   The core source code and the localization files, located in the ./po/ 
+   directory (including translation templates and compiled formats), are 
+   licensed under the Apache License, Version 2.0, unless explicitly 
+   stated otherwise in subdirectories.
+
+   - Code Contributions: By submitting source code to this repository, 
+     contributors agree to license their work under the Apache License, 
+     Version 2.0.
+
+   - Translation Contributions: Localization files submitted via Hosted 
+     Weblate or pull requests are licensed under Apache License, Version 2.0.
+
+2. BRANDING & PROJECT IDENTITY
+   All logos, icons, application banners, and brand graphics located in 
+   the ./branding/ directory are EXCLUDED from the Apache License 2.0 
+   and are licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 
+   4.0 International (CC BY-NC-ND 4.0).
+
+   - Third-Party & Derivative Builds: Any third-party redistribution, 
+     commercial fork, or derivative build must remove or replace all 
+     protected visual assets located in ./branding/ and must clearly state 
+     that their product is an unofficial modification not endorsed by the 
+     fconvert maintainer.
 
 ========================================================================
 Third-Party Software Notices

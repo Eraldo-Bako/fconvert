@@ -3,7 +3,7 @@ All contributions are welcome. If you find a bug or have a feature request, plea
 
 When thinking of contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. The developers or other contributors might be already working on that specific issue.
 
-When contributing to this repository, you agree to license your additions under the project's license Apache v2.0 (the License). Read the license [here](./LICENSE).
+When contributing to this repository, you agree that your additions will be licensed under the project's main license, **Apache License 2.0** (the License), unless explicitly stated otherwise in subdirectories. Please refer to our [NOTICE](./NOTICE) file for a complete breakdown of module and asset licensing. Read the main license [here](./LICENSE).
 
 Note that we have a [Code Of Conduct](CODE_OF_CONDUCT.md) which you are expected to follow in all your interactions with the project.
 Serious violations of the Code of Conduct will result in a ban from future contributions.
@@ -17,6 +17,12 @@ Their decision is considered final, unless further information/instructions have
 > NOTE: Neither the owner, nor any of the active maintainers, is allowed to use code from a pull-request that has not been accepted first.
 
 ## Guidelines
+### Translation Contributions
+Localization files in the `./po/` directory (in both raw source `.po`/`.pot` and compiled forms) are licensed under the **Apache License, Version 2.0**.
+
+* **Hosted Weblate:** To maintain translation quality, prevent merge conflicts, and streamline localization workflow, translation contributions must be submitted via our [Hosted Weblate project](https://hosted.weblate.org/fconvert).
+* **Pull Requests:** Do **not** submit direct pull requests containing localization files. Direct PRs modifying `./po/` files will be closed; only verified repository maintainers and owners are authorized to merge translation updates into the source tree.
+* **Branding Protection:** Localization strings containing official project identifiers (such as `"fconvert"` or maintainer identity strings) are protected under Section 6 of the Apache License 2.0 and the visual asset terms in `./branding/`. Third-party forks redistributing derivative builds must rebrand these strings prior to distribution.
 ### Instructions for Bugs
 Open an issue providing as much information as possible.
 #### Required:
@@ -100,12 +106,12 @@ Some licenses compatible with Apache v2.0 (the License) include:
 - CC0 / Public Domain
 - Boost Software License (BSL)
 
-Avoid adding code from codebases using the following licenses:
-- GPLv2, GPLv3, and AGPLv3
+Avoid adding **source code** from codebases using the following licenses:
+- GPLv1, GPLv2, GPLv3, and AGPLv3
 - LGPL (v2.1 / v3)
-- Mozilla Public License 2.0 (MPL 2.0) 
+- Mozilla Public License 2.0 (MPL 2.0)
 - Eclipse Public License (EPL)
-- Creative Commons (CC BY-SA, CC BY-NC, etc.)
+- Non-software Creative Commons licenses (CC BY-SA, CC BY-NC, etc.) for source code modules
 - other restrictive, copy-left, non-Apache v2.0 (the License) compatible
 
 ### Allowed sources and use of AI/LLM
@@ -117,6 +123,7 @@ You are not allowed, however, to use them as code debuggers. You are expected to
 The use of such tools is also prohibited when describing the features, bugs, or fixes in your code additions, README.md, and inside descriptions when opening an issue or a pull request.
 
 ### What you are allowed to modify
+> IMPORTANT: The following limits apply to any contributor who is not a verified repository maintainer or owner, unless a temporary grant has been given to you by a verified repository maintainer or owner.
 Freely modify:
 - main.cpp
 - Everything inside the `classes/` directory
@@ -139,6 +146,8 @@ OFF Limits:
 - .gitignore
 - `.github/` directory and everything inside
 - `branding/` directory and everything inside
+- Any file with the `.po` or `.pot` extension and the `po/` directory and everything inside
+- etc
 
 Your pull request should only contain source code, therefore, you mustn't include build artifacts, binaries, or anything either not related or unnecessary.
 

@@ -137,6 +137,10 @@ std::string Program::Get::input(const std::string& prompt, Program::Case lower, 
         Program::end("[ Stream reached EOF, ending the program. ]");
     }
 
+    while (!input.empty() && (input.back() == '\r' || input.back() == '\n')) {
+        input.pop_back();
+    }
+
     if (input.empty()) {
         Program::log("[!] Error: Input could not be resolved. [!]");
         return "";

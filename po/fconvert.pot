@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# fconvert Translation Template
+# Copyright (C) 2023-2026 Eraldo Bako
+# This file is distributed under the same license as the fconvert package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 20:14+0200\n"
+"POT-Creation-Date: 2026-08-06 19:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -346,13 +346,13 @@ msgstr ""
 msgid "[!] Error: File '{}' not found. [!]\n"
 msgstr ""
 
-#: main.cpp:327 classes/image_converter.cpp:318
+#: main.cpp:327 classes/image_converter.cpp:319
 msgid ""
 "[!] Warning: Converting to a RAW image format is not supported, nor "
 "recommended! [!]"
 msgstr ""
 
-#: main.cpp:328 classes/image_converter.cpp:319
+#: main.cpp:328 classes/image_converter.cpp:320
 #, c++-format
 msgid "[!] Error: Detected target is a RAW image format: '{}' [!]"
 msgstr ""
@@ -431,12 +431,12 @@ msgid "Audio filename or path: "
 msgstr ""
 
 #: classes/audio_converter.cpp:121 classes/ebook_converter.cpp:98
-#: classes/image_converter.cpp:300 classes/video_converter.cpp:131
+#: classes/image_converter.cpp:301 classes/video_converter.cpp:131
 msgid "[!] Error: Path could not be resolved. [!]"
 msgstr ""
 
 #. fetch me the desired format w/ safe lowercase conversion
-#: classes/audio_converter.cpp:126 classes/image_converter.cpp:306
+#: classes/audio_converter.cpp:126 classes/image_converter.cpp:307
 msgid "Format: "
 msgstr ""
 
@@ -446,7 +446,7 @@ msgid "[~] Detected: '{}' Quitting... [~]"
 msgstr ""
 
 #: classes/audio_converter.cpp:131 classes/ebook_converter.cpp:117
-#: classes/image_converter.cpp:309 classes/video_converter.cpp:139
+#: classes/image_converter.cpp:310 classes/video_converter.cpp:139
 #: classes/video_converter.cpp:159
 msgid "[!] Successfully stopped the conversion! [!]"
 msgstr ""
@@ -479,7 +479,7 @@ msgid "* Lossy Compressed: MP3, AAC, OGG, M4A, WMA, OPUS\n"
 msgstr ""
 
 #: classes/audio_converter.cpp:145 classes/ebook_converter.cpp:132
-#: classes/image_converter.cpp:333 classes/video_converter.cpp:153
+#: classes/image_converter.cpp:334 classes/video_converter.cpp:153
 msgid ""
 "\n"
 "[-] If you believe this is a bug, make sure to report it. [-]\n"
@@ -518,7 +518,7 @@ msgstr ""
 msgid "Ebook/Document filename or path: "
 msgstr ""
 
-#: classes/ebook_converter.cpp:99 classes/image_converter.cpp:301
+#: classes/ebook_converter.cpp:99 classes/image_converter.cpp:302
 msgid "[!] File not found. [!]\n"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgid ""
 "[~] Quitting... [~]"
 msgstr ""
 
-#: classes/ebook_converter.cpp:129 classes/image_converter.cpp:329
+#: classes/ebook_converter.cpp:129 classes/image_converter.cpp:330
 #: classes/video_converter.cpp:149
 #, c++-format
 msgid ""
@@ -606,143 +606,147 @@ msgstr ""
 
 #. fallback using imagemagic + opencv or vtracer
 #: classes/image_converter.cpp:150
+msgid "[-] Status: Prepearing for external converter. [-]"
+msgstr ""
+
+#: classes/image_converter.cpp:151
 msgid "[-] Status: Writing temporary file. [-]"
 msgstr ""
 
-#: classes/image_converter.cpp:159
+#: classes/image_converter.cpp:160
 msgid "[!] Error: VTracer not found. [!]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:178
+#: classes/image_converter.cpp:179
 msgid "[-] Status: Initiating custom profile setting. [-]"
 msgstr ""
 
-#: classes/image_converter.cpp:181
+#: classes/image_converter.cpp:182
 msgid "Do you want color in your vector tracing? [Y/n] "
 msgstr ""
 
-#: classes/image_converter.cpp:190
+#: classes/image_converter.cpp:191
 msgid "Specify the color precision in vector tracing [1-8]: "
 msgstr ""
 
-#: classes/image_converter.cpp:194 classes/image_converter.cpp:230
+#: classes/image_converter.cpp:195 classes/image_converter.cpp:231
 msgid "[!!] Operation quit by user. Exiting... [!!]"
 msgstr ""
 
-#: classes/image_converter.cpp:202
+#: classes/image_converter.cpp:203
 msgid "[!] Error: Color Precision needs to be a value between 1-8. [!]"
 msgstr ""
 
-#: classes/image_converter.cpp:208
+#: classes/image_converter.cpp:209
 msgid "Specify the gradient step in vector tracing [0-255]: "
 msgstr ""
 
-#: classes/image_converter.cpp:212
+#: classes/image_converter.cpp:213
 msgid "[!!] Operation quitted by user. Exiting... [!!]"
 msgstr ""
 
-#: classes/image_converter.cpp:220
+#: classes/image_converter.cpp:221
 msgid "[!] Error: Gradient Step needs to be a value between 0-255. [!]"
 msgstr ""
 
-#: classes/image_converter.cpp:226
+#: classes/image_converter.cpp:227
 msgid "Specify the amount of filter speckle in vector tracing [0-16]: "
 msgstr ""
 
-#: classes/image_converter.cpp:238
+#: classes/image_converter.cpp:239
 msgid "[!] Error: Filter Speckle needs to be a value between 0-16. [!]"
 msgstr ""
 
-#: classes/image_converter.cpp:250
+#: classes/image_converter.cpp:251
 msgid "[!] Error: ImageMagick or Ghostscript not found. [!]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:256 classes/image_converter.cpp:279
+#: classes/image_converter.cpp:257 classes/image_converter.cpp:280
 msgid "[-] Status: Writing the file. [-]"
 msgstr ""
 
 #. using imagemagick to wrap it into svg
-#: classes/image_converter.cpp:262
+#: classes/image_converter.cpp:263
 msgid "[-] Status: Cleaning temporary files. [-]"
 msgstr ""
 
-#: classes/image_converter.cpp:268
+#: classes/image_converter.cpp:269
 msgid "[!] Error: {foreign} failed to convert to '{format}' [!]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:275
+#: classes/image_converter.cpp:276
 #, c++-format
 msgid "[+] Saved Wrapped Image: {0} [+]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:281 classes/image_converter.cpp:288
+#: classes/image_converter.cpp:282 classes/image_converter.cpp:289
 #, c++-format
 msgid "[+] Saved: {0} [+]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:289
+#: classes/image_converter.cpp:290
 msgid ""
 "[!!] Error: Failed to safely export output file from the internal sandbox. "
 "[!!]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:291
+#: classes/image_converter.cpp:292
 msgid "[!!] Error: Image writing or processing failed. [!!]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:297
+#: classes/image_converter.cpp:298
 msgid "Image filename or path: "
 msgstr ""
 
-#: classes/image_converter.cpp:308 classes/video_converter.cpp:138
+#: classes/image_converter.cpp:309 classes/video_converter.cpp:138
 #, c++-format
 msgid ""
 "[~] Detected: {0} [~]\n"
 "[~] Quitting... [~]"
 msgstr ""
 
-#: classes/image_converter.cpp:330
+#: classes/image_converter.cpp:331
 msgid "Supported image formats include:\n"
 msgstr ""
 
-#: classes/image_converter.cpp:332
+#: classes/image_converter.cpp:333
 msgid "RAW Image formats should never be your target format.\n"
 msgstr ""
 
-#: classes/image_converter.cpp:344
+#: classes/image_converter.cpp:345
 #, c++-format
 msgid "[-] Converting to {0}. [-]\n"
 msgstr ""
 
-#: classes/image_converter.cpp:345
+#: classes/image_converter.cpp:348
 msgid "[-] Select Profile: \n"
 msgstr ""
 
-#: classes/image_converter.cpp:346
+#: classes/image_converter.cpp:349
 msgid "    1  Vector Tracing\n"
 msgstr ""
 
-#: classes/image_converter.cpp:347
+#: classes/image_converter.cpp:350
 msgid "    2  Colorful Vector Tracing\n"
 msgstr ""
 
-#: classes/image_converter.cpp:348
+#: classes/image_converter.cpp:351
 msgid "   [3] Basic Image Precision\n"
 msgstr ""
 
-#: classes/image_converter.cpp:349
+#: classes/image_converter.cpp:352
 msgid "    4  Perfect Image Precision\n"
 msgstr ""
 
-#: classes/image_converter.cpp:350
+#: classes/image_converter.cpp:353
 msgid "    5  Custom\n"
 msgstr ""
 
-#: classes/image_converter.cpp:351
+#: classes/image_converter.cpp:354
 msgid "Choice [3]: "
 msgstr ""
 
-#: classes/image_converter.cpp:395
+#: classes/image_converter.cpp:398
 msgid "[!] Invalid selection. Please enter a number between 1 and 5. [!]"
 msgstr ""
 

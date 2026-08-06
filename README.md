@@ -1,4 +1,4 @@
-<!-- fconvert v2.3.0 | Copyright (c) 2023-2026 Eraldo Bako -->
+<!-- fconvert v2.4.1 | Copyright (c) 2023-2026 Eraldo Bako -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License") -->
 <!-- Maintainer: eraldobako@gmail.com -->
 
@@ -198,11 +198,10 @@ $ sudo pacman -Syyu base-devel cmake ffmpeg opencv
 # Runtime:
 $ sudo pacman -Syyu libraw imagemagick ghostscript libheif libde265 x265
 $ sudo pacman -Syyu pandoc typst 
+$ yay -S vtracer
 ```
-> NOTE: For Arch-based distributions typst is recommended, but you can use:
->
-> **Weasyprint**: `$ sudo pacman -S python-weasyprint`
->
+> NOTE: For Arch-based distributions typst is recommended, but you can use:<br>
+> **Weasyprint**: `$ sudo pacman -S python-weasyprint`<br>
 > **Xelatex**: `$ sudo pacman -S texlive-xetex`
 #### Linux: Fedora Based
 ```bash
@@ -239,6 +238,8 @@ $ sudo apt install pandoc weasyprint
 > vcpkg install libraw graphicsmagick libheif libde265 x265
 > winget install JohnMacFarlane.Pandoc 
 > winget install Typst.Typst
+> winget install Rustlang.Rustup
+> cargo install vtracer
 ```
 > NOTE: If you installed the optional packages(graphicsmagick/imagemagick), get and install ghostscript for Windows: [gs00000w64.exe](https://github.com/artifexsoftware/ghostpdl-downloads/releases)
 #### macOS
@@ -259,6 +260,14 @@ $ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DW
 # set -DWITH_LIBRAW=OFF if not needed
 $ cmake --build build --config Release
 ```
+Windows Exclusive - If you used vcpkg to install dependencies, these will be your build instructions:
+```powershell
+> cd fconvert
+# Replace PATH_TO_VCPKG with your actual vcpkg path
+> PATH_TO_VCPKG\vcpkg.exe install --triplet x64-windows
+> cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="PATH_TO_VCPKG/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_LIBRAW=ON
+> cmake --build build --config Release
+```
 > **Note:** If you built it locally using CMake, the executable will be inside the `build/` directory (run with `./build/fconvert` on Linux/macOS or `.\build\Release\fconvert.exe` on Windows).
 
 Building with GCC - For the majority of up-to-date Linux distributions, use one of the following g++ commands:
@@ -273,11 +282,19 @@ $ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert
 ```
 
 ## Contributing
-Contributions are welcome! If you find a bug or have a feature request, please open an issue and then submit a pull request with your version of the fix/feature.
-Before contributing, you are expected to have read & understood and to follow our [Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
+Contributions are welcome! If you find a bug or have a feature request, please open an issue first. 
+
+* **Code Contributions:** Review our [CONTRIBUTING.md](./CONTRIBUTING.md) guide before submitting pull requests.
+* **Translation Contributions:** Localization edits must be submitted via our [Hosted Weblate project](https://hosted.weblate.org/fconvert) rather than direct pull requests.
+
+Before contributing, you are expected to have read, understood, and agreed to follow our [Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## License
-* Code: [Apache License, Version 2.0](LICENSE)
-* Branding/Logos: [CC BY-NC-ND 4.0](branding/LICENSE)
-* Read the Notice file: [NOTICE](NOTICE)
+* **Source Code & Localization (`./po/`):** [Apache License, Version 2.0](LICENSE)
+* **Branding & Logos (`./branding/`):** [CC BY-NC-ND 4.0](branding/LICENSE)
+* **Official Binary Releases:** Distributed under [Apache License, Version 2.0](LICENSE)
+
+> **Licensing & Brand Summary:** The core application, source code, and localization files in `./po/` are licensed under **Apache 2.0**. Official branding, logos, and visual graphics in `./branding/` are licensed under **CC BY-NC-ND 4.0**. Pursuant to Section 6 of the Apache License 2.0 and our branding terms, third-party forks or derivative distributions must rebrand and scrub protected project identifiers prior to distribution. For complete module breakdowns and third-party software notices, see the [NOTICE](NOTICE) file.
+
 ## Disclaimer
 Please use this utility responsibly and comply with relevant copyright laws. The authors are not responsible for any misuse of this software.

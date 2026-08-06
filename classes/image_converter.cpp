@@ -147,6 +147,7 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent,
     bool conversion_success = false;
     if (external_write) { // fallback using imagemagic + opencv or vtracer
 
+        Program::log(_("[-] Status: Prepearing for external converter. [-]"));
         Program::log(_("[-] Status: Writing temporary file. [-]"));
         std::string temp_png = (std::filesystem::path(session.safe_output()).parent_path() / "temp_holder.png").string();
         cv::imwrite(temp_png, img); // temp png using opencv
@@ -336,12 +337,14 @@ void image() {
     
     Image::SVG SVG_Precision = Image::SVG::INACTIVE; // when non-vector conversion
     {
-        std::string in_ext = in.extension().string();
-        bool targetIsVector = (fmt == "svg" || fmt == "ai" || fmt == "pdf");
+        bool targetIsVector = (fmt == "svg" || fmt == "ai");
         if (targetIsVector) {
             Program::log(_("[-] Detected: Converting to a vector-based format! [-]"));
             std::string prompt = 
-            fmt::format(_("[-] Converting to {0}. [-]\n"), fmt) +
+            fmt::format(
+                _("[-] Converting to {0}. [-]\n"), 
+                fmt
+            ) +
             _("[-] Select Profile: \n") +
             _("    1  Vector Tracing\n") +
             _("    2  Colorful Vector Tracing\n") +
