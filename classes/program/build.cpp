@@ -40,7 +40,7 @@ std::string Program::Build::command(const Program::Build::cmdType type, const st
                    cleanOutput + "\"";
         else if (params == "layered") 
             return magickPATH + " -density 300 -background none \"" + 
-                   cleanInput + "\" \"" + 
+                   cleanInput + "[0]\" \"" + 
                    cleanOutput + "\"";
         else {
             std::string extraParams = params.empty() ? "" : params + " ";

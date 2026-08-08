@@ -118,13 +118,14 @@ Ensure you have the following installed on your system:
 
 Build Dependencies:
 * **C++17** compatible compiler (GCC/Clang)
-* **FFmpeg** (for video and audio processing)
 * **OpenCV 4+** (for image processing)
+* **LibRaw** (for RAW image processing) (optional)
 
 Runtime Dependencies (optional):
-* **LibRaw** (for RAW image processing)
-* **ImageMagick** (for vector/composite)
-* **Ghostscript** (for vector/composite)
+* **FFmpeg** (for video and audio processing)
+* **ImageMagick** (for vector/composite/layered)
+* **Ghostscript** (for ImageMagick)
+* **VTracer** (for vector tracing)
 * **Pandoc** (for experimental document processing)
 * **Typst**, **Weasyprint**, or **Xelatex** (as a PDF engine)
 
@@ -132,7 +133,7 @@ Runtime Dependencies (optional):
 Download the latest release in the Releases Page of the repository.
 - Linux: Download `fconvert-vX.X.X-x86_64.AppImage` (no dependencies required, contains the full program)
 - Windows: Download `fconvert-vX.X.X-windows-x86_64.zip` (no dependencies required, contains the full program)
-- macOS: There is no official release of fconvert for macOS. Try building it manually following the build instructions below.
+- macOS: While there is no official release of fconvert for macOS, the code (kind of) supports it. Try building it manually following the build instructions below.
 
 ### Installation (Arch Linux)
 Clone the repo and use `makepkg` to install system-wide:
@@ -141,7 +142,7 @@ $ git clone https://github.com/Eraldo-Bako/fconvert
 $ cd fconvert
 $ makepkg -si
 ```
-> **Note:** You could use a package helper like ```yay``` or ```paru``` since the package is in the AUR: ```yay -S fconvert``` or ```paru -S fconvert```
+> **Note:** You could use a package helper like `yay` or `paru` since the package is in the AUR: `yay -S fconvert` or `paru -S fconvert`
 ## Usage
 > **Note:** If you installed the package system-wide, you can simply use `fconvert`. If you are running the binary locally from the build folder, use `./fconvert`.
 ### Quick Convert (CLI Mode)
@@ -193,67 +194,74 @@ Convert [I]mage / [V]ideo / [A]udio / [E]book / [Q]uit:
 #### Linux: Arch Based
 ```bash
 # Build:
-$ sudo pacman -Syyu base-devel cmake ffmpeg opencv
+$ sudo pacman -Syyu
+$ sudo pacman -S --needed base-devel gcc cmake fmt gettext opencv libraw
 
 # Runtime:
-$ sudo pacman -Syyu libraw imagemagick ghostscript libheif libde265 x265
-$ sudo pacman -Syyu pandoc typst 
+$ sudo pacman -S --needed ffmpeg imagemagick ghostscript libheif libde265 x265
+$ sudo pacman -S pandoc typst 
 $ yay -S vtracer
 ```
-> NOTE: For Arch-based distributions typst is recommended, but you can use:<br>
+> NOTE: For Arch-based distributions typst is recommended, but you can also use:<br>
 > **Weasyprint**: `$ sudo pacman -S python-weasyprint`<br>
 > **Xelatex**: `$ sudo pacman -S texlive-xetex`
 #### Linux: Fedora Based
 ```bash
 # Build:
 $ sudo dnf check-update && sudo dnf upgrade
-$ sudo dnf install @development-tools && sudo dnf install cmake ffmpeg-free opencv-devel
+$ sudo dnf install @development-tools && sudo dnf install cmake fmt-devel gettext opencv-devel LibRaw-devel
 
 # Runtime:
-$ sudo dnf install LibRaw-devel ImageMagick ghostscript libheif-devel libde265-devel x265-devel
+$ sudo dnf install ffmpeg-free ImageMagick ghostscript libheif-devel libde265-devel x265-devel
 $ sudo dnf install pandoc weasyprint
+$ sudo dnf install rust cargo && cargo install vtracer
 ```
-> NOTE: If you want to use typst as the PDF engine, for Fedora-based distributions, use copr:
->
-> Enable the community Copr repository: `$ sudo dnf copr enable -y claaj/typst`
->
+> NOTE: If you want to use typst as the PDF engine, for Fedora-based distributions, use copr:<br>
+> Enable the community Copr repository: `$ sudo dnf copr enable -y claaj/typst`<br>
 > Install via DNF normally: `$ sudo dnf install typst`
 #### Linux: Debian Based(Ubuntu)
 ```bash
 # Build:
-$ sudo apt update && sudo apt install build-essential cmake ffmpeg libopencv-dev
+$ sudo apt update && sudo apt install build-essential cmake libfmt-dev gettext libopencv-dev libraw-dev
 
 # Runtime:
-$ sudo apt install libraw-dev imagemagick ghostscript libheif-dev libde265-dev libx265-dev
+$ sudo apt install ffmpeg imagemagick ghostscript libheif-dev libde265-dev libx265-dev
 $ sudo apt install pandoc weasyprint
+$ sudo apt install rustc cargo && cargo install vtracer
 ```
 #### Windows (winget for tools, vcpkg for libraries)
 ```powershell
 # Build:
-> winget install Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools"
-> winget install Kitware.CMake
-> vcpkg install ffmpeg opencv4
+PS> winget install Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools"
+PS> winget install Kitware.CMake
+# Either install build dependencies manually
+PS> vcpkg install fmt gettext libraw opencv4
+# Or just run this in the project's root
+PS> vcpkg install --triplet x64-windows
 
 # Runtime:
-> vcpkg install libraw graphicsmagick libheif libde265 x265
-> winget install JohnMacFarlane.Pandoc 
-> winget install Typst.Typst
-> winget install Rustlang.Rustup
-> cargo install vtracer
+PS> vcpkg install graphicsmagick libheif libde265 x265
+PS> winget install ImageMagick.ImageMagick Gyan.FFmpeg
+PS> winget install JohnMacFarlane.Pandoc Typst.Typst
+PS> winget install Rustlang.Rustup
+PS> cargo install vtracer
 ```
 > NOTE: If you installed the optional packages(graphicsmagick/imagemagick), get and install ghostscript for Windows: [gs00000w64.exe](https://github.com/artifexsoftware/ghostpdl-downloads/releases)
 #### macOS
 ```zsh
 # Build (Requires Xcode Command Line Tools installed):
 $ xcode-select --install
-$ brew install cmake ffmpeg opencv
+$ brew install cmake fmt gettext opencv libraw
 
 # Runtime:
-$ brew install libraw imagemagick ghostscript libheif libde265 x265
+$ brew install ffmpeg imagemagick ghostscript libheif libde265 x265
 $ brew install pandoc typst
+$ brew install rust 
+$ cargo install vtracer
 ```
+> Note: Homebrew keeps gettext isolated. If CMake fails to find it, run `$ export gettext_DIR="$(brew --prefix gettext)"` before building.
 ### Build Instructions
-For universal compatibility use CMake:
+#### For universal compatibility use CMake:
 ```bash
 $ cd fconvert
 $ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_LIBRAW=ON 
@@ -262,23 +270,41 @@ $ cmake --build build --config Release
 ```
 Windows Exclusive - If you used vcpkg to install dependencies, these will be your build instructions:
 ```powershell
-> cd fconvert
-# Replace PATH_TO_VCPKG with your actual vcpkg path
-> PATH_TO_VCPKG\vcpkg.exe install --triplet x64-windows
-> cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="PATH_TO_VCPKG/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_LIBRAW=ON
-> cmake --build build --config Release
+PS> cd fconvert
+PS> vcpkg install --triplet x64-windows # If you haven't installed build libraries
+PS> cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="PATH_TO_VCPKG/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_LIBRAW=ON
+PS> cmake --build build --config Release
 ```
 > **Note:** If you built it locally using CMake, the executable will be inside the `build/` directory (run with `./build/fconvert` on Linux/macOS or `.\build\Release\fconvert.exe` on Windows).
 
-Building with GCC - For the majority of up-to-date Linux distributions, use one of the following g++ commands:
+#### Building with GCC
+For the majority of up-to-date Linux distributions, use one of the following g++ commands:
 
 ```bash
 $ cd fconvert
 # Linux
-$ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv4 libraw) $CXXFLAGS $LDFLAGS
-# Arch Based
-$ g++ -std=c++17 -O3 -s main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv5 libraw) $CXXFLAGS $LDFLAGS
-# omit libraw if not needed
+$ g++ -std=c++17 -O3 -s -DHAS_LIBRAW $CXXFLAGS main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv4 libraw fmt) $LDFLAGS
+
+# Without LibRaw support:
+$ g++ -std=c++17 -O3 -s $CXXFLAGS main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv4 fmt) $LDFLAGS
+
+# Arch Based (repos now ship with opencv5)
+$ g++ -std=c++17 -O3 -s -DHAS_LIBRAW $CXXFLAGS main.cpp classes/*.cpp classes/program/*.cpp -o fconvert $(pkg-config --cflags --libs opencv5 libraw fmt) $LDFLAGS
+```
+For Windows(without vcpkg) follow one of the following commands:
+```bash
+# Windows MSYS2 (bash) with LibRaw
+$ g++ -std=c++17 -O3 -s -DHAS_LIBRAW $CXXFLAGS main.cpp classes/*.cpp classes/program/*.cpp -o fconvert.exe $(pkg-config --cflags --libs opencv4 libraw fmt) $LDFLAGS
+```
+
+Windows Native(you need to specify the directory of the libraries)
+```powershell
+# Modern (powershell)
+PS> g++ -std=c++17 -O3 -s -DHAS_LIBRAW $env:CXXFLAGS main.cpp classes/*.cpp classes/program/*.cpp -o fconvert.exe -I"C:/deps/include" -L"C:/deps/lib" -lopencv_core4 -lopencv_imgproc4 -lopencv_imgcodecs4 -lraw -lfmt $env:LDFLAGS
+```
+```cmd
+:: Classic Command Prompt (cmd.exe)
+> g++ -std=c++17 -O3 -s -DHAS_LIBRAW %CXXFLAGS% main.cpp classes/*.cpp classes/program/*.cpp -o fconvert.exe -I"C:\deps\include" -L"C:\deps\lib" -lopencv_core4 -lopencv_imgproc4 -lopencv_imgcodecs4 -lraw -lfmt %LDFLAGS%
 ```
 
 ## Contributing

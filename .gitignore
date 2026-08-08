@@ -22,6 +22,7 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 AppDir/
+vcpkg_installed/
 
 # Offline Features
 *.test

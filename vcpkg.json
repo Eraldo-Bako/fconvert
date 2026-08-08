@@ -3,7 +3,9 @@
   "version": "2.4.1",
   "dependencies": [
     "opencv",
-    "libraw"
+    "libraw",
+    "fmt",
+    "gettext"
   ],
   "builtin-baseline": "b6905a8c4f65e38dbf75475919c83120745622c0"
 }

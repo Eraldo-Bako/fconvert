@@ -73,6 +73,13 @@ endif()
 
 add_executable(fconvert main.cpp ${CLASS_SOURCES} ${WINDOWS_RESOURCES})
 
+#libintl.h
+if(Intl_INCLUDE_DIRS)
+    target_include_directories(fconvert PRIVATE ${Intl_INCLUDE_DIRS})
+elseif(WIN32 AND VCPKG_TARGET_TRIPLET)
+    target_include_directories(fconvert PRIVATE "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+endif()
+
 target_link_libraries(fconvert PRIVATE ${OpenCV_LIBS} Intl::Intl fmt::fmt)
 
 if(WITH_LIBRAW AND LIBRAW_FOUND)

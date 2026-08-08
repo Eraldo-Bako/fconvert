@@ -1,7 +1,7 @@
 /*
 ------------------------------------------------------------------------
 
-    fconvert v2.4.0
+    fconvert v2.4.1
     A fast C++ CLI converter for Images, Videos, Audios, and Ebooks!
     License: Apache 2.0
     Written by Eraldo Bako.

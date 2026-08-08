@@ -13,6 +13,7 @@
 #include <limits>
 
 #if defined(_WIN32)
+#define NOMINMAX
 #include <windows.h>
 
 #elif defined(__APPLE__)
@@ -25,6 +26,7 @@
 std::string Program::Get::localeDirectory() {
     const char* appdir = std::getenv("APPDIR");
     if (appdir) return std::string(appdir) + LOCALEDIR;
+    std::filesystem::path exec_dir;
 
     try {
         std::filesystem::path exec_path;
@@ -44,7 +46,7 @@ std::string Program::Get::localeDirectory() {
 #endif
 
         if (!exec_path.empty()) {
-            std::filesystem::path exec_dir = exec_path.parent_path();
+            exec_dir = exec_path.parent_path();
 
             std::filesystem::path build_po = exec_dir / "po";
             if (std::filesystem::exists(build_po)) return build_po.string();
