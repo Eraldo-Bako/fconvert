@@ -1,0 +1,9 @@
+NEXT:
+    - Translation Improvements
+    - Multi-file conversion
+    - Print Cache Directory Implementation
+    - Specify Cache Directory Implementation
+    - Document Improvements
+    - Native Conversion(instead of relying on outside tools)
+GENERAL: 
+    - UNIX STANDARD IMPLEMENTATION

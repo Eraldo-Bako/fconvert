@@ -1,10 +1,16 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
 #pragma once
 #ifndef PROGRAM_HANDLER_HPP
 #define PROGRAM_HANDLER_HPP
+
+#if defined(_WIN32) || defined(_WIN64)
+#define WINBLOAT true
+#else
+#define WINBLOAT false
+#endif
 
 #include <filesystem>
 #include <string>
