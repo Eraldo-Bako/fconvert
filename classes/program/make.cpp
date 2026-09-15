@@ -17,7 +17,11 @@ std::filesystem::path Program::Make::logFile(const std::string& time) {
     std::replace(sanitizedTime.begin(), sanitizedTime.end(), ':', '_');
 
     std::string logFilename = "fconvert-" + sanitizedTime + ".log";
-    std::filesystem::path logPath = Program::Get::logDirectory() / logFilename;
+    std::filesystem::path logPath = (
+        !LOG_DIRECTORY.empty() 
+            ? Program::LOG_DIRECTORY 
+            : Program::Get::logDirectory()
+        ) / logFilename;
 
     try {
         if (!std::filesystem::exists(logPath)) {

@@ -1,4 +1,4 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -313,7 +313,9 @@ void image() {
 
     {    
         bool targetIsRAWImage = (fmt == "cr2" || fmt == "nef" || fmt == "arw" || 
-                                fmt == "dng" || fmt == "crw");
+                                 fmt == "dng" || fmt == "crw" || fmt == "cr3" || 
+                                 fmt == "raf" || fmt == "rw2" || fmt == "pef" || 
+                                 fmt == "orf");
 
         if (targetIsRAWImage) {
             Program::log(_("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]"));
@@ -340,18 +342,20 @@ void image() {
         bool targetIsVector = (fmt == "svg" || fmt == "ai");
         if (targetIsVector) {
             Program::log(_("[-] Detected: Converting to a vector-based format! [-]"));
-            std::string prompt = 
-            fmt::format(
-                _("[-] Converting to {0}. [-]\n"), 
-                fmt
-            ) +
-            _("[-] Select Profile: \n") +
-            _("    1  Vector Tracing\n") +
-            _("    2  Colorful Vector Tracing\n") +
-            _("   [3] Basic Image Precision\n") +
-            _("    4  Perfect Image Precision\n") +
-            _("    5  Custom\n") +
-            _("Choice [3]: ");
+            std::string prompt = [&]() {
+            return 
+                fmt::format(
+                    _("[-] Converting to {0}. [-]\n"), 
+                    fmt
+                ) +
+                _("[-] Select Profile: \n") +
+                _("    1  Vector Tracing\n") +
+                _("    2  Colorful Vector Tracing\n") +
+                _("   [3] Basic Image Precision\n") +
+                _("    4  Perfect Image Precision\n") +
+                _("    5  Custom\n") +
+                _("Choice [3]: ");
+            }();
 
             while (true) {
                 std::string input = Program::Get::input(prompt, Program::Case::Lower, Program::InputType::noWS);

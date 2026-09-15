@@ -108,8 +108,14 @@ std::filesystem::path PathHandler::get_output_path(const std::filesystem::path& 
         formattedExt = "." + extension; // impossible case, reporting as an error catcher
         Program::log(_("[~] Status: Prepending dot to extension: ") + formattedExt);
     }
-    std::filesystem::path out = outDir / absoluteInput.stem(); // full path + file name
-    out.replace_extension(formattedExt); // appending extension
+
+    //fix for multiple files
+    //old:
+    //std::filesystem::path out = outDir / absoluteInput.stem(); // full path + file name
+    //out.replace_extension(formattedExt); // appending extension
+    //new
+    std::filesystem::path out = outDir / (absoluteInput.stem().string() + formattedExt);
+
     Program::log(_("[-] Result: Successfully defined output file directory and extension as: ") + out.string());
     return out;
 }

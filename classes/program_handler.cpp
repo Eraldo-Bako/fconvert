@@ -1,4 +1,4 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -55,7 +55,6 @@ void Program::log(const std::string& msg, const Program::LogDest dest) {
 
 // aggressive, using this as a last resort if sth goes rly bad
 void Program::end(const std::string& msg) {
-
     std::cerr << msg << std::endl;
     std::cerr << Program::Color::RED
               << _("[!!] Critical Warning: Forcefully ending the program. [!!]\n")
@@ -75,7 +74,6 @@ void Program::end(const std::string& msg) {
     
     std::fflush(nullptr);
     std::exit(EXIT_FAILURE);
-
 }
 
 void Program::print(const std::string& msg, PrintType type) {

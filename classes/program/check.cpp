@@ -28,7 +28,7 @@ bool Program::Check::is_running_as_root() {
                                  }
     return is_admin == TRUE;
 #else
-    return (geteuid() == 0); // 0 means root
+    return (geteuid() == 0); // 0 == root
 #endif
 }
 

@@ -1,26 +1,25 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1-rc3 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
 #include "get.hpp"
 #include "../program_handler.hpp"
 
-#include <algorithm>
 #include <cctype>
 #include <ctime>
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 #if defined(_WIN32)
 #define NOMINMAX
 #include <windows.h>
 
 #elif defined(__APPLE__)
-
 #include <mach-o/dyld.h>
 #include <climits>
-
 #endif
 
 std::string Program::Get::localeDirectory() {
@@ -159,6 +158,68 @@ std::string Program::Get::input(const std::string& prompt, Program::Case lower, 
 
     Program::log("[-] Status: Successfully acquired input: " + input + " [-]");
     return input;
+}
+
+std::vector<ParsedInput> Program::Get::multipleInput(const std::string& fullInput) {
+    std::vector<ParsedInput> tokens;
+    std::string current_token;
+    bool inside_quotes = false;
+    char quote_char = '\0';
+
+    // Helper lambda to process and push a verified token
+    auto push_token = [&](const std::string& path_str) {
+        std::string ext = std::filesystem::path(path_str).extension().string();
+        
+        // Convert to lowercase to ensure consistency (.JPG -> .jpg)
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
+
+        // If no extension exists, read the magic bytes
+        if (ext.empty()) {
+            ext = Program::Get::extensionFromHeader(path_str);
+        }
+
+        tokens.push_back({path_str, ext});
+    };
+
+    for (size_t i = 0; i < fullInput.length(); ++i) {
+        char c = fullInput[i];
+
+        if ((c == '"' || c == '\'') && !inside_quotes && current_token.empty()) {
+            inside_quotes = true;
+            quote_char = c;
+            continue; 
+        }
+
+        if (inside_quotes && c == quote_char) {
+            inside_quotes = false;
+            quote_char = '\0';
+            continue; 
+        }
+
+        if (std::isspace(static_cast<unsigned char>(c)) && !inside_quotes) {
+            if (!current_token.empty()) {
+                if (std::filesystem::exists(current_token)) {
+                    push_token(current_token); // Use the helper
+                    current_token.clear();
+                } else {
+                    current_token += c;
+                }
+            }
+        } else {
+            current_token += c;
+        }
+    }
+
+    if (!current_token.empty()) {
+        if (std::filesystem::exists(current_token)) {
+            push_token(current_token);
+        } else if (tokens.empty()) {
+            // Ultimate fallback if nothing exists and it's just a raw string
+            tokens.push_back({fullInput, ""});
+        }
+    }
+
+    return tokens;
 }
 
 std::string Program::Get::toolPath(const std::string& baseToolName) {

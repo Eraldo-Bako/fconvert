@@ -2,7 +2,7 @@
 ------------------------------------------------------------------------
 
     fconvert v2.4.1
-    A fast C++ CLI converter for Images, Videos, Audios, and Ebooks!
+    A fast C++ CLI converter for Images, Videos, Audios, and eBooks!
     License: Apache 2.0
     Written by Eraldo Bako.
     Maintainer: eraldobako@gmail.com
@@ -34,33 +34,34 @@ limitations under the License.
 */
 
 ///////////////////////////////////////////////////////////////
-// The official info for this program.
+// The official info for fconvert.
 #define PROGRAM_NAME "fconvert"
+#define PROGRAM_VERSION "v2.4.1"
 #define PROGRAM_AUTHOR "Eraldo Bako"
 #define PROGRAM_AUTHOR_EMAIL "eraldobako@gmail.com"
 #define PROGRAM_LICENSE "Apache v2.0, the License"
 
 extern "C" [[gnu::used, gnu::section(".metadata")]] inline const char METADATA_BANNER[] = 
-    "=== " PROGRAM_NAME " | " PROGRAM_AUTHOR " " PROGRAM_AUTHOR_EMAIL " | " PROGRAM_LICENSE " ===";
+    "=== " PROGRAM_NAME " " PROGRAM_VERSION " | " PROGRAM_AUTHOR " " PROGRAM_AUTHOR_EMAIL " | " PROGRAM_LICENSE " ===";
 
 ///////////////////////////////////////////////////////////////
 
 #include "classes/program_handler.hpp"
 #include "classes/path_handler.hpp"
 
-#include "classes/image_converter.hpp"
-#include "classes/video_converter.hpp"
 #include "classes/audio_converter.hpp"
 #include "classes/ebook_converter.hpp"
+#include "classes/image_converter.hpp"
+#include "classes/video_converter.hpp"
 
-#include <iostream>
-#include <cstdlib>
-#include <vector>
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
-void print_version(const char* program_name = PROGRAM_NAME) {
-    std::cout << program_name << " v2.4.1\n"
+void print_version(const char* s_program_name = PROGRAM_NAME) {
+    std::cout << s_program_name << " " << PROGRAM_VERSION << "\n"
               << fmt::format(_("Copyright (C) 2023-2026 {0}\n"), PROGRAM_AUTHOR)
               << _("Licensed under the Apache License, Version 2.0 (the \"License\")\n")
               << fmt::format(_("Read a copy of the license at {0}\n\n"), "<https://www.apache.org/licenses/LICENSE-2.0>")
@@ -93,16 +94,16 @@ void print_list() {
               << _("  Note: Inputting a video with an audio extension auto-extracts audio.\n\n");
 }
 
-void print_help(const char* program_name, int status = EXIT_SUCCESS) {
+void print_help(const char* s_program_name, int status = EXIT_SUCCESS) {
 
     if (status != EXIT_SUCCESS) {
-        std::cerr << fmt::format(_("Try '{0} --help' for more information.\n"), program_name);
+        std::cerr << fmt::format(_("Try '{0}' for more information.\n"), s_program_name " --help");
         std::exit(status);
     }
 
     // Usage and Summary
-    std::cout << fmt::format(_("Usage: {0} [OPTIONS]\n"), program_name)
-              << fmt::format(_("       {0} -f <file-name> -<ext>\n"), program_name)
+    std::cout << fmt::format(_("Usage: {0} [OPTIONS]\n"), s_program_name)
+              << fmt::format(_("       {0} -f <file-name> -<ext>\n"), s_program_name)
               << _("Info: Convert media files to the specified formats.\n\n");
 
     // Options
@@ -118,12 +119,12 @@ void print_help(const char* program_name, int status = EXIT_SUCCESS) {
 
     // Notes & Examples
     std::cout << _("Note:\n")
-              << fmt::format(_("  {0} accepts absolute or relative file paths.\n"), program_name)
+              << fmt::format(_("  {0} accepts absolute or relative file paths.\n"), s_program_name)
               << _("If no path is provided, it defaults to searching in the sandbox directory.\n\n")
               << _("Examples:\n")
-              << fmt::format(_("  {0} -f /path/to/file.jpg -png\n\n"), program_name)
+              << fmt::format(_("  {0} -f /path/to/file.jpg -png\n\n"), s_program_name)
               << _("Interactive Mode:\n")
-              << fmt::format(_("  Run {0} without flags to enter the guided menu.\n\n"), program_name);
+              << fmt::format(_("  Run {0} without flags to enter the guided menu.\n\n"), s_program_name);
 
     // Dependencies
     std::cout << "\n" << _("Make sure the required external tools are installed and accessible: \n")
@@ -141,11 +142,11 @@ void print_help(const char* program_name, int status = EXIT_SUCCESS) {
     std::cout << "========================================================================\n\n";
 
     // Program Info
-    print_version(program_name);
+    print_version(s_program_name);
 }
 
 void clear_screen() {
-    if(WINBLOAT) std::system("cls");
+    if(WINDOWS) std::system("cls");
     else std::cout << "\033[3J\033[H\033[2J" << std::flush;
 }
 
@@ -210,9 +211,9 @@ int main(int argc, char* argv[]) {
 
     std::setlocale(LC_ALL, "");
     std::string loc_dir = Program::Get::localeDirectory();
-    bindtextdomain("fconvert", loc_dir.c_str());
-    bind_textdomain_codeset("fconvert", "UTF-8");
-    textdomain("fconvert");
+    bindtextdomain(PROGRAM_NAME, loc_dir.c_str());
+    bind_textdomain_codeset(PROGRAM_NAME, "UTF-8");
+    textdomain(PROGRAM_NAME);
 
     {
         if (Program::Check::is_running_as_root()) {
@@ -241,7 +242,8 @@ int main(int argc, char* argv[]) {
 
             std::string confirmation2;
             std::cout << Program::Color::YELLOW << _("Are you sure about that?\n")
-                    << Program::Color::RESET << fmt::format(_("Type '{0}' to proceed: "), "PROCEED");
+                      << Program::Color::RESET 
+                      << fmt::format(_("Type '{0}' to proceed: "), "PROCEED");
             std::getline(std::cin, confirmation2);
 
             if (confirmation2 != "PROCEED") {
@@ -258,7 +260,7 @@ int main(int argc, char* argv[]) {
 
         }
     }
-    
+    // main execution
     std::vector<std::string> args(argv, argv + argc);
 
     if (args.size() > 1) {
@@ -277,11 +279,22 @@ int main(int argc, char* argv[]) {
             Program::clearCache();
             return EXIT_SUCCESS;
         } else if (arg == "-pcd" || arg == "--print-cache-dir") {
-            //TODO
+            std::cout << Program::Get::logDirectory();
             return EXIT_SUCCESS;
         } else if (arg == "-scd" || arg == "--specify-cache-dir") {
-            //TODO
-            return EXIT_SUCCESS;
+            std::string pathInput = Program::Get::input("Specify Cache Directory for this instance: ");
+            std::error_code ec;
+            
+            if (std::filesystem::is_directory(pathInput, ec)) {
+                Program::LOG_DIRECTORY = std::filesystem::canonical(pathInput, ec);
+                if (ec) {
+                    Program::print("[!] Error: Could not resolve canonical path! [!]", Program::PrintType::Error);
+                    return EXIT_FAILURE;
+                }
+            } else {
+                Program::print("[!] Error: Provided path is not a valid directory, or access is denied! [!]");
+                return EXIT_FAILURE;
+            }
         }
     }
 
@@ -312,12 +325,12 @@ int main(int argc, char* argv[]) {
             } else if (arg == "-f" || arg == "--file") {
                 if (i + 1 >= args.size()) { // didn't find any argument
                     Program::print(_("[!] Error: -f requires a file path argument [!]\n"), Program::PrintType::Error);
-                    return 1;
+                    return EXIT_FAILURE;
                 }
                 std::string next_arg = args[i + 1];
                 if (next_arg[0] == '-') { // found flag instead of file path
                     Program::print(fmt::format(_("[!] Error: -f requires a file path, but found a flag: '{0}' [!]\n"), next_arg), Program::PrintType::Error);
-                    return 1;
+                    return EXIT_FAILURE;
                 }
                 quick_file = args[++i];
                 FILE_FLAG_PASSED = true;
@@ -334,14 +347,14 @@ int main(int argc, char* argv[]) {
 
     if (!quick_file.empty() && quick_ext.empty()) { // if no extension is provided
         Program::print(_("[!] Error: -f requires a file extension after file path, but found nothing. [!]\n"), Program::PrintType::Error);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (!quick_file.empty() && !quick_ext.empty()) { // the -f logic for quick conversion
         std::filesystem::path in = PathHandler::resolve_input(quick_file.string());
         if (in.empty()) { 
             Program::print(fmt::format(_("[!] Error: File '{0}' not found. [!]\n"), quick_file.string()), Program::PrintType::Error);
-            return 1; 
+            return EXIT_FAILURE; 
         }
         
         std::string in_ext = in.extension().string();
@@ -394,7 +407,7 @@ int main(int argc, char* argv[]) {
         } else if (targetIsDOC) {
             ebook_convert_logic(in, quick_ext, true);
         } else {
-            Program::print(fmt::format(_("[!] Error: Format '-{}' is not supported. [!]\n"), quick_ext), Program::PrintType::Error);
+            Program::print(fmt::format(_("[!] Error: Format '-{0}' is not supported. [!]\n"), quick_ext), Program::PrintType::Error);
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;

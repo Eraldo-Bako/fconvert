@@ -7,9 +7,9 @@
 #define PROGRAM_HANDLER_HPP
 
 #if defined(_WIN32) || defined(_WIN64)
-#define WINBLOAT true
+#define WINDOWS true
 #else
-#define WINBLOAT false
+#define WINDOWS false
 #endif
 
 #include <filesystem>
@@ -31,6 +31,7 @@ namespace Program {
     enum class PrintType { Normal, Error };
     enum class LogDest { None, Console, File, All };
 
+    std::filesystem::path LOG_DIRECTORY;
     inline std::filesystem::path activeLogPath = "";
     inline bool debug_mode = false;
 

@@ -8,6 +8,7 @@
 #include "secure_conversion_session.hpp"
 
 #include <iostream>
+#include <vector>
 #include <set>
 #include <algorithm>
 #include <fmt/core.h>
@@ -113,12 +114,13 @@ void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
     }
 }
 
-void audio() {
+void audio() {  
+    // vector type holds the ParsedInput struct
+    std::vector<Program::Get::ParsedInput> raw_inputs = 
+        Program::Get::multipleInput(Program::Get::input(_("Audio filename(s) or path(s): ")));
 
-    std::string name = Program::Get::input(_("Audio filename or path: "));
-    std::filesystem::path in = PathHandler::resolve_input(name);
-    if (in.empty()) {
-        Program::log(_("[!] Error: Path could not be resolved. [!]"));
+    if (raw_inputs.empty()) {
+        Program::log(_("[!] Error: No input paths provided. [!]"));
         return;
     }
 
@@ -144,6 +146,23 @@ void audio() {
                   << _("* Lossy Compressed: MP3, AAC, OGG, M4A, WMA, OPUS\n")
                   << _("\n[-] If you believe this is a bug, make sure to report it. [-]\n");
         return;
-    } // actual conversion logic
-    audio_convert_logic(in, fmt, false);
+    } 
+    
+    //experimental - multi input
+    // actual conversion logic
+    // Process each resolved path sequentially
+    for (const auto& raw_input : raw_inputs) {
+        
+        // should access the .path member of the ParsedInput struct
+        std::filesystem::path in = PathHandler::resolve_input(raw_input.path);
+        
+        if (in.empty()) {
+            std::cout << fmt::format(_("[!] Warning: Path could not be resolved for '{0}'. Skipping...\n"), raw_input.path);
+            Program::log(fmt::format("[!] Path resolution failed for: {0}", raw_input.path));
+            continue;
+        }
+
+        // Actual conversion logic executed 1 by 1
+        audio_convert_logic(in, raw_input.extension, fmt, false);
+    }
 }
