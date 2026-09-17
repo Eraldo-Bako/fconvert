@@ -160,26 +160,59 @@ std::string Program::Get::input(const std::string& prompt, Program::Case lower, 
     return input;
 }
 
-std::vector<ParsedInput> Program::Get::multipleInput(const std::string& fullInput) {
-    std::vector<ParsedInput> tokens;
+std::vector<Program::Get::ParsedInput> Program::Get::multipleInput(const std::string& fullInput) {
+    std::vector<Program::Get::ParsedInput> tokens;
+
+    // Helper lambda to process and push a verified token
+    auto push_token = [&](const std::string& s_l_path_str) {
+        std::string l_ext = std::filesystem::path(s_l_path_str).extension().string();
+        
+        // Convert to lowercase to ensure consistency (.JPG -> .jpg)
+        std::transform(l_ext.begin(), l_ext.end(), l_ext.begin(), [](unsigned char c){ return std::tolower(c); });
+
+        // If no extension was found, read the magic bytes
+        if (l_ext.empty()) {
+            l_ext = Program::Get::extensionFromHeader(s_l_path_str);
+        }
+
+        tokens.push_back({s_l_path_str, l_ext});
+    };
+
+    // Helper lambda to trim whitespace and strip surrounding quotes
+    auto clean_segment = [](std::string l_segment) -> std::string {
+        size_t l_start = l_segment.find_first_not_of(" \t\n\r");
+        if (l_start == std::string::npos) return "";
+        size_t l_end = l_segment.find_last_not_of(" \t\n\r");
+        l_segment = l_segment.substr(l_start, l_end - l_start + 1);
+
+        if (l_segment.size() >= 2 && (
+                (l_segment.front() == '"' && l_segment.back() == '"') || 
+                (l_segment.front() == '\'' && l_segment.back() == '\'')
+            )) 
+        {
+            l_segment = l_segment.substr(1, l_segment.size() - 2);
+        }
+        return l_segment;
+    };
+
+    // Expected '|' delimiter detected
+    if (fullInput.find('|') != std::string::npos) {
+        std::stringstream string_stream(fullInput);
+        std::string raw_segment;
+
+        while (std::getline(string_stream, raw_segment, '|')) {
+            std::string path_str = clean_segment(raw_segment);
+            if (!path_str.empty() && std::filesystem::exists(path_str)) {
+                push_token(path_str);
+            }
+        }
+        return tokens;
+    }
+
+    // Fallback, trying to decipher the input
     std::string current_token;
     bool inside_quotes = false;
     char quote_char = '\0';
-
-    // Helper lambda to process and push a verified token
-    auto push_token = [&](const std::string& path_str) {
-        std::string ext = std::filesystem::path(path_str).extension().string();
-        
-        // Convert to lowercase to ensure consistency (.JPG -> .jpg)
-        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
-
-        // If no extension exists, read the magic bytes
-        if (ext.empty()) {
-            ext = Program::Get::extensionFromHeader(path_str);
-        }
-
-        tokens.push_back({path_str, ext});
-    };
 
     for (size_t i = 0; i < fullInput.length(); ++i) {
         char c = fullInput[i];

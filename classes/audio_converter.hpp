@@ -6,10 +6,12 @@
 #ifndef AUDIO_CONVERTER_HPP
 #define AUDIO_CONVERTER_HPP
 
+#include "program_handler.hpp"
+
 #include <filesystem>
 #include <string>
 
 void audio();
-void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
+void audio_convert_logic(std::filesystem::path in, std::string extension, std::string fmt, bool silent);
 
 #endif

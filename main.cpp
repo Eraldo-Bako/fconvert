@@ -97,7 +97,7 @@ void print_list() {
 void print_help(const char* s_program_name, int status = EXIT_SUCCESS) {
 
     if (status != EXIT_SUCCESS) {
-        std::cerr << fmt::format(_("Try '{0}' for more information.\n"), s_program_name " --help");
+        std::cerr << fmt::format(_("Try '{0}' for more information.\n"), "--help");
         std::exit(status);
     }
 
@@ -388,7 +388,7 @@ int main(int argc, char* argv[]) {
                             quick_ext == "txt" || quick_ext == "docx");
 
         if (inputIsVideo && targetIsAudio) {
-            audio_convert_logic(in, quick_ext, true);
+            //audio_convert_logic(in, quick_ext, true);
         } else if (targetIsRAWImage) {
             Program::log(_("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]"));
             Program::print(fmt::format(_("[!] Error: Detected target is a RAW image format: '{0}' [!]"), quick_ext), Program::PrintType::Error);
@@ -396,7 +396,7 @@ int main(int argc, char* argv[]) {
         } else if (inputIsVideo) {
             video_convert_logic(in, quick_ext, 'd', true);
         } else if (targetIsAudio) {
-            audio_convert_logic(in, quick_ext, true);
+            //audio_convert_logic(in, quick_ext, true);
         } else if (targetIsImage) {
             bool targetIsVector = (quick_ext == "svg" || quick_ext == "ai");
             if (targetIsVector) {

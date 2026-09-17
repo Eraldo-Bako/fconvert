@@ -17,7 +17,7 @@
     #include <sys/wait.h>
 #endif
 
-void audio_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
+void audio_convert_logic(std::filesystem::path in, std::string extension, std::string fmt, bool silent) {
 
     if (!Program::Check::ffmpeg()) {
         Program::print(_("[!] Error: FFmpeg not found. [!]\n"), Program::PrintType::Error);

@@ -9,6 +9,7 @@
 #include "../program_handler.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -27,12 +28,13 @@ namespace Program {
         std::string currentTimestamp();
         std::string input(const std::string& prompt, Case lower = Program::Case::Normal, InputType useWS = Program::InputType::WS);
         std::string toolPath(const std::string& baseToolName);
-        std::vector<std::string> multipleInput(const std::string& fullInput);
 
         struct ParsedInput {
             std::string path;
             std::string extension;
         };
+
+        std::vector<ParsedInput> multipleInput(const std::string& fullInput);
 
         struct FileSignature {
             std::vector<uint8_t> magic;
@@ -40,39 +42,13 @@ namespace Program {
             std::string extension;
         };
 
-        //experimenting with a standart, input camelCase, in-function variables snake_case
-        std::optional<std::uintmax_t> fileSize(const std::string& filePath) {
-            std::filesystem::path path_from_string;
-
-            try {
-                path_from_string = std::filesystem::u8path(filePath);
-            } catch (const std::exception& e) {
-                Program::print(_("[!!] Error: Could not parse file path! [!!]"), Program::PrintType::Error);
-                Program::log(_("[!] Warning: Unsafe state detected. Stopping... [!]"));
-                Program::end((fmt::format_("[Error] Program stopped due to: {0}"), e.what()));
-                return std::nullopt; //shouldn't reach
-            };
-            
-            std::error_code error_state;
-            std::uintmax_t input_size = std::filesystem::file_size(path_from_string, error_state);
-
-            if (error_state) {
-                Program::print(fmt::format(_("[!!] Error: {0} could not determine file size! [!!]"), "fconvert"), Program::PrintType::Error);
-                Program::log(_("[!] Warning: Unsafe state detected. Stopping... [!]"));
-                Program::end(fmt::format(_("[Error] Program stopped due to: {0}"), error_state.message()));
-                return std::nullopt;
-            }
-
-            return input_size;
-        }
-
         /** old
          * std::string(std::filesystem::path) >> Program::Get::extensionFromHeader >> std::string
          * Reads the file through std::ifstream in std::ios::binary format
          * Reads a range of 1-4kb of header data to determine the filetype
          */
 
-        std::string extensionFromHeader(const std::string& filePath) {
+        inline std::string extensionFromHeader(const std::string& filePath) {
 
             std::error_code error_state;
             const auto file_size = std::filesystem::file_size(filePath, error_state);
@@ -149,7 +125,7 @@ namespace Program {
                 {{0x38, 0x42, 0x50, 0x53}, 0, ".psd"},
                 {{0x25, 0x21, 0x50, 0x53, 0x2D, 0x41, 0x64, 0x6F}, 0, ".eps"}, //Encapsulated PostScript file
                 {{0xC5, 0xD0, 0xD3, 0xC6}, 0, ".eps"}, //Adobe encapsulated PostScript
-                {{0x67 0x69 0x6D 0x70 0x20 0x78 0x63 0x66}, 0, ".xcf"},
+                {{0x67, 0x69, 0x6D, 0x70, 0x20, 0x78, 0x63, 0x66}, 0, ".xcf"},
 
                 //  MODERN COMPRESSED - heic, heif
                 {{0x68, 0x65, 0x69, 0x63}, 8, ".heic"}, //header is the same so just going to identify it as heic
@@ -208,7 +184,7 @@ namespace Program {
                 const std::string_view brand{reinterpret_cast<const char*>(buffer.data() + 8), 4};
 
                 if (ftyp == "ftyp") {
-                    static constexpr std::array<std::string_view, 5> mp4_brands{
+                    static constexpr std::array<std::string_view, 6> mp4_brands{
                         "isom", "mp41", "mp42", "MSNV", "avc1", "3gp5"
                     };
 
@@ -245,7 +221,7 @@ namespace Program {
                 (buffer[0] == 0x4D && buffer[1] == 0x4D && buffer[2] == 0x00 && buffer[3] == 0x2A)
             )) {
                 
-                if (content.find(dng_tag) != std::string_view::npos)   return ".dng";
+                if (content.find("DNG TAG") != std::string_view::npos)   return ".dng";
                 if (content.find("NIKON") != std::string_view::npos)   return ".nef";
                 if (content.find("Sony") != std::string_view::npos)    return ".arw";
                 if (content.find("PENTAX") != std::string_view::npos)  return ".pef";

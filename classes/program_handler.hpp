@@ -31,7 +31,7 @@ namespace Program {
     enum class PrintType { Normal, Error };
     enum class LogDest { None, Console, File, All };
 
-    std::filesystem::path LOG_DIRECTORY;
+    inline std::filesystem::path LOG_DIRECTORY;
     inline std::filesystem::path activeLogPath = "";
     inline bool debug_mode = false;
 
