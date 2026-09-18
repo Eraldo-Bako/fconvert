@@ -11,6 +11,6 @@
 
 bool check_ffmpeg();
 void video();
-void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent);
+void video_convert_logic(const std::filesystem::path& in, const std::string& fmt, const char q, const bool silent);
 
 #endif

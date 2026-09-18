@@ -37,7 +37,7 @@ namespace Program {
         std::vector<ParsedInput> multipleInput(const std::string& fullInput);
 
         struct FileSignature {
-            std::vector<uint8_t> magic;
+            std::array<uint8_t, 16> magic;
             size_t offset;
             std::string extension;
         };
@@ -71,36 +71,20 @@ namespace Program {
             const std::streamsize bytes_read = file.gcount();
 
             /*
-            DONE: jpg/jpeg, png, webp, tiff/tif*, bmp
-                  cr2, crw, cr3, raf, rw2, nef*, arw*, pef*, orf*, dng*
-                  svg, pdf, gif, ico, psd, eps, 
-                  heic/heif
-
-                  wav, aiff
-                  flac
-                  mp3
-                  
-                  mp4, mkv*, mov
-                  webm, ogg
-
-                  avi
-
             TODO: 
                   ai
 
                   pcm, dsd
                   alac, wavpack
-                  aac, m4a, opus, wma
+                  opus, wma
 
-                  m4a
                   prores, dnxhr, dnxhd
-                  avchd, mpeg2
-                  wmv, flv, f4v, 3gp, 3g2
+                  avchd
 
             
             */
 
-            const std::vector<FileSignature> signatures = {
+            const static Program::Get::FileSignature signatures[] = {
                 // IMAGE
                 // STANDARD IMAGES - jpg/jpeg, png, webp, tiff/tif, bmp
                 {{0xFF, 0xD8, 0xFF}, 0, ".jpg"}, // SOI + first APP0 byte (JFIF and EXIF)
@@ -108,7 +92,7 @@ namespace Program {
                 {{0x57, 0x45, 0x42, 0x50}, 8, ".webp"},// 4 bytes starting at 8 gets *WEBP*, uses the RIFF container
                 {{0x42, 0x4D}, 0, ".bmp"}, // BM*
                 //{{0x49, 0x49, 0x2A, 0x00}, 0, ".tif"}, // little-endian
-                //{{0x4D, 0x4D, 0x00, 0x2A}, 0, ".tif"}, //    big-endian
+                //{{0x4D, 0x4D, 0x00, 0x2A}, 0, ".tif"}, // big-endian
 
                 // Camera RAW - cr2, nef, arw, dng, crw
                 {{0x43, 0x52, 0x02, 0x00}, 8, ".cr2"}, // CR + version 2.0
@@ -123,12 +107,12 @@ namespace Program {
                 {{0x47, 0x49, 0x46, 0x38}, 0, ".gif"}, // GIF8* both animated(GIF89a) and not(GIF87a)
                 {{0x00, 0x00, 0x01, 0x00}, 0, ".ico"},
                 {{0x38, 0x42, 0x50, 0x53}, 0, ".psd"},
-                {{0x25, 0x21, 0x50, 0x53, 0x2D, 0x41, 0x64, 0x6F}, 0, ".eps"}, //Encapsulated PostScript file
-                {{0xC5, 0xD0, 0xD3, 0xC6}, 0, ".eps"}, //Adobe encapsulated PostScript
+                {{0x25, 0x21, 0x50, 0x53, 0x2D, 0x41, 0x64, 0x6F}, 0, ".eps"}, // Encapsulated PostScript file
+                {{0xC5, 0xD0, 0xD3, 0xC6}, 0, ".eps"}, // Adobe encapsulated PostScript
                 {{0x67, 0x69, 0x6D, 0x70, 0x20, 0x78, 0x63, 0x66}, 0, ".xcf"},
 
                 //  MODERN COMPRESSED - heic, heif
-                {{0x68, 0x65, 0x69, 0x63}, 8, ".heic"}, //header is the same so just going to identify it as heic
+                {{0x68, 0x65, 0x69, 0x63}, 8, ".heic"}, // header is the same so just going to identify it as heic
 
                 // AUDIO
                 // UNCOMPRESSED - wav, aiff, pcm, dsd
@@ -141,7 +125,7 @@ namespace Program {
                 // LOSSY COMPRESSED - mp3, ogg, aac, m4a, opus, wma
                 {{0x49, 0x44, 0x33}, 0, ".mp3"},
                 {{0xFF, 0xFB}, 0, ".mp3"},       
-                {{0x4F, 0x67, 0x67, 0x53}, 0, ".ogg"},
+                // {{0x4F, 0x67, 0x67, 0x53}, 0, ".ogg"},
                 {{0xFF, 0xF1}, 0, ".aac"}, //MPEG-4 AAC
                 {{0xFF, 0xF9}, 0, ".aac"}, //MPEG-2 AAC
                 {{0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x41}, 0, ".m4a"}, //Apple audio and video
@@ -149,25 +133,41 @@ namespace Program {
                 
                 // VIDEO
                 // COMPRESSED/DELIVERY - mp4, mkv, mov, m4v
+                // dealing w/ mp4 later in the code
                 //{{0x6D, 0x70, 0x34, 0x31}, 8, ".mp4"}, //mp41
                 //{{0x6D, 0x70, 0x34, 0x32}, 8, ".mp4"}, //mp42
                 //{{0x69, 0x73, 0x6F, 0x6D}, 8, ".mp4"}, //isom
                 {{0x71, 0x74, 0x20, 0x20}, 8, ".mov"},
+                {{0x66, 0x74, 0x79, 0x70, 0x4d, 0x34, 0x56}, 4, ".m4v"}, // ftypM4V
 
                 // WEB OPTIMIZED - webm, ogg
-                {{0x4F, 0x67, 0x67, 0x53}, 0, ".ogg"},
+                // webm later in the code
+                // {{0x4F, 0x67, 0x67, 0x53}, 0, ".ogg"},
 
                 // EDITING/INTERMEDIATE - prores, dnxhr, dnxhd
+                // these are a big mess
 
-                // HARDWARE/ACQUISITION: avchd, mpeg2
+                // HARDWARE/ACQUISITION: avchd, mpg, mpeg
+                {{0x00, 0x00, 0x01, 0xBA}, 0, ".mpg"}, // MPEG-1/2 Part 1 (using mpg for this since its older)
+                {{0x00, 0x00, 0x01, 0xB3}, 0, ".mpeg"}, // MPEG-1/2 Part 2
 
                 // LEGACY - avi, wmv, flv, f4v, 3gp, 3g2
-                {{0x41, 0x56, 0x49, 0x20}, 8, ".avi"},// 4 bytes starting at 8 gets *WEBP*, uses the RIFF container
+                {{0x41, 0x56, 0x49, 0x20}, 8, ".avi"}, // 4 bytes starting at 8 gets *WEBP*, uses the RIFF container
+                {{0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11}, 0, ".wmv"}, //Windows Media Audio-Video File: either wma or wmv
                 
-                //4D 53 4E 56 - MSNV
-                //61 76 63 31 - avc1
-                //33 67 70 35 - 3gp5
-                {{0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11}, 0, ".wmv"} //Windows Media Audio-Video File: either wma or wmv
+                {{0x46, 0x4C, 0x56}, 0, ".flv"}, // FLV
+                {{0x66, 0x74, 0x79, 0x70, 0x66, 0x34, 0x76}, 4, ".f4v"}, // ftypf4v
+
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x31}, 4, ".3gp"}, // ftyp3gp1
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x32}, 4, ".3gp"}, // ftyp3gp2
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x33}, 4, ".3gp"}, // ftyp3gp3
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x34}, 4, ".3gp"}, // ftyp3gp4
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x35}, 4, ".3gp"}, // ftyp3gp5
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x36}, 4, ".3gp"}, // ftyp3gp6
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70, 0x37}, 4, ".3gp"}, // ftyp3gp7
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x32, 0x61}, 4, ".3g2"}, // ftyp3g2a
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x32, 0x62}, 4, ".3g2"}, // ftyp3g2b
+                {{0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x32, 0x63}, 4, ".3g2"}  // ftyp3g2c
             };
 
             // Preset Signatures check
@@ -192,7 +192,30 @@ namespace Program {
                         return ".mp4";
                     }
                 }
-            }
+            } file.clear();
+            
+            { // reading up to 36 bytes for ogg and opus distinction
+                file.seekg(0, std::ios::beg);
+                const size_t bytes_to_read = std::min<size_t>(
+                                                static_cast<size_t>(file_size), 
+                                                36
+                                            );
+                std::vector<char> opus_buffer(bytes_to_read);
+                file.read(opus_buffer.data(), bytes_to_read);
+                const size_t opus_bytes_read = static_cast<size_t>(file.gcount());
+                if (opus_bytes_read == 0) return "";
+                if (opus_bytes_read >= 4 && opus_buffer[0] == 0x4F && opus_buffer[1] == 0x67 && opus_buffer[2] == 0x67 && opus_buffer[3] == 0x53) {
+                    if(opus_bytes_read >= 36 && 
+                        opus_buffer[28] == 0x4f && opus_buffer[29] == 0x70 && 
+                        opus_buffer[30] == 0x75 && opus_buffer[31] == 0x73 &&
+                        opus_buffer[32] == 0x48 && opus_buffer[33] == 0x65 && 
+                        opus_buffer[34] == 0x61 && opus_buffer[35] == 0x64
+                    ) {
+                        return ".opus";
+                    }
+                    return ".ogg";
+                }
+            } file.clear();
 
             // Container Deep Inspection (reads up to 4KB)
             file.seekg(0, std::ios::beg);
@@ -221,7 +244,6 @@ namespace Program {
                 (buffer[0] == 0x4D && buffer[1] == 0x4D && buffer[2] == 0x00 && buffer[3] == 0x2A)
             )) {
                 
-                if (content.find("DNG TAG") != std::string_view::npos)   return ".dng";
                 if (content.find("NIKON") != std::string_view::npos)   return ".nef";
                 if (content.find("Sony") != std::string_view::npos)    return ".arw";
                 if (content.find("PENTAX") != std::string_view::npos)  return ".pef";

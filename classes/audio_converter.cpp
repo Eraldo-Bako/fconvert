@@ -1,4 +1,4 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1-rc3 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -17,7 +17,7 @@
     #include <sys/wait.h>
 #endif
 
-void audio_convert_logic(std::filesystem::path in, std::string extension, std::string fmt, bool silent) {
+void audio_convert_logic(const std::filesystem::path& in, const std::string& fmt, const bool silent) {
 
     if (!Program::Check::ffmpeg()) {
         Program::print(_("[!] Error: FFmpeg not found. [!]\n"), Program::PrintType::Error);
@@ -129,7 +129,7 @@ void audio() {
 
     // why u quitting +@+   jk, just providing a quiting option at anytime(promise u'll come back Q-Q)
     if (fmt == "q" || fmt == "quit" || fmt == "exit" || fmt == "cancel") {
-        Program::log(fmt::format(_("[~] Detected: '{}' Quitting... [~]"), fmt));
+        Program::log(fmt::format(_("[~] Detected: '{0}' Quitting... [~]"), fmt));
         Program::print(_("[!] Successfully stopped the conversion! [!]"));
         return;
     }
@@ -163,6 +163,6 @@ void audio() {
         }
 
         // Actual conversion logic executed 1 by 1
-        audio_convert_logic(in, raw_input.extension, fmt, false);
+        audio_convert_logic(in, fmt, false);
     }
 }

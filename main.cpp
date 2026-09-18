@@ -279,9 +279,9 @@ int main(int argc, char* argv[]) {
             Program::clearCache();
             return EXIT_SUCCESS;
         } else if (arg == "-pcd" || arg == "--print-cache-dir") {
-            std::cout << Program::Get::logDirectory();
+            std::cout << Program::LOG_DIRECTORY;
             return EXIT_SUCCESS;
-        } else if (arg == "-scd" || arg == "--specify-cache-dir") {
+        } else if (arg == "-scd" || arg == "--specify-cache-dir") {// add no logging option for input()
             std::string pathInput = Program::Get::input("Specify Cache Directory for this instance: ");
             std::error_code ec;
             
@@ -386,7 +386,8 @@ int main(int argc, char* argv[]) {
         
         bool targetIsDOC = (quick_ext == "epub" || quick_ext == "html" || quick_ext == "pdf" || 
                             quick_ext == "txt" || quick_ext == "docx");
-
+        
+        //TODO: needs to have the multiple input feature
         if (inputIsVideo && targetIsAudio) {
             //audio_convert_logic(in, quick_ext, true);
         } else if (targetIsRAWImage) {

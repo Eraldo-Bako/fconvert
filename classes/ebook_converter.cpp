@@ -1,4 +1,4 @@
-// fconvert v2.4.0 | Copyright (c) 2023-2026 Eraldo Bako
+// fconvert v2.4.1-rc3 | Copyright (c) 2023-2026 Eraldo Bako
 // Licensed under the Apache License, Version 2.0 (the "License")
 // Maintainer: eraldobako@gmail.com
 
@@ -74,7 +74,7 @@ bool EbookConverter::convert(const std::filesystem::path& input, const std::stri
     return false;
 }
 
-void ebook_convert_logic(std::filesystem::path in, std::string fmt, bool silent) {
+void ebook_convert_logic(const std::filesystem::path& in, const std::string& fmt, const bool silent) {
     Program::log(_("[-] Status: Checking for pandoc... [-]"));
     if (!Program::Check::pandoc()) {
         Program::print(_("[!] Error: Pandoc not found. [!]\n"), Program::PrintType::Error);
@@ -91,23 +91,12 @@ void ebook_convert_logic(std::filesystem::path in, std::string fmt, bool silent)
 }
 
 void ebook() {
+    std::vector<Program::Get::ParsedInput> raw_inputs = 
+        Program::Get::multipleInput(Program::Get::input(_("eBook/Document filename(s) or path(s): ")));
 
-    std::string name = Program::Get::input(_("Ebook/Document filename or path: "));
-    std::filesystem::path in = PathHandler::resolve_input(name);
-    if (in.empty()) {
-        Program::log(_("[!] Error: Path could not be resolved. [!]"));
-        Program::print(_("[!] File not found. [!]\n"));
+    if (raw_inputs.empty()) {
+        Program::log(_("[!] Error: No input paths provided. [!]"));
         return;
-    }
-
-    {
-        std::string ext = in.extension().string();
-        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-        if (ext == ".pdf") {
-            Program::log(_("[!] Error: PDF files cannot be used as a source format for conversion. [!]"));
-            Program::print(_("[!] PDF input is not supported. Pandoc cannot read raw PDF structures. [!]\n"));
-            return;
-        }
     }
 
     std::string fmt = Program::Get::input("Target Format ([P]df / [H]tml / [E]pub / [T]xt / [D]ocx): ", Program::Case::Lower);
@@ -133,5 +122,21 @@ void ebook() {
         return;
     }
 
-    ebook_convert_logic(in, fmt, false);
+    for (const auto& raw_input : raw_inputs) {
+        std::filesystem::path in = PathHandler::resolve_input(raw_input.path);
+        if (in.empty()) {
+            std::cout << fmt::format(_("[!] Warning: Path could not be resolved for '{0}'. Skipping...\n"), raw_input.path);
+            Program::log(fmt::format("[!] Path resolution failed for: {0}", raw_input.path));
+            continue;
+        }
+
+        if (raw_input.extension == ".pdf") {
+            Program::log(_("[!] Error: PDF files cannot be used as a source format for conversion. [!]"));
+            Program::print(_("[!] PDF input is yet to be supported. Pandoc cannot read raw PDF structures. [!]\n"), Program::PrintType::Error);
+            return;
+        }
+
+        // Actual conversion logic executed 1 by 1
+        ebook_convert_logic(in, fmt, false);
+    }
 }

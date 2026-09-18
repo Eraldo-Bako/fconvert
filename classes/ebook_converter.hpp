@@ -15,6 +15,6 @@ public:
 };
 
 void ebook();
-void ebook_convert_logic(std::filesystem::path in, std::string fmt, bool silent);
+void ebook_convert_logic(const std::filesystem::path& in, const std::string& fmt, bool silent);
 
 #endif

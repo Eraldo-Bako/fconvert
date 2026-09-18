@@ -12,6 +12,6 @@
 #include <string>
 
 void audio();
-void audio_convert_logic(std::filesystem::path in, std::string extension, std::string fmt, bool silent);
+void audio_convert_logic(const std::filesystem::path& in, const std::string& fmt, const bool silent);
 
 #endif

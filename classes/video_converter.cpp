@@ -16,7 +16,7 @@
     #include <sys/wait.h>
 #endif
 
-void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool silent) {
+void video_convert_logic(const std::filesystem::path& in, const std::string& fmt, const char quality, const bool silent) {
     if (!Program::Check::ffmpeg()) {
         Program::print(_("[!] Error: FFmpeg not found. [!]\n"), Program::PrintType::Error);
         return;
@@ -29,56 +29,56 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
 
     std::string params;
     if (fmt == "mp4" || fmt == "m4v" || fmt == "f4v" || fmt == "mov") {
-        if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
+        if (quality == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     } else if (fmt == "mkv") {
-        if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a libopus -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a libopus -b:a 96k";
+        if (quality == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a libopus -b:a 192k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a libopus -b:a 96k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a libopus -b:a 128k";
     } else if (fmt == "webm") {
-        if (q == 'b')      params = "-c:v libvpx-vp9 -crf 20 -b:v 0 -deadline best -c:a libopus -b:a 192k";
-        else if (q == 'q') params = "-c:v libvpx-vp9 -crf 35 -b:v 0 -deadline realtime -c:a libopus -b:a 96k";
+        if (quality == 'b')      params = "-c:v libvpx-vp9 -crf 20 -b:v 0 -deadline best -c:a libopus -b:a 192k";
+        else if (quality == 'q') params = "-c:v libvpx-vp9 -crf 35 -b:v 0 -deadline realtime -c:a libopus -b:a 96k";
         else               params = "-c:v libvpx-vp9 -crf 30 -b:v 0 -deadline good -c:a libopus -b:a 128k";
     } else if (fmt == "avi") {
-        if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a mp3 -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a mp3 -b:a 128k";
+        if (quality == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a mp3 -b:a 192k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a mp3 -b:a 128k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a mp3 -b:a 160k";
     } else if (fmt == "wmv") {
-        if (q == 'b')      params = "-c:v wmv2 -b:v 4M -c:a wmav2 -b:a 192k";
-        else if (q == 'q') params = "-c:v wmv2 -b:v 1M -c:a wmav2 -b:a 96k";
+        if (quality == 'b')      params = "-c:v wmv2 -b:v 4M -c:a wmav2 -b:a 192k";
+        else if (quality == 'q') params = "-c:v wmv2 -b:v 1M -c:a wmav2 -b:a 96k";
         else               params = "-c:v wmv2 -b:v 2M -c:a wmav2 -b:a 128k";
     } else if (fmt == "flv") {
-        if (q == 'b')      params = "-c:v libx264 -crf 19 -preset slow -c:a aac -b:a 160k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 96k";
+        if (quality == 'b')      params = "-c:v libx264 -crf 19 -preset slow -c:a aac -b:a 160k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 96k";
         else               params = "-c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k";
-    } else if (fmt == "mpeg-2") {
-        if (q == 'b')      params = "-c:v mpeg2video -b:v 8M -maxrate 9M -bufsize 2M -c:a mp2 -b:a 224k";
-        else if (q == 'q') params = "-c:v mpeg2video -b:v 2M -maxrate 3M -bufsize 1M -c:a mp2 -b:a 128k";
+    } else if (fmt == "mpg" || fmt == "mpeg") {
+        if (quality == 'b')      params = "-c:v mpeg2video -b:v 8M -maxrate 9M -bufsize 2M -c:a mp2 -b:a 224k";
+        else if (quality == 'q') params = "-c:v mpeg2video -b:v 2M -maxrate 3M -bufsize 1M -c:a mp2 -b:a 128k";
         else               params = "-c:v mpeg2video -b:v 5M -maxrate 6M -bufsize 2M -c:a mp2 -b:a 160k";
     } else if (fmt == "3gp" || fmt == "3g2") {
-        if (q == 'b')      params = "-c:v h263 -b:v 500k -r 15 -s cif -c:a libopencore_amrnb -b:a 12.2k -ar 8000 -ac 1";
-        else if (q == 'q') params = "-c:v h263 -b:v 150k -r 10 -s qcif -c:a libopencore_amrnb -b:a 4.75k -ar 8000 -ac 1";
+        if (quality == 'b')      params = "-c:v h263 -b:v 500k -r 15 -s cif -c:a libopencore_amrnb -b:a 12.2k -ar 8000 -ac 1";
+        else if (quality == 'q') params = "-c:v h263 -b:v 150k -r 10 -s qcif -c:a libopencore_amrnb -b:a 4.75k -ar 8000 -ac 1";
         else               params = "-c:v h263 -b:v 300k -r 15 -s qcif -c:a libopencore_amrnb -b:a 7.4k -ar 8000 -ac 1";
     } else if (fmt == "avchd" || fmt == "mts" || fmt == "m2ts") {
-        if (q == 'b')      params = "-c:v libx264 -crf 18 -preset slow -c:a ac3 -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a ac3 -b:a 128k";
+        if (quality == 'b')      params = "-c:v libx264 -crf 18 -preset slow -c:a ac3 -b:a 192k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a ac3 -b:a 128k";
         else               params = "-c:v libx264 -crf 23 -preset medium -c:a ac3 -b:a 160k";
     } else if (fmt == "ogv" || fmt == "ogg") {
-        if (q == 'b')      params = "-c:v libtheora -q:v 7 -c:a libvorbis -q:a 6";
-        else if (q == 'q') params = "-c:v libtheora -q:v 3 -c:a libvorbis -q:a 3";
+        if (quality == 'b')      params = "-c:v libtheora -q:v 7 -c:a libvorbis -q:a 6";
+        else if (quality == 'q') params = "-c:v libtheora -q:v 3 -c:a libvorbis -q:a 3";
         else               params = "-c:v libtheora -q:v 5 -c:a libvorbis -q:a 5";
     } else if (fmt == "prores") {
-        if (q == 'b')      params = "-c:v prores_ks -profile:v 3 -vendor ap10 -pix_fmt yuv422p10le -c:a pcm_s16le";
-        else if (q == 'q') params = "-c:v prores_ks -profile:v 0 -vendor ap10 -pix_fmt yuv422p10le -c:a pcm_s16le";
+        if (quality == 'b')      params = "-c:v prores_ks -profile:v 3 -vendor ap10 -pix_fmt yuv422p10le -c:a pcm_s16le";
+        else if (quality == 'q') params = "-c:v prores_ks -profile:v 0 -vendor ap10 -pix_fmt yuv422p10le -c:a pcm_s16le";
         else               params = "-c:v prores_ks -profile:v 2 -vendor ap10 -pix_fmt yuv422p10le -c:a pcm_s16le";
     } else if (fmt == "dnxhd" || fmt == "dnxhr") {
-        if (q == 'b')      params = "-c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a pcm_s16le";
-        else if (q == 'q') params = "-c:v dnxhd -profile:v dnxhr_lb -pix_fmt yuv422p -c:a pcm_s16le";
-        else               params = "-c:v dnxhd -profile:v dnxhr_sq -pix_fmt yuv422p -c:a pcm_s16le";
-    } else { //intentional repetition of the first if block, may change in the future
-        if (q == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
-        else if (q == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
+        if (quality == 'b')      params = "-c:v dnxhd -profile:v dnxhr_hquality -pix_fmt yuv422p -c:a pcm_s16le";
+        else if (quality == 'q') params = "-c:v dnxhd -profile:v dnxhr_lb -pix_fmt yuv422p -c:a pcm_s16le";
+        else               params = "-c:v dnxhd -profile:v dnxhr_squality -pix_fmt yuv422p -c:a pcm_s16le";
+    } else { //intentional repetition of the first if block, may change in the future ~ kinda unreachable
+        if (quality == 'b')      params = "-c:v libx264 -crf 17 -preset slow -c:a aac -b:a 192k";
+        else if (quality == 'q') params = "-c:v libx264 -crf 28 -preset superfast -c:a aac -b:a 128k";
         else               params = "-c:v libx264 -crf 22 -preset medium -c:a aac -b:a 160k";
     }
 
@@ -89,7 +89,7 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
     bool success = false; // error catching -_-
     if (int execute = std::system(cmd.c_str()); execute == -1) { // the system shell itself couldn't be started, critical
         std::cerr << _("[!] Critical Error: Failed to initiate the command shell. [!]\n");
-    } else { // did the command even finish normally
+    } else { // did the command even finish normally?
         #ifdef _WIN32
             if (execute == 0) {
                 std::cout << _("[~] Status: Conversion completed successfully! [~]") << std::endl;
@@ -125,15 +125,15 @@ void video_convert_logic(std::filesystem::path in, std::string fmt, char q, bool
 }
 
 void video() {
-    std::string name = Program::Get::input(_("Video filename: "));
-    std::filesystem::path in = PathHandler::resolve_input(name);
-    if (in.empty()) {
-        Program::log(_("[!] Error: Path could not be resolved. [!]"));
+    std::vector<Program::Get::ParsedInput> raw_inputs =
+        Program::Get::multipleInput(Program::Get::input(_("Video filename(s) or path(s): ")));
+    
+    if (raw_inputs.empty()) {
+        Program::log(_("[!] Error: No input paths provided. [!]"));
         return;
     }
 
-    std::string fmt = Program::Get::input("Format: ", Program::Case::Lower);
-
+    std::string fmt = Program::Get::input(_("Format: "), Program::Case::Lower);
     if (fmt == "quit" || fmt == "exit" || fmt == "cancel") {
         Program::log(fmt::format(_("[~] Detected: {0} [~]\n[~] Quitting... [~]"), fmt));
         Program::print(_("[!] Successfully stopped the conversion! [!]"));
@@ -142,7 +142,7 @@ void video() {
 
     static const std::set<std::string> valid_video = {"mp4", "mov", "avi", "wmv", "flv", 
                                                       "f4v", "mkv", "webm", "3gp", "3g2", 
-                                                      "m4v", "f4v", "mpeg-2", "avchd", "mts",
+                                                      "m4v", "f4v", "mpg", "mpeg", "avchd", "mts",
                                                       "m2ts", "ogv", "ogg", "prores", "dnxhd", 
                                                       "dnxhr"};
     if (valid_video.find(fmt) == valid_video.end()) {
@@ -154,16 +154,32 @@ void video() {
         return;
     }
 
-    std::string qual = Program::Get::input(_("Select Quality ([Q]uick, [D]efault, [B]est): "), Program::Case::Lower);
+    std::string qual = 
+        Program::Get::input(
+            _("Select Quality ([Q]uick, [D]efault, [B]est): "), 
+            Program::Case::Lower
+        );
     if (qual == "quit" || qual == "exit" || qual == "cancel") {
         std::cout << _("[!] Successfully stopped the conversion! [!]");
         return;
     }
 
-    if (!qual.empty() && (qual[0] == 'q' || qual[0] == 'd' || qual[0] == 'b'))
-        video_convert_logic(in, fmt, qual[0], false);
-    else {
+    if(qual.empty() || qual[0] != 'q' || qual[0] != 'd' || qual[0] != 'b') {
         Program::print(fmt::format(_("[!] Invalid quality option provided: {0} [!]\nExiting..."), qual));
         return;
+    }
+
+    for (const auto& raw_input : raw_inputs) {
+        // should access the .path member of the ParsedInput struct
+        std::filesystem::path in = PathHandler::resolve_input(raw_input.path);
+        
+        if (in.empty()) {
+            std::cout << fmt::format(_("[!] Warning: Path could not be resolved for '{0}'. Skipping...\n"), raw_input.path);
+            Program::log(fmt::format(_("[!] Path resolution failed for: {0}"), raw_input.path));
+            continue;
+        }
+
+        // Actual conversion logic executed 1 by 1
+        video_convert_logic(in, fmt, qual[0], false);
     }
 }

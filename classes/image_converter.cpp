@@ -57,7 +57,7 @@ cv::Mat read_camera_raw(const std::string& raw_path) {
     return bgr_mat; // full-res image matrix
 }
 
-void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent, Image::SVG vector_precision) {
+void image_convert_logic(const std::filesystem::path& in, const std::string& fmt, const bool silent, Image::SVG vector_precision) {
 
     if (!Program::Check::opencv()) {
         Program::print(_("[!] Error: OpenCV not found. [!]\n"), Program::PrintType::Error);
@@ -295,12 +295,11 @@ void image_convert_logic(std::filesystem::path in, std::string fmt, bool silent,
 
 void image() {
 
-    std::string name = Program::Get::input(_("Image filename or path: "));
-    std::filesystem::path in = PathHandler::resolve_input(name);
-    if (in.empty()) {
-        Program::log(_("[!] Error: Path could not be resolved. [!]"));
-        Program::print(_("[!] File not found. [!]\n"), Program::PrintType::Error);
-        std::cerr << std::flush;
+    std::vector<Program::Get::ParsedInput> raw_inputs =
+        Program::Get::multipleInput(Program::Get::input(_("Image filename(s) or path(s): ")));
+
+    if (raw_inputs.empty()) {
+        Program::log(_("[!] Error: No input paths provided. [!]"));
         return;
     }
 
@@ -319,7 +318,7 @@ void image() {
 
         if (targetIsRAWImage) {
             Program::log(_("[!] Warning: Converting to a RAW image format is not supported, nor recommended! [!]"));
-            Program::print(fmt::format(_("[!] Error: Detected target is a RAW image format: '{}' [!]"), fmt), Program::PrintType::Error);
+            Program::print(fmt::format(_("[!] Error: Detected target is a RAW image format: '{0}' [!]"), fmt), Program::PrintType::Error);
             return;
         }
     }
@@ -404,5 +403,18 @@ void image() {
         }
     }
 
-    if (SVG_Precision != Image::SVG::QUIT) image_convert_logic(in, fmt, false, SVG_Precision);
+    if (SVG_Precision == Image::SVG::QUIT) return;
+    for (const auto& raw_input : raw_inputs) {
+        // should access the .path member of the ParsedInput struct
+        std::filesystem::path in = PathHandler::resolve_input(raw_input.path);
+        
+        if (in.empty()) {
+            std::cout << fmt::format(_("[!] Warning: Path could not be resolved for '{0}'. Skipping...\n"), raw_input.path);
+            Program::log(fmt::format("[!] Path resolution failed for: {0}", raw_input.path));
+            continue;
+        }
+
+        // Actual conversion logic executed 1 by 1
+        image_convert_logic(in, fmt, false, SVG_Precision);
+    }
 }
