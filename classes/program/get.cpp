@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <limits>
-#include <sstream>
+#include <string_view>
 
 #if defined(_WIN32)
 #define NOMINMAX
@@ -162,6 +162,10 @@ std::string Program::Get::input(const std::string& prompt, Program::Case lower, 
 
 std::vector<Program::Get::ParsedInput> Program::Get::multipleInput(const std::string& fullInput) {
     std::vector<Program::Get::ParsedInput> tokens;
+    // blind/basic estimation pre allocation
+    size_t delimiter_count = std::count(fullInput.begin(), fullInput.end(), ',') +
+                             std::count(fullInput.begin(), fullInput.end(), '|');
+    tokens.reserve(delimiter_count + 1);
 
     // Helper lambda to process and push a verified token
     auto push_token = [&](const std::string& s_l_path_str) {
@@ -179,9 +183,9 @@ std::vector<Program::Get::ParsedInput> Program::Get::multipleInput(const std::st
     };
 
     // Helper lambda to trim whitespace and strip surrounding quotes
-    auto clean_segment = [](std::string l_segment) -> std::string {
+    auto clean_segment = [](std::string_view l_segment) -> std::string_view {
         size_t l_start = l_segment.find_first_not_of(" \t\n\r");
-        if (l_start == std::string::npos) return "";
+        if (l_start == std::string::npos) return {};
         size_t l_end = l_segment.find_last_not_of(" \t\n\r");
         l_segment = l_segment.substr(l_start, l_end - l_start + 1);
 
@@ -190,22 +194,55 @@ std::vector<Program::Get::ParsedInput> Program::Get::multipleInput(const std::st
                 (l_segment.front() == '\'' && l_segment.back() == '\'')
             )) 
         {
-            l_segment = l_segment.substr(1, l_segment.size() - 2);
+            //l_segment = l_segment.substr(1, l_segment.size() - 2);
+            l_segment.remove_prefix(1);
+            l_segment.remove_suffix(1);
         }
         return l_segment;
     };
 
+    // Helper lambda that clans and pushes the token
+    auto process_segment = [&](const std::string_view s_l_raw) {
+        std::string_view l_path_str = clean_segment(s_l_raw);
+        if (!l_path_str.empty() && std::filesystem::exists(l_path_str)) {
+            push_token(std::string(l_path_str));
+        }
+    };
+
     // Expected '|' delimiter detected
     if (fullInput.find('|') != std::string::npos) {
-        std::stringstream string_stream(fullInput);
-        std::string raw_segment;
+        size_t segment_start = 0;
+        size_t segment_end = 0;
 
-        while (std::getline(string_stream, raw_segment, '|')) {
-            std::string path_str = clean_segment(raw_segment);
-            if (!path_str.empty() && std::filesystem::exists(path_str)) {
-                push_token(path_str);
-            }
+        while ((segment_end = fullInput.find('|', segment_start)) != std::string::npos) {
+            process_segment(std::string_view(fullInput).substr(
+                                segment_start,
+                                segment_end - segment_start
+                            ));
+            segment_start = segment_end + 1;
         }
+        process_segment(std::string_view(fullInput).substr(segment_start));
+        return tokens;
+    }
+
+    // Potentially expected: ('input', 'input') or ("input", "input")
+    bool has_single_delim = (fullInput.find("', '") != std::string::npos) || 
+                            (fullInput.find("','")   != std::string::npos);
+    bool has_double_delim = (fullInput.find("\", \"") != std::string::npos) ||
+                            (fullInput.find("\",\"") != std::string::npos);
+
+    if (has_single_delim || has_double_delim) {
+        size_t segment_start = 0;
+        size_t segment_end = 0;
+
+        while ((segment_end = fullInput.find(',', segment_start)) != std::string::npos) {
+            process_segment(std::string_view(fullInput).substr(
+                                segment_start,
+                                segment_end - segment_start
+                            ));
+            segment_start = segment_end + 1;
+        }
+        process_segment(std::string_view(fullInput).substr(segment_start));
         return tokens;
     }
 

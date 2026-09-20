@@ -39,7 +39,7 @@ namespace Program {
         struct FileSignature {
             std::array<uint8_t, 16> magic;
             size_t offset;
-            std::string extension;
+            std::string_view extension;
         };
 
         /** old
@@ -48,7 +48,7 @@ namespace Program {
          * Reads a range of 1-4kb of header data to determine the filetype
          */
 
-        inline std::string extensionFromHeader(const std::string& filePath) {
+        inline std::string_view extensionFromHeader(std::string_view filePath) {
 
             std::error_code error_state;
             const auto file_size = std::filesystem::file_size(filePath, error_state);
@@ -61,12 +61,12 @@ namespace Program {
             if (file_size < 4) return "";
             
             //read only after confirming the file size
-            std::ifstream file(filePath, std::ios::binary);
+            std::ifstream file(std::filesystem::path(filePath), std::ios::binary);
             if (!file.is_open()) return "";
             file.seekg(0, std::ios::beg);
 
             //initial buffer - 16bytes
-            std::vector<uint8_t> buffer(16, 0);
+            std::array<uint8_t, 16> buffer{};
             file.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
             const std::streamsize bytes_read = file.gcount();
 
@@ -196,11 +196,11 @@ namespace Program {
             
             { // reading up to 36 bytes for ogg and opus distinction
                 file.seekg(0, std::ios::beg);
+                std::array<char, 36> opus_buffer{};
                 const size_t bytes_to_read = std::min<size_t>(
                                                 static_cast<size_t>(file_size), 
                                                 36
                                             );
-                std::vector<char> opus_buffer(bytes_to_read);
                 file.read(opus_buffer.data(), bytes_to_read);
                 const size_t opus_bytes_read = static_cast<size_t>(file.gcount());
                 if (opus_bytes_read == 0) return "";
@@ -219,12 +219,11 @@ namespace Program {
 
             // Container Deep Inspection (reads up to 4KB)
             file.seekg(0, std::ios::beg);
+            std::array<char, 4096> deep_buffer{};
             const size_t bytes_to_read = std::min<size_t>(
                                             static_cast<size_t>(file_size), 
                                             4096
                                         );
-            std::vector<char> deep_buffer(bytes_to_read);
-            
             file.read(deep_buffer.data(), bytes_to_read);
             const size_t deep_bytes_read = static_cast<size_t>(file.gcount());
 
